@@ -35,7 +35,7 @@ jobs:
 
       - name: Set correct env vars
         id: script
-        uses: ./tools/actions/set-master-vars
+        uses: ./tools/actions/set-master-vars-bbeu
 
   release:
     needs: [ prepare-env ]
