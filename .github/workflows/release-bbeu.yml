@@ -2,8 +2,9 @@ name: Release
 
 on:
   push:
-    branches:
-      - bbeu
+    # Pattern matched against refs/tags
+    tags:
+      - '**'           # Push events to every tag including hierarchical tags like v1.0/beta
 
 env:
   NX_BRANCH: ${{ github.event.number }}
@@ -35,7 +36,7 @@ jobs:
 
       - name: Set correct env vars
         id: script
-        uses: ./tools/actions/set-master-vars-bbeu
+        uses: ./tools/actions/set-master-vars
 
   release:
     needs: [ prepare-env ]
