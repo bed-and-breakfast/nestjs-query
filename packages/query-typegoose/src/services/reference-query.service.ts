@@ -14,6 +14,7 @@ import {
 } from '@ptc-org/nestjs-query-core'
 import { DocumentType, getClass, getModelWithString, mongoose } from '@typegoose/typegoose'
 import { Base } from '@typegoose/typegoose/lib/defaultClasses'
+import omit from 'lodash.omit'
 import { PipelineStage } from 'mongoose'
 
 import { AggregateBuilder, FilterQueryBuilder } from '../query'
@@ -144,28 +145,32 @@ export abstract class ReferenceQueryService<Entity extends Base> {
   ): Promise<(Relation | undefined) | Map<Entity, Relation | undefined>> {
     this.checkForReference('FindRelation', relationName)
     const referenceQueryBuilder = this.getReferenceQueryBuilder(relationName)
+    const assembler = AssemblerFactory.getAssembler(RelationClass, this.getReferenceEntity(relationName))
+    const filterQuery = referenceQueryBuilder.buildFilterQuery(assembler.convertQuery({ filter: opts?.filter }).filter)
 
-    if (Array.isArray(dto)) {
-      return dto.reduce(async (prev, curr) => {
-        const map = await prev
-        const ref = await this.findRelation(RelationClass, relationName, curr, opts)
-        return map.set(curr, ref)
-      }, Promise.resolve(new Map<DocumentType<Entity>, DocumentType<Relation> | undefined>()))
+    let arrayDto = dto as DocumentType<Entity>[]
+
+    if (!Array.isArray(dto)) {
+      arrayDto = [dto]
     }
 
     // eslint-disable-next-line no-underscore-dangle
-    const foundEntity = await this.Model.findById(dto._id ?? dto.id)
+    const foundEntities = await this.Model.find({ _id: { $in: arrayDto.map((d) => d._id ?? d.id) } }).populate({
+      path: relationName,
+      match: filterQuery
+    })
 
-    if (!foundEntity) {
-      return undefined
-    }
+    const references: [DocumentType<Entity>, Relation | undefined][] = arrayDto.map((d, i) => {
+      let populatedRef: Relation | undefined
 
-    const assembler = AssemblerFactory.getAssembler(RelationClass, this.getReferenceEntity(relationName))
-    const filterQuery = referenceQueryBuilder.buildFilterQuery(assembler.convertQuery({ filter: opts?.filter }).filter)
-    const populated = await foundEntity.populate({ path: relationName, match: filterQuery })
+      if (typeof foundEntities[i] !== 'undefined') {
+        populatedRef = foundEntities[i].get(relationName)
+      }
 
-    const populatedRef: unknown = populated.get(relationName)
-    return populatedRef ? assembler.convertToDTO(populatedRef) : undefined
+      return [d, populatedRef ? assembler.convertToDTO(populatedRef) : undefined]
+    })
+
+    return Array.isArray(dto) ? new Map(references) : references[0][1]
   }
 
   public queryRelations<Relation>(
@@ -190,25 +195,33 @@ export abstract class ReferenceQueryService<Entity extends Base> {
   ): Promise<Relation[] | Map<Entity, Relation[]>> {
     this.checkForReference('QueryRelations', relationName)
     const referenceQueryBuilder = this.getReferenceQueryBuilder<Relation>(relationName)
-
-    if (Array.isArray(dto)) {
-      return dto.reduce(async (mapPromise, entity) => {
-        const map = await mapPromise
-        const refs = await this.queryRelations(RelationClass, relationName, entity, query)
-        return map.set(entity, refs)
-      }, Promise.resolve(new Map<Entity, Relation[]>()))
-    }
-
-    const foundEntity = await this.Model.findById(dto._id ?? dto.id)
-    if (!foundEntity) {
-      return []
-    }
-
     const assembler = AssemblerFactory.getAssembler(RelationClass, this.getReferenceEntity(relationName))
     const { filterQuery, options } = referenceQueryBuilder.buildQuery(assembler.convertQuery(query))
-    const populated = await foundEntity.populate({ path: relationName, match: filterQuery, options })
 
-    return assembler.convertToDTOs(populated.get(relationName) as unknown[])
+    let arrayDto = dto as DocumentType<Entity>[]
+
+    if (!Array.isArray(dto)) {
+      arrayDto = [dto]
+    }
+
+    // eslint-disable-next-line no-underscore-dangle
+    const foundEntities = await this.Model.find({ _id: { $in: arrayDto.map((d) => d._id ?? d.id) } }).populate({
+      path: relationName,
+      match: filterQuery,
+      ...(options.limit ? { perDocumentLimit: options.limit, options: omit(options, 'limit') } : { options })
+    })
+
+    const references: [Entity, Relation[]][] = arrayDto.map((d, i) => {
+      let populatedRef: Relation[] | undefined
+
+      if (typeof foundEntities[i] !== 'undefined') {
+        populatedRef = foundEntities[i].get(relationName)
+      }
+
+      return [d as Entity, populatedRef ? assembler.convertToDTOs(populatedRef) : []]
+    })
+
+    return Array.isArray(dto) ? new Map(references) : references[0][1]
   }
 
   public async addRelations<Relation>(

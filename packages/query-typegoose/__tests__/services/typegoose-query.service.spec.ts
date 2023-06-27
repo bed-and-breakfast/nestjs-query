@@ -20,6 +20,19 @@ const { Types } = mongoose
 
 const mongo = new MongoServer()
 
+const queries: Record<string, number> = { total: 0 }
+
+mongoose.set('debug', (collectionName, methodName, ...methodArgs) => {
+  if (!queries[methodName]) {
+    queries[methodName] = 0
+  }
+
+  queries[methodName] += 1
+  queries.total += 1
+
+  // console.log(`${collectionName}.${methodName}(${methodArgs.join(', ')})`)
+})
+
 describe('TypegooseQueryService', () => {
   let moduleRef: TestingModule
   let TestEntityModel: ReturnModelType<typeof TestEntity>
@@ -49,6 +62,10 @@ describe('TypegooseQueryService', () => {
       ],
       providers: [TestReferenceService, TestEntityService]
     }).compile()
+  })
+
+  afterAll(() => {
+    console.log(queries)
   })
 
   function convertDocument<Doc>(doc: DocumentType<Doc>): Doc {
@@ -894,6 +911,33 @@ describe('TypegooseQueryService', () => {
         expect(queryResult.get(entities[0])).toEqual(TEST_REFERENCES.slice(1, 3))
         expect(queryResult.get(entities[1])).toEqual(TEST_REFERENCES.slice(4, 6))
         expect(queryResult.get(entities[2])).toEqual(TEST_REFERENCES.slice(7, 9))
+      })
+
+      it('should apply sorting', async () => {
+        const entities = TEST_ENTITIES.slice(0, 3)
+        const queryService = moduleRef.get(TestEntityService)
+        const queryResult = await queryService.queryRelations(TestReference, 'testReferences', entities, {
+          sorting: [{ field: 'referenceName', direction: SortDirection.DESC }]
+        })
+
+        expect(queryResult.size).toBe(3)
+        expect(queryResult.get(entities[0])).toEqual(TEST_REFERENCES.slice(0, 3).reverse())
+        expect(queryResult.get(entities[1])).toEqual(TEST_REFERENCES.slice(3, 6).reverse())
+        expect(queryResult.get(entities[2])).toEqual(TEST_REFERENCES.slice(6, 9).reverse())
+      })
+
+      it('should apply sorting and paging per entity', async () => {
+        const entities = TEST_ENTITIES.slice(0, 3)
+        const queryService = moduleRef.get(TestEntityService)
+        const queryResult = await queryService.queryRelations(TestReference, 'testReferences', entities, {
+          paging: { limit: 1, offset: 2 },
+          sorting: [{ field: 'referenceName', direction: SortDirection.DESC }]
+        })
+
+        expect(queryResult.size).toBe(3)
+        expect(queryResult.get(entities[0])).toEqual(TEST_REFERENCES.slice(0, 1).reverse())
+        expect(queryResult.get(entities[1])).toEqual(TEST_REFERENCES.slice(3, 4).reverse())
+        expect(queryResult.get(entities[2])).toEqual(TEST_REFERENCES.slice(6, 7).reverse())
       })
 
       it('should return an empty array if no results are found.', async () => {
