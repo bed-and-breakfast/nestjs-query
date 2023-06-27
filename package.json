@@ -1,5 +1,5 @@
 {
-  "name": "nestjs-query",
+  "name": "@bed-and-breakfast/nestjs-query",
   "version": "3.0.0",
   "private": true,
   "workspaces": [
