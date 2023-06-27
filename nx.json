@@ -41,7 +41,7 @@
     ]
   },
   "affected": {
-    "defaultBase": "master"
+    "defaultBase": "origin/master"
   },
   "cli": {
     "defaultCollection": "@nx/node"
