@@ -1,5 +1,5 @@
 {
-  "name": "@ptc-org/nestjs-query-typegoose",
+  "name": "@bed-and-breakfast/nestjs-query-typegoose",
   "version": "3.0.0",
   "description": "Typegoose adapter for @ptc-org/nestjs-query-core",
   "author": "john mcinall<johnmcinall@gmail.com>",

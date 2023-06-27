@@ -3155,6 +3155,23 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@bed-and-breakfast/nestjs-query-typegoose@workspace:packages/query-typegoose":
+  version: 0.0.0-use.local
+  resolution: "@bed-and-breakfast/nestjs-query-typegoose@workspace:packages/query-typegoose"
+  dependencies:
+    camel-case: ^4.1.2
+    is-class: 0.0.9
+    lodash.escaperegexp: ^4.1.2
+    lodash.merge: ^4.6.2
+    tslib: ^2.5.3
+  peerDependencies:
+    "@m8a/nestjs-typegoose": ^9.0.0 || ^10.0.0 || ^11.0.0
+    "@nestjs/common": ^9.0.0 || ^10.0.0
+    "@typegoose/typegoose": ^9.0.0 || ^10.0.0 || ^11.0.0
+    mongoose: ^6.5.0 || ^7.0.3
+  languageName: unknown
+  linkType: soft
+
 "@bed-and-breakfast/nestjs-query@workspace:.":
   version: 0.0.0-use.local
   resolution: "@bed-and-breakfast/nestjs-query@workspace:."
@@ -5568,23 +5585,6 @@ __metadata:
     "@nestjs/sequelize": ^9.0.0 || ^10.0.0
     sequelize: ^6.5.0
     sequelize-typescript: ^1.1.0 || ^2.0.0
-  languageName: unknown
-  linkType: soft
-
-"@ptc-org/nestjs-query-typegoose@workspace:packages/query-typegoose":
-  version: 0.0.0-use.local
-  resolution: "@ptc-org/nestjs-query-typegoose@workspace:packages/query-typegoose"
-  dependencies:
-    camel-case: ^4.1.2
-    is-class: 0.0.9
-    lodash.escaperegexp: ^4.1.2
-    lodash.merge: ^4.6.2
-    tslib: ^2.5.3
-  peerDependencies:
-    "@m8a/nestjs-typegoose": ^9.0.0 || ^10.0.0 || ^11.0.0
-    "@nestjs/common": ^9.0.0 || ^10.0.0
-    "@typegoose/typegoose": ^9.0.0 || ^10.0.0 || ^11.0.0
-    mongoose: ^6.5.0 || ^7.0.3
   languageName: unknown
   linkType: soft
 
