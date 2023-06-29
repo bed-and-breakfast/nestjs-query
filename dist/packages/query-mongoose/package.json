@@ -27,8 +27,7 @@
     "@nestjs/common": "^8.0.0 || ^9.0.0",
     "@nestjs/mongoose": "^8.0.0 || ^9.0.0",
     "mongoose": "^6.5.0",
-    "@ptc-org/nestjs-query-core": "2.4.0",
-    "reflect-metadata": "0.1.13"
+    "@ptc-org/nestjs-query-core": "2.4.0"
   },
   "repository": {
     "type": "git",

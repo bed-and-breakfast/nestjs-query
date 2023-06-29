@@ -40,8 +40,7 @@
     "tslib": "^2.4.0",
     "upper-case-first": "^2.0.2",
     "@ptc-org/nestjs-query-core": "2.4.0",
-    "lodash.merge": "4.6.2",
-    "reflect-metadata": "0.1.13"
+    "lodash.merge": "4.6.2"
   },
   "peerDependencies": {
     "@apollo/gateway": "^0.44.1 || ^0.46.0 || ^0.48.0 || ^0.49.0 || ^0.50.0 || ^2.0.0",

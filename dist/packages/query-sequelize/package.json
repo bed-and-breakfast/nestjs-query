@@ -28,8 +28,7 @@
     "sequelize": "^6.5.0",
     "sequelize-typescript": "^1.1.0 || ^2.0.0",
     "@ptc-org/nestjs-query-core": "2.4.0",
-    "lodash.merge": "4.6.2",
-    "reflect-metadata": "0.1.13"
+    "lodash.merge": "4.6.2"
   },
   "repository": {
     "type": "git",

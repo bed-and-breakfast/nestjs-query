@@ -24,8 +24,7 @@
     "lodash.merge": "^4.6.2",
     "speedgoose": "^1.2.24",
     "tslib": "^2.4.0",
-    "@ptc-org/nestjs-query-core": "2.4.0",
-    "reflect-metadata": "0.1.13"
+    "@ptc-org/nestjs-query-core": "2.4.0"
   },
   "peerDependencies": {
     "@m8a/nestjs-typegoose": "^9.0.0 || ^10.0.0 || ^11.0.0",

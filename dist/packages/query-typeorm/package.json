@@ -30,8 +30,7 @@
     "@nestjs/typeorm": "^8.1.0 || ^9.0.0",
     "class-transformer": "^0.2.3 || 0.3.1 || ^0.5",
     "typeorm": "^0.3.8",
-    "@ptc-org/nestjs-query-core": "2.4.0",
-    "reflect-metadata": "0.1.13"
+    "@ptc-org/nestjs-query-core": "2.4.0"
   },
   "repository": {
     "type": "git",
