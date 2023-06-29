@@ -1,11 +1,13 @@
 /* eslint-disable no-underscore-dangle,@typescript-eslint/no-unsafe-return */
 import { InjectModel, TypegooseModule } from '@m8a/nestjs-typegoose'
+import { ConsoleLogger } from '@nestjs/common'
 import { Test, TestingModule } from '@nestjs/testing'
 import { FindRelationOptions, SortDirection } from '@ptc-org/nestjs-query-core'
 import { DocumentType, getModelForClass, mongoose } from '@typegoose/typegoose'
 
 import { NestjsQueryTypegooseModule } from '../../src'
 import { TypegooseQueryService } from '../../src/services'
+import { ReferenceCacheService } from '../../src/services/reference-cache.service'
 import { ReturnModelType } from '../../src/typegoose-types.helper'
 import {
   MongoServer,
@@ -20,7 +22,7 @@ const { Types } = mongoose
 
 const mongo = new MongoServer()
 
-const queries: Record<string, number> = { total: 0 }
+export const queries: Record<string, number> = { total: 0 }
 
 mongoose.set('debug', (collectionName, methodName, ...methodArgs) => {
   if (!queries[methodName]) {
@@ -30,7 +32,7 @@ mongoose.set('debug', (collectionName, methodName, ...methodArgs) => {
   queries[methodName] += 1
   queries.total += 1
 
-  // console.log(`${collectionName}.${methodName}(${methodArgs.join(', ')})`)
+  // console.log(`${collectionName}.${methodName}(${methodArgs.map((arg) => inspect(arg, true, null, true)).join(', ')})`)
 })
 
 describe('TypegooseQueryService', () => {
@@ -39,15 +41,21 @@ describe('TypegooseQueryService', () => {
   let TestReferenceModel: ReturnModelType<typeof TestReference>
 
   class TestEntityService extends TypegooseQueryService<TestEntity> {
-    constructor(@InjectModel(TestEntity) readonly model: ReturnModelType<typeof TestEntity>) {
-      super(model)
+    constructor(
+      @InjectModel(TestEntity) readonly model: ReturnModelType<typeof TestEntity>,
+      protected readonly referenceCacheService: ReferenceCacheService
+    ) {
+      super(model, referenceCacheService)
       TestEntityModel = model
     }
   }
 
   class TestReferenceService extends TypegooseQueryService<TestReference> {
-    constructor(@InjectModel(TestReference) readonly model: ReturnModelType<typeof TestReference>) {
-      super(model)
+    constructor(
+      @InjectModel(TestReference) readonly model: ReturnModelType<typeof TestReference>,
+      protected readonly referenceCacheService: ReferenceCacheService
+    ) {
+      super(model, referenceCacheService)
       TestReferenceModel = model
     }
   }
@@ -55,13 +63,28 @@ describe('TypegooseQueryService', () => {
   beforeAll(async () => {
     await mongo.init()
 
-    moduleRef = await Test.createTestingModule({
+    // await applySpeedGooseCacheLayer(mongoose as unknown as Parameters<typeof applySpeedGooseCacheLayer>[0], {
+    //   sharedCacheStrategy: SharedCacheStrategies.IN_MEMORY,
+    //   debugConfig: {
+    //     enabled: true
+    //   },
+    //   enabled: false
+    // })
+
+    const testingModuleBuilder = Test.createTestingModule({
       imports: [
         TypegooseModule.forRoot(mongo.getConnectionUri()),
-        NestjsQueryTypegooseModule.forFeature([TestEntity, TestReference])
+        NestjsQueryTypegooseModule.forFeature([TestEntity, TestReference], [TestEntity, TestReference])
       ],
       providers: [TestReferenceService, TestEntityService]
-    }).compile()
+    })
+
+    testingModuleBuilder.setLogger(new ConsoleLogger('TEST'))
+
+    moduleRef = await testingModuleBuilder.compile()
+
+    const app = moduleRef.createNestApplication()
+    await app.init()
   })
 
   afterAll(() => {
@@ -718,9 +741,12 @@ describe('TypegooseQueryService', () => {
             }
           }
         )
+        const updatedEntity = await TestEntityModel.findById(entity._id)
 
         const queryService = moduleRef.get(TestEntityService)
-        const queryResult = await queryService.findRelation(TestReference, 'testReference', entity)
+
+        // @TODO When an object is loaded before the relation has changed, cache will return the old value because no query by id is done for the entity
+        const queryResult = await queryService.findRelation(TestReference, 'testReference', updatedEntity)
         expect(queryResult).toBeUndefined()
       })
 
@@ -736,6 +762,15 @@ describe('TypegooseQueryService', () => {
         it('call select and return the result', async () => {
           const entity = TEST_REFERENCES[0]
           const queryService = moduleRef.get(TestReferenceService)
+          // console.log(Reflect.getOwnMetadataKeys(TestReference))
+          // console.log(Reflect.getOwnMetadata('typegoose:options', TestReference))
+          // console.log(Reflect.getOwnMetadata('typegoose:virtualPopulate', TestReference))
+          // console.log(Reflect.getOwnMetadata(DecoratorKeys.PropCache, TestReference))
+          // console.log(
+          //   (Reflect.getOwnMetadata(DecoratorKeys.PropCache, TestReference) as DecoratedPropertyMetadataMap).get(
+          //     'virtualTestEntity'
+          //   )
+          // )
           const queryResult = await queryService.findRelation(TestEntity, 'virtualTestEntity', entity)
 
           expect(queryResult).toEqual(TEST_ENTITIES[0])
@@ -1505,7 +1540,8 @@ describe('TypegooseQueryService', () => {
       )
       expect(queryResult).toEqual(expect.objectContaining({ ...entity, testEntity: TEST_ENTITIES[1]._id }))
 
-      const relation = await queryService.findRelation(TestEntity, 'testEntity', entity)
+      // @TODO When an object is loaded before the relation has changed, cache will return the old value because no query by id is done for the entity
+      const relation = await queryService.findRelation(TestEntity, 'testEntity', queryResult)
       expect(relation).toEqual(TEST_ENTITIES[1])
     })
 
@@ -1552,7 +1588,8 @@ describe('TypegooseQueryService', () => {
       const { testEntity, ...expected } = entity
       expect(queryResult).toEqual(expect.objectContaining(expected))
 
-      const relation = await queryService.findRelation(TestEntity, 'testEntity', entity)
+      // @TODO When an object is loaded before the relation has changed, cache will return the old value because no query by id is done for the entity
+      const relation = await queryService.findRelation(TestEntity, 'testEntity', queryResult)
       expect(relation).toBeUndefined()
     })
 

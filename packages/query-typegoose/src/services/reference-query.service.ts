@@ -12,10 +12,10 @@ import {
   ModifyRelationOptions,
   Query
 } from '@ptc-org/nestjs-query-core'
-import { DocumentType, getClass, getModelWithString, mongoose } from '@typegoose/typegoose'
+import { DocumentType, getClass, getModelForClass, getModelWithString, mongoose } from '@typegoose/typegoose'
 import { Base } from '@typegoose/typegoose/lib/defaultClasses'
 import omit from 'lodash.omit'
-import { PipelineStage } from 'mongoose'
+import { PipelineStage, RefType } from 'mongoose'
 
 import { AggregateBuilder, FilterQueryBuilder } from '../query'
 import {
@@ -25,11 +25,15 @@ import {
   ReturnModelType,
   VirtualTypeWithOptions
 } from '../typegoose-types.helper'
+import { ReferenceCacheService } from './reference-cache.service'
 
 export abstract class ReferenceQueryService<Entity extends Base> {
   abstract readonly filterQueryBuilder: FilterQueryBuilder<Entity>
 
-  protected constructor(readonly Model: ReturnModelType<new () => Entity>) {}
+  protected constructor(
+    readonly Model: ReturnModelType<new () => Entity>,
+    protected readonly referenceCacheService: ReferenceCacheService
+  ) {}
 
   abstract getById(id: string | number, opts?: GetByIdOptions<Entity>): Promise<DocumentType<Entity>>
 
@@ -123,26 +127,27 @@ export abstract class ReferenceQueryService<Entity extends Base> {
     return relationModel.countDocuments(referenceQueryBuilder.buildFilterQuery(refFilter)).exec()
   }
 
-  public findRelation<Relation>(
+  public findRelation<Relation extends Base<RefType>>(
     RelationClass: Class<Relation>,
     relationName: string,
     dtos: DocumentType<Entity>[],
     opts?: FindRelationOptions<Relation>
   ): Promise<Map<Entity, Relation | undefined>>
 
-  public findRelation<Relation>(
+  public findRelation<Relation extends Base<RefType>>(
     RelationClass: Class<Relation>,
     relationName: string,
     dto: DocumentType<Entity>,
     opts?: FindRelationOptions<Relation>
   ): Promise<DocumentType<Relation> | undefined>
 
-  public async findRelation<Relation>(
+  public async findRelation<Relation extends Base<RefType>>(
     RelationClass: Class<Relation>,
     relationName: string,
     dto: DocumentType<Entity> | DocumentType<Entity>[],
     opts?: FindRelationOptions<Relation>
   ): Promise<(Relation | undefined) | Map<Entity, Relation | undefined>> {
+    const relationModel = getModelForClass(RelationClass)
     this.checkForReference('FindRelation', relationName)
     const referenceQueryBuilder = this.getReferenceQueryBuilder(relationName)
     const assembler = AssemblerFactory.getAssembler(RelationClass, this.getReferenceEntity(relationName))
@@ -154,21 +159,76 @@ export abstract class ReferenceQueryService<Entity extends Base> {
       arrayDto = [dto]
     }
 
-    // eslint-disable-next-line no-underscore-dangle
-    const foundEntities = await this.Model.find({ _id: { $in: arrayDto.map((d) => d._id ?? d.id) } }).populate({
-      path: relationName,
-      match: filterQuery
-    })
+    let references: [DocumentType<Entity>, Relation | undefined][]
 
-    const references: [DocumentType<Entity>, Relation | undefined][] = arrayDto.map((d, i) => {
-      let populatedRef: Relation | undefined
+    if (
+      !this.referenceCacheService.isCachedRelation(RelationClass) ||
+      opts?.filter ||
+      !(relationName in arrayDto[0]) /* @TODO Replace with: arrayDto[0].schema.virtuals[relationName] (after updating tests) */
+    ) {
+      // eslint-disable-next-line no-underscore-dangle
+      const foundEntities = await this.Model.find({ _id: { $in: arrayDto.map((d) => d._id ?? d.id) } }).populate({
+        path: relationName,
+        match: filterQuery
+      })
 
-      if (typeof foundEntities[i] !== 'undefined') {
-        populatedRef = foundEntities[i].get(relationName)
+      references = arrayDto.map((d, i) => {
+        let populatedRef: Relation | undefined
+
+        if (typeof foundEntities[i] !== 'undefined') {
+          populatedRef = foundEntities[i].get(relationName)
+        }
+
+        if (populatedRef) {
+          if (populatedRef._id) {
+            this.referenceCacheService.set(RelationClass, populatedRef._id, populatedRef)
+          }
+        }
+
+        return [d, populatedRef ? assembler.convertToDTO(populatedRef) : undefined]
+      })
+    } else {
+      const unresolvedReferences: string[] = []
+
+      // Find unresolved references
+      arrayDto.forEach((d) => {
+        if (d[relationName]) {
+          if (!this.referenceCacheService.get(RelationClass, d[relationName])) {
+            unresolvedReferences.push(d[relationName])
+          }
+        }
+      })
+
+      if (unresolvedReferences.length > 1) {
+        console.log('unresolvedReferences', unresolvedReferences)
       }
 
-      return [d, populatedRef ? assembler.convertToDTO(populatedRef) : undefined]
-    })
+      // Fetch and cache unresolved references
+      const unresolvedReferenceResults = await relationModel.find({ _id: { $in: unresolvedReferences.map((ref) => ref) } }).exec()
+      unresolvedReferenceResults.forEach((ref) => {
+        if (ref._id) {
+          this.referenceCacheService.set(RelationClass, ref._id, ref as unknown as Relation)
+        }
+      })
+
+      // Set reference results
+      references = arrayDto.map((d) => {
+        if (d[relationName]) {
+          return [d, assembler.convertToDTO(this.referenceCacheService.get(RelationClass, d[relationName]))]
+        }
+
+        return [d, undefined]
+      })
+    }
+
+    // console.log(
+    //   RelationClass.name,
+    //   relationName,
+    //   opts,
+    //   // arrayDto[0].schema.virtuals,
+    //   arrayDto,
+    //   Array.isArray(dto) ? new Map(references) : references[0][1]
+    // )
 
     return Array.isArray(dto) ? new Map(references) : references[0][1]
   }
@@ -210,6 +270,7 @@ export abstract class ReferenceQueryService<Entity extends Base> {
       match: filterQuery,
       ...(options.limit ? { perDocumentLimit: options.limit, options: omit(options, 'limit') } : { options })
     })
+    // .cacheQuery()
 
     const references: [Entity, Relation[]][] = arrayDto.map((d, i) => {
       let populatedRef: Relation[] | undefined

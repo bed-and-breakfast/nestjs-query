@@ -19,6 +19,7 @@ import { PipelineStage } from 'mongoose'
 
 import { AggregateBuilder, FilterQueryBuilder } from '../query'
 import { ReturnModelType, UpdateArrayQuery } from '../typegoose-types.helper'
+import { ReferenceCacheService } from './reference-cache.service'
 import { ReferenceQueryService } from './reference-query.service'
 
 export interface TypegooseQueryServiceOpts {
@@ -28,9 +29,10 @@ export interface TypegooseQueryServiceOpts {
 export class TypegooseQueryService<Entity extends Base> extends ReferenceQueryService<Entity> implements QueryService<Entity> {
   constructor(
     readonly Model: ReturnModelType<new () => Entity>,
+    protected readonly referenceCacheService: ReferenceCacheService,
     readonly filterQueryBuilder: FilterQueryBuilder<Entity> = new FilterQueryBuilder(Model)
   ) {
-    super(Model)
+    super(Model, referenceCacheService)
   }
 
   /**

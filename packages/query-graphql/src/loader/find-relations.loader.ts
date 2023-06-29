@@ -23,6 +23,7 @@ export class FindRelationsLoader<DTO, Relation>
     findRelationsMap: FindRelationsMap<DTO, Relation>
   ): Promise<(Relation | undefined)[]> {
     const results: (Relation | undefined)[] = []
+
     await Promise.all(
       [...findRelationsMap.values()].map(async (args) => {
         const { filter, withDeleted, lookedAhead } = args[0]

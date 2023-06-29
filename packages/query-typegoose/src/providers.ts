@@ -6,6 +6,7 @@ import { Base } from '@typegoose/typegoose/lib/defaultClasses'
 import { isClass } from 'is-class'
 
 import { TypegooseQueryService } from './services'
+import { ReferenceCacheService } from './services/reference-cache.service'
 import { TypegooseClass, TypegooseClassWithOptions, TypegooseDiscriminator } from './typegoose-interface.helpers'
 import { ReturnModelType } from './typegoose-types.helper'
 
@@ -41,14 +42,14 @@ function createTypegooseQueryServiceProvider<Entity extends Base>(
 
   return {
     provide: getQueryServiceToken({ name: modelName }),
-    useFactory(ModelClass: ReturnModelType<new () => Entity>) {
+    useFactory(ModelClass: ReturnModelType<new () => Entity>, referenceCacheService: ReferenceCacheService) {
       // initialize default serializer for documents, this is the type that mongoose returns from queries
       // eslint-disable-next-line @typescript-eslint/no-unsafe-return
       AssemblerSerializer((obj: DocumentType<unknown>) => obj.toObject({ virtuals: true }))(ModelClass)
 
-      return new TypegooseQueryService(ModelClass)
+      return new TypegooseQueryService(ModelClass, referenceCacheService)
     },
-    inject: [getModelToken(modelName)]
+    inject: [getModelToken(modelName), ReferenceCacheService]
   }
 }
 

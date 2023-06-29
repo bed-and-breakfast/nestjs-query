@@ -28,6 +28,7 @@ const ReadOneRelationMixin =
     const { baseNameLower, baseName } = getDTONames(relationDTO, { dtoName: relation.dtoName })
     const relationName = relation.relationName ?? baseNameLower
     const loaderName = `load${baseName}For${DTOClass.name}`
+
     const findLoader = new FindRelationsLoader<DTO, Relation>(relationDTO, relationName)
 
     @Resolver(() => DTOClass, { isAbstract: true })
