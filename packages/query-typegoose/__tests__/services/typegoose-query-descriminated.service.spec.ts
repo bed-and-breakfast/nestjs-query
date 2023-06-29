@@ -6,6 +6,7 @@ import { DocumentType, getModelForClass, mongoose } from '@typegoose/typegoose'
 
 import { NestjsQueryTypegooseModule } from '../../src'
 import { TypegooseQueryService } from '../../src/services'
+import { ReferenceCacheService } from '../../src/services/reference-cache.service'
 import { ReturnModelType } from '../../src/typegoose-types.helper'
 import {
   MongoServer,
@@ -26,15 +27,21 @@ describe('TypegooseQueryService-With Descriminates', () => {
   let TestDiscriminatedEntityModel: ReturnModelType<typeof TestDiscriminatedEntity>
 
   class TestReferenceService extends TypegooseQueryService<TestReference> {
-    constructor(@InjectModel(TestReference) readonly model: ReturnModelType<typeof TestReference>) {
-      super(model)
+    constructor(
+      @InjectModel(TestReference) readonly model: ReturnModelType<typeof TestReference>,
+      protected readonly referenceCacheService: ReferenceCacheService
+    ) {
+      super(model, referenceCacheService)
       TestReferenceModel = model
     }
   }
 
   class TestDiscriminatedEntityService extends TypegooseQueryService<TestDiscriminatedEntity> {
-    constructor(@InjectModel(TestDiscriminatedEntity) readonly model: ReturnModelType<typeof TestDiscriminatedEntity>) {
-      super(model)
+    constructor(
+      @InjectModel(TestDiscriminatedEntity) readonly model: ReturnModelType<typeof TestDiscriminatedEntity>,
+      protected readonly referenceCacheService: ReferenceCacheService
+    ) {
+      super(model, referenceCacheService)
       TestDiscriminatedEntityModel = model
     }
   }
@@ -44,13 +51,16 @@ describe('TypegooseQueryService-With Descriminates', () => {
     moduleRef = await Test.createTestingModule({
       imports: [
         TypegooseModule.forRoot(mongo.getConnectionUri()),
-        NestjsQueryTypegooseModule.forFeature([
-          {
-            typegooseClass: TestEntity,
-            discriminators: [TestDiscriminatedEntity]
-          },
-          TestReference
-        ])
+        NestjsQueryTypegooseModule.forFeature(
+          [
+            {
+              typegooseClass: TestEntity,
+              discriminators: [TestDiscriminatedEntity]
+            },
+            TestReference
+          ],
+          [TestEntity, TestReference]
+        )
       ],
       providers: [TestDiscriminatedEntityService, TestReferenceService]
     }).compile()

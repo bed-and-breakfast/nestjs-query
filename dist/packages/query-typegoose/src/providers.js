@@ -6,6 +6,7 @@ const nestjs_query_core_1 = require("@ptc-org/nestjs-query-core");
 const typegoose_1 = require("@typegoose/typegoose");
 const is_class_1 = require("is-class");
 const services_1 = require("./services");
+const reference_cache_service_1 = require("./services/reference-cache.service");
 const isTypegooseClass = (item) => (0, is_class_1.isClass)(item);
 const isTypegooseClassWithOptions = (item) => isTypegooseClass(item.typegooseClass);
 (0, nestjs_query_core_1.AssemblerSerializer)((obj) => obj.toObject({ virtuals: true }))(typegoose_1.mongoose.Document);
@@ -27,13 +28,13 @@ function createTypegooseQueryServiceProvider(model) {
     const modelName = inputModel.typegooseClass?.name;
     return {
         provide: (0, nestjs_query_core_1.getQueryServiceToken)({ name: modelName }),
-        useFactory(ModelClass) {
+        useFactory(ModelClass, referenceCacheService) {
             // initialize default serializer for documents, this is the type that mongoose returns from queries
             // eslint-disable-next-line @typescript-eslint/no-unsafe-return
             (0, nestjs_query_core_1.AssemblerSerializer)((obj) => obj.toObject({ virtuals: true }))(ModelClass);
-            return new services_1.TypegooseQueryService(ModelClass);
+            return new services_1.TypegooseQueryService(ModelClass, referenceCacheService);
         },
-        inject: [(0, nestjs_typegoose_1.getModelToken)(modelName)]
+        inject: [(0, nestjs_typegoose_1.getModelToken)(modelName), reference_cache_service_1.ReferenceCacheService]
     };
 }
 const createTypegooseQueryServiceProviders = (models) => models.map((model) => createTypegooseQueryServiceProvider(model));

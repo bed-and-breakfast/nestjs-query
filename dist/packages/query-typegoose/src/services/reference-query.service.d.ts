@@ -1,19 +1,22 @@
 import { AggregateQuery, AggregateResponse, Class, Filter, FindRelationOptions, GetByIdOptions, ModifyRelationOptions, Query } from '@ptc-org/nestjs-query-core';
 import { DocumentType } from '@typegoose/typegoose';
 import { Base } from '@typegoose/typegoose/lib/defaultClasses';
+import { RefType } from 'mongoose';
 import { FilterQueryBuilder } from '../query';
 import { ReturnModelType } from '../typegoose-types.helper';
+import { ReferenceCacheService } from './reference-cache.service';
 export declare abstract class ReferenceQueryService<Entity extends Base> {
     readonly Model: ReturnModelType<new () => Entity>;
+    protected readonly referenceCacheService: ReferenceCacheService;
     abstract readonly filterQueryBuilder: FilterQueryBuilder<Entity>;
-    protected constructor(Model: ReturnModelType<new () => Entity>);
+    protected constructor(Model: ReturnModelType<new () => Entity>, referenceCacheService: ReferenceCacheService);
     abstract getById(id: string | number, opts?: GetByIdOptions<Entity>): Promise<DocumentType<Entity>>;
     aggregateRelations<Relation>(RelationClass: Class<Relation>, relationName: string, entities: DocumentType<Entity>[], filter: Filter<Relation>, aggregate: AggregateQuery<Relation>): Promise<Map<DocumentType<Entity>, AggregateResponse<DocumentType<Relation>>[]>>;
     aggregateRelations<Relation>(RelationClass: Class<Relation>, relationName: string, dto: DocumentType<Entity>, filter: Filter<Relation>, aggregate: AggregateQuery<Relation>): Promise<AggregateResponse<DocumentType<Relation>>[]>;
     countRelations<Relation>(RelationClass: Class<Relation>, relationName: string, entities: DocumentType<Entity>[], filter: Filter<Relation>): Promise<Map<DocumentType<Entity>, number>>;
     countRelations<Relation>(RelationClass: Class<Relation>, relationName: string, dto: DocumentType<Entity>, filter: Filter<Relation>): Promise<number>;
-    findRelation<Relation>(RelationClass: Class<Relation>, relationName: string, dtos: DocumentType<Entity>[], opts?: FindRelationOptions<Relation>): Promise<Map<Entity, Relation | undefined>>;
-    findRelation<Relation>(RelationClass: Class<Relation>, relationName: string, dto: DocumentType<Entity>, opts?: FindRelationOptions<Relation>): Promise<DocumentType<Relation> | undefined>;
+    findRelation<Relation extends Base<RefType>>(RelationClass: Class<Relation>, relationName: string, dtos: DocumentType<Entity>[], opts?: FindRelationOptions<Relation>): Promise<Map<Entity, Relation | undefined>>;
+    findRelation<Relation extends Base<RefType>>(RelationClass: Class<Relation>, relationName: string, dto: DocumentType<Entity>, opts?: FindRelationOptions<Relation>): Promise<DocumentType<Relation> | undefined>;
     queryRelations<Relation>(RelationClass: Class<Relation>, relationName: string, entities: DocumentType<Entity>[], query: Query<Relation>): Promise<Map<DocumentType<Entity>, DocumentType<Relation>[]>>;
     queryRelations<Relation>(RelationClass: Class<Relation>, relationName: string, dto: DocumentType<Entity>, query: Query<Relation>): Promise<DocumentType<Relation>[]>;
     addRelations<Relation>(relationName: string, id: string, relationIds: (string | number)[], opts?: ModifyRelationOptions<Entity, Relation>): Promise<DocumentType<Entity>>;

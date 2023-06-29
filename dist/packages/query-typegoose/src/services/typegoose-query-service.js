@@ -6,9 +6,10 @@ const typegoose_1 = require("@typegoose/typegoose");
 const query_1 = require("../query");
 const reference_query_service_1 = require("./reference-query.service");
 class TypegooseQueryService extends reference_query_service_1.ReferenceQueryService {
-    constructor(Model, filterQueryBuilder = new query_1.FilterQueryBuilder(Model)) {
-        super(Model);
+    constructor(Model, referenceCacheService, filterQueryBuilder = new query_1.FilterQueryBuilder(Model)) {
+        super(Model, referenceCacheService);
         this.Model = Model;
+        this.referenceCacheService = referenceCacheService;
         this.filterQueryBuilder = filterQueryBuilder;
     }
     /**
