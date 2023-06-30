@@ -70,6 +70,7 @@ class ReferenceQueryService {
         if (!this.referenceCacheService.isCachedRelation(RelationClass) ||
             opts?.filter ||
             !(relationName in arrayDto[0]) /* @TODO Replace with: arrayDto[0].schema.virtuals[relationName] (after updating tests) */) {
+            // references = await this.queryRelation(RelationClass, relationName, arrayDto, { filter: opts?.filter })
             // eslint-disable-next-line no-underscore-dangle
             const foundEntities = await this.Model.find({ _id: { $in: arrayDto.map((d) => d._id ?? d.id) } }).populate({
                 path: relationName,
@@ -127,6 +128,7 @@ class ReferenceQueryService {
         return Array.isArray(dto) ? new Map(references) : references[0][1];
     }
     async queryRelations(RelationClass, relationName, dto, query) {
+        const relationModel = (0, typegoose_1.getModelForClass)(RelationClass);
         this.checkForReference('QueryRelations', relationName);
         const referenceQueryBuilder = this.getReferenceQueryBuilder(relationName);
         const assembler = nestjs_query_core_1.AssemblerFactory.getAssembler(RelationClass, this.getReferenceEntity(relationName));
@@ -135,22 +137,114 @@ class ReferenceQueryService {
         if (!Array.isArray(dto)) {
             arrayDto = [dto];
         }
-        // eslint-disable-next-line no-underscore-dangle
-        const foundEntities = await this.Model.find({ _id: { $in: arrayDto.map((d) => d._id ?? d.id) } }).populate({
-            path: relationName,
-            match: filterQuery,
-            ...(options.limit ? { perDocumentLimit: options.limit, options: (0, lodash_omit_1.default)(options, 'limit') } : { options })
-        });
-        // .cacheQuery()
-        const references = arrayDto.map((d, i) => {
-            let populatedRef;
-            if (typeof foundEntities[i] !== 'undefined') {
-                populatedRef = foundEntities[i].get(relationName);
+        let references;
+        if (!this.referenceCacheService.isCachedRelation(RelationClass) ||
+            query.filter ||
+            query.paging ||
+            query.sorting ||
+            !(relationName in arrayDto[0]) /* @TODO Replace with: arrayDto[0].schema.virtuals[relationName] (after updating tests) */) {
+            // references = await this.queryRelation(RelationClass, relationName, arrayDto, query, true)
+            // eslint-disable-next-line no-underscore-dangle
+            const foundEntities = await this.Model.find({ _id: { $in: arrayDto.map((d) => d._id ?? d.id) } }).populate({
+                path: relationName,
+                match: filterQuery,
+                ...(options.limit ? { perDocumentLimit: options.limit, options: (0, lodash_omit_1.default)(options, 'limit') } : { options })
+            });
+            // .cacheQuery()
+            references = arrayDto.map((d, i) => {
+                let populatedRef;
+                if (typeof foundEntities[i] !== 'undefined') {
+                    populatedRef = foundEntities[i].get(relationName);
+                }
+                return [d, populatedRef ? assembler.convertToDTOs(populatedRef) : []];
+            });
+        }
+        else {
+            const unresolvedReferences = [];
+            // Find unresolved references
+            arrayDto.forEach((d) => {
+                if (d[relationName]) {
+                    d[relationName].forEach((referenceId) => {
+                        if (!this.referenceCacheService.get(RelationClass, d[relationName])) {
+                            unresolvedReferences.push(referenceId.toString());
+                        }
+                    });
+                }
+            });
+            if (unresolvedReferences.length > 1) {
+                console.log('unresolvedReferences', unresolvedReferences);
             }
-            return [d, populatedRef ? assembler.convertToDTOs(populatedRef) : []];
-        });
+            // Fetch and cache unresolved references
+            const unresolvedReferenceResults = await relationModel.find({ _id: { $in: unresolvedReferences.map((ref) => ref) } }).exec();
+            unresolvedReferenceResults.forEach((ref) => {
+                if (ref._id) {
+                    this.referenceCacheService.set(RelationClass, ref._id, ref);
+                }
+            });
+            // Set reference results
+            references = arrayDto.map((d) => {
+                if (d[relationName]) {
+                    return [
+                        d,
+                        assembler.convertToDTOs(d[relationName].map((reference) => this.referenceCacheService.get(RelationClass, reference)))
+                    ];
+                }
+                return [d, []];
+            });
+        }
         return Array.isArray(dto) ? new Map(references) : references[0][1];
     }
+    // private async queryRelation<Relation extends Base<RefType>>(
+    //   RelationClass: Class<Relation>,
+    //   relationName: string,
+    //   arrayDto: DocumentType<Entity>[],
+    //   query: Query<Relation>,
+    //   multiple = false
+    // ): Promise<[DocumentType<Entity>, Relation[]][]> {
+    //   const referenceQueryBuilder = this.getReferenceQueryBuilder(relationName)
+    //   const assembler = AssemblerFactory.getAssembler(RelationClass, this.getReferenceEntity(relationName))
+    //
+    //   console.log(assembler.convertQuery(query))
+    //   const { filterQuery, options } = referenceQueryBuilder.buildFilterQuery(
+    //     multiple ? assembler.convertQuery(query) : assembler.convertQuery(query).filter
+    //   )
+    //   console.log(options)
+    //
+    //   const foundEntities = await this.Model.find({ _id: { $in: arrayDto.map((d) => d._id ?? d.id) } }).populate({
+    //     path: relationName,
+    //     match: filterQuery,
+    //     ...(options.limit ? { perDocumentLimit: options.limit, options: omit(options, 'limit') } : { options })
+    //   })
+    //   // .cacheQuery()
+    //
+    //   const references = arrayDto.map((d, i) => {
+    //     let populatedRef: Relation | Relation[] | undefined
+    //
+    //     if (typeof foundEntities[i] !== 'undefined') {
+    //       populatedRef = foundEntities[i].get(relationName)
+    //     }
+    //
+    //     if (!populatedRef) {
+    //       return multiple ? [d, []] : [d, undefined]
+    //     }
+    //
+    //     if (!Array.isArray(populatedRef)) {
+    //       populatedRef = [populatedRef]
+    //     }
+    //
+    //     populatedRef.forEach((ref) => {
+    //       if (ref) {
+    //         if (ref._id) {
+    //           this.referenceCacheService.set(RelationClass, ref._id, ref)
+    //         }
+    //       }
+    //     })
+    //
+    //     return [d, assembler.convertToDTOs(populatedRef)] as [DocumentType<Entity>, Relation[]]
+    //   })
+    //
+    //   return references
+    // }
     async addRelations(relationName, id, relationIds, opts) {
         this.checkForReference('AddRelations', relationName, false);
         const refCount = await this.getRefCount(relationName, relationIds, opts?.relationFilter);

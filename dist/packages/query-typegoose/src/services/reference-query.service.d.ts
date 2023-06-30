@@ -17,8 +17,8 @@ export declare abstract class ReferenceQueryService<Entity extends Base> {
     countRelations<Relation>(RelationClass: Class<Relation>, relationName: string, dto: DocumentType<Entity>, filter: Filter<Relation>): Promise<number>;
     findRelation<Relation extends Base<RefType>>(RelationClass: Class<Relation>, relationName: string, dtos: DocumentType<Entity>[], opts?: FindRelationOptions<Relation>): Promise<Map<Entity, Relation | undefined>>;
     findRelation<Relation extends Base<RefType>>(RelationClass: Class<Relation>, relationName: string, dto: DocumentType<Entity>, opts?: FindRelationOptions<Relation>): Promise<DocumentType<Relation> | undefined>;
-    queryRelations<Relation>(RelationClass: Class<Relation>, relationName: string, entities: DocumentType<Entity>[], query: Query<Relation>): Promise<Map<DocumentType<Entity>, DocumentType<Relation>[]>>;
-    queryRelations<Relation>(RelationClass: Class<Relation>, relationName: string, dto: DocumentType<Entity>, query: Query<Relation>): Promise<DocumentType<Relation>[]>;
+    queryRelations<Relation extends Base<RefType>>(RelationClass: Class<Relation>, relationName: string, entities: DocumentType<Entity>[], query: Query<Relation>): Promise<Map<DocumentType<Entity>, DocumentType<Relation>[]>>;
+    queryRelations<Relation extends Base<RefType>>(RelationClass: Class<Relation>, relationName: string, dto: DocumentType<Entity>, query: Query<Relation>): Promise<DocumentType<Relation>[]>;
     addRelations<Relation>(relationName: string, id: string, relationIds: (string | number)[], opts?: ModifyRelationOptions<Entity, Relation>): Promise<DocumentType<Entity>>;
     setRelations<Relation>(relationName: string, id: string, relationIds: (string | number)[], opts?: ModifyRelationOptions<Entity, Relation>): Promise<DocumentType<Entity>>;
     setRelation<Relation>(relationName: string, id: string | number, relationId: string | number, opts?: ModifyRelationOptions<Entity, Relation>): Promise<DocumentType<Entity>>;
