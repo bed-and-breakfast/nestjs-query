@@ -2,7 +2,6 @@ import { TypegooseModule } from '@m8a/nestjs-typegoose'
 import { DynamicModule } from '@nestjs/common'
 
 import { createTypegooseQueryServiceProviders } from './providers'
-import { ReferenceCacheService } from './services/reference-cache.service'
 import { TypegooseClass, TypegooseClassWithOptions } from './typegoose-interface.helpers'
 
 export class NestjsQueryTypegooseModule {
@@ -17,8 +16,8 @@ export class NestjsQueryTypegooseModule {
     return {
       imports: [typegooseModule],
       module: NestjsQueryTypegooseModule,
-      providers: [ReferenceCacheService, ...queryServiceProviders],
-      exports: [ReferenceCacheService, ...queryServiceProviders, typegooseModule]
+      providers: [...queryServiceProviders],
+      exports: [...queryServiceProviders, typegooseModule]
     }
   }
 }

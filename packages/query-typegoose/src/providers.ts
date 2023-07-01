@@ -60,4 +60,4 @@ export const createTypegooseQueryServiceProviders = (
   models: (TypegooseClass | TypegooseClassWithOptions)[],
   cacheModels: TypegooseClass[]
 ): FactoryProvider[] =>
-  models.map((model) => createTypegooseQueryServiceProvider(model, cacheModels.includes(model as TypegooseClass)))
+  models.map((model) => createTypegooseQueryServiceProvider(model, cacheModels?.includes(model as TypegooseClass)))

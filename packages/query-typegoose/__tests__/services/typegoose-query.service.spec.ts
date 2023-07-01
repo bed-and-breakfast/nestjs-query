@@ -6,6 +6,7 @@ import { FindRelationOptions, SortDirection } from '@ptc-org/nestjs-query-core'
 import { DocumentType, getModelForClass, mongoose } from '@typegoose/typegoose'
 
 import { NestjsQueryTypegooseModule } from '../../src'
+import { NestjsQueryTypegooseCacheModule } from '../../src/cache-module'
 import { TypegooseQueryService } from '../../src/services'
 import { ReferenceCacheService } from '../../src/services/reference-cache.service'
 import { ReturnModelType } from '../../src/typegoose-types.helper'
@@ -73,6 +74,7 @@ describe('TypegooseQueryService', () => {
 
     const testingModuleBuilder = Test.createTestingModule({
       imports: [
+        NestjsQueryTypegooseCacheModule,
         TypegooseModule.forRoot(mongo.getConnectionUri()),
         NestjsQueryTypegooseModule.forFeature([TestEntity, TestReference], [TestEntity, TestReference])
       ],

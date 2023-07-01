@@ -38,6 +38,6 @@ function createTypegooseQueryServiceProvider(model, cache) {
         inject: [(0, nestjs_typegoose_1.getModelToken)(modelName), reference_cache_service_1.ReferenceCacheService]
     };
 }
-const createTypegooseQueryServiceProviders = (models, cacheModels) => models.map((model) => createTypegooseQueryServiceProvider(model, cacheModels.includes(model)));
+const createTypegooseQueryServiceProviders = (models, cacheModels) => models.map((model) => createTypegooseQueryServiceProvider(model, cacheModels?.includes(model)));
 exports.createTypegooseQueryServiceProviders = createTypegooseQueryServiceProviders;
 //# sourceMappingURL=providers.js.map
