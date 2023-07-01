@@ -5,19 +5,20 @@ const tslib_1 = require("tslib");
 const common_1 = require("@nestjs/common");
 const typegoose_1 = require("@typegoose/typegoose");
 let ReferenceCacheService = class ReferenceCacheService {
-    constructor(cacheModels) {
-        this.cacheModels = cacheModels;
+    constructor() {
+        this.cacheModels = new Set();
         this.relationCache = new Map();
         this.relationModels = new Map();
-        if (cacheModels) {
-            console.log('cacheServices', cacheModels);
-            cacheModels.forEach((cacheModel) => {
-                Reflect.defineMetadata('cacheProvider', this, cacheModel);
-            });
-        }
+    }
+    enableCache(model) {
+        console.log('enable cache', model.name);
+        this.cacheModels.add(model);
+        this.cacheModels.add(model);
+        console.log('enabled cache', this.cacheModels.values());
+        Reflect.defineMetadata('cacheProvider', this, model);
     }
     isCachedRelation(RelationClass) {
-        return this.cacheModels?.includes(RelationClass);
+        return this.cacheModels.has(RelationClass);
     }
     initRelation(RelationClass) {
         if (!this.relationCache.get(RelationClass)) {
@@ -66,7 +67,7 @@ let ReferenceCacheService = class ReferenceCacheService {
 };
 ReferenceCacheService = tslib_1.__decorate([
     (0, common_1.Injectable)(),
-    tslib_1.__metadata("design:paramtypes", [Array])
+    tslib_1.__metadata("design:paramtypes", [])
 ], ReferenceCacheService);
 exports.ReferenceCacheService = ReferenceCacheService;
 //# sourceMappingURL=reference-cache.service.js.map

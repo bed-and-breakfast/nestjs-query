@@ -70,6 +70,7 @@ class ReferenceQueryService {
         if (!this.referenceCacheService.isCachedRelation(RelationClass) ||
             opts?.filter ||
             !(relationName in arrayDto[0]) /* @TODO Replace with: arrayDto[0].schema.virtuals[relationName] (after updating tests) */) {
+            console.log('no cache', RelationClass, opts?.filter);
             // references = await this.queryRelation(RelationClass, relationName, arrayDto, { filter: opts?.filter })
             // eslint-disable-next-line no-underscore-dangle
             const foundEntities = await this.Model.find({ _id: { $in: arrayDto.map((d) => d._id ?? d.id) } }).populate({
@@ -143,6 +144,7 @@ class ReferenceQueryService {
             query.paging ||
             query.sorting ||
             !(relationName in arrayDto[0]) /* @TODO Replace with: arrayDto[0].schema.virtuals[relationName] (after updating tests) */) {
+            console.log('no cache', RelationClass, query);
             // references = await this.queryRelation(RelationClass, relationName, arrayDto, query, true)
             // eslint-disable-next-line no-underscore-dangle
             const foundEntities = await this.Model.find({ _id: { $in: arrayDto.map((d) => d._id ?? d.id) } }).populate({

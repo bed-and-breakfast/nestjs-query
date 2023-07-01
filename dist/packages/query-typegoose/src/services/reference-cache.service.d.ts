@@ -5,10 +5,11 @@ import { Base } from '@typegoose/typegoose/lib/defaultClasses';
 import { RefType } from 'mongoose';
 import { TypegooseClass } from '../typegoose-interface.helpers';
 export declare class ReferenceCacheService implements OnApplicationBootstrap {
-    protected readonly cacheModels: TypegooseClass[];
+    protected readonly cacheModels: Set<TypegooseClass>;
     protected readonly relationCache: Map<Class<Base<RefType>>, Map<Base<RefType>['_id'] | Base<RefType>['id'], Base<RefType>>>;
     protected readonly relationModels: Map<Class<Base<RefType>>, ReturnModelType<Class<Base<RefType>>>>;
-    constructor(cacheModels: TypegooseClass[]);
+    constructor();
+    enableCache(model: TypegooseClass): void;
     isCachedRelation<Entity extends Base<RefType>>(RelationClass: Class<Entity>): boolean;
     initRelation<Entity extends Base<RefType>>(RelationClass: Class<Entity>): void;
     onApplicationBootstrap(): Promise<void>;
