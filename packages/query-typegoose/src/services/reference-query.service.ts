@@ -166,6 +166,8 @@ export abstract class ReferenceQueryService<Entity extends Base> {
       opts?.filter ||
       !(relationName in arrayDto[0]) /* @TODO Replace with: arrayDto[0].schema.virtuals[relationName] (after updating tests) */
     ) {
+      console.log('no cache', RelationClass, opts?.filter)
+
       // references = await this.queryRelation(RelationClass, relationName, arrayDto, { filter: opts?.filter })
 
       // eslint-disable-next-line no-underscore-dangle
@@ -276,6 +278,8 @@ export abstract class ReferenceQueryService<Entity extends Base> {
       query.sorting ||
       !(relationName in arrayDto[0]) /* @TODO Replace with: arrayDto[0].schema.virtuals[relationName] (after updating tests) */
     ) {
+      console.log('no cache', RelationClass, query)
+
       // references = await this.queryRelation(RelationClass, relationName, arrayDto, query, true)
 
       // eslint-disable-next-line no-underscore-dangle

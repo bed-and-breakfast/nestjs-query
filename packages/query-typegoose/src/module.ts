@@ -11,15 +11,14 @@ export class NestjsQueryTypegooseModule {
     cacheModels?: TypegooseClass[],
     connectionName?: string
   ): DynamicModule {
-    const queryServiceProviders = createTypegooseQueryServiceProviders(models)
+    const queryServiceProviders = createTypegooseQueryServiceProviders(models, cacheModels)
     const typegooseModule = TypegooseModule.forFeature(models, connectionName)
-    const referenceCacheServiceProvider = { provide: ReferenceCacheService, useValue: new ReferenceCacheService(cacheModels) }
 
     return {
       imports: [typegooseModule],
       module: NestjsQueryTypegooseModule,
-      providers: [referenceCacheServiceProvider, ...queryServiceProviders],
-      exports: [referenceCacheServiceProvider, ...queryServiceProviders, typegooseModule]
+      providers: [ReferenceCacheService, ...queryServiceProviders],
+      exports: [ReferenceCacheService, ...queryServiceProviders, typegooseModule]
     }
   }
 }

@@ -8,23 +8,28 @@ import { TypegooseClass } from '../typegoose-interface.helpers'
 
 @Injectable()
 export class ReferenceCacheService implements OnApplicationBootstrap {
+  protected readonly cacheModels: Set<TypegooseClass> = new Set<TypegooseClass>()
+
   protected readonly relationCache: Map<Class<Base<RefType>>, Map<Base<RefType>['_id'] | Base<RefType>['id'], Base<RefType>>> =
     new Map()
 
   protected readonly relationModels: Map<Class<Base<RefType>>, ReturnModelType<Class<Base<RefType>>>> = new Map()
 
-  constructor(protected readonly cacheModels: TypegooseClass[]) {
-    if (cacheModels) {
-      console.log('cacheServices', cacheModels)
+  constructor() {}
 
-      cacheModels.forEach((cacheModel) => {
-        Reflect.defineMetadata('cacheProvider', this, cacheModel)
-      })
-    }
+  enableCache(model: TypegooseClass) {
+    console.log('enable cache', model.name)
+
+    this.cacheModels.add(model)
+    this.cacheModels.add(model)
+
+    console.log('enabled cache', this.cacheModels.values())
+
+    Reflect.defineMetadata('cacheProvider', this, model)
   }
 
   isCachedRelation<Entity extends Base<RefType>>(RelationClass: Class<Entity>) {
-    return this.cacheModels?.includes(RelationClass)
+    return this.cacheModels.has(RelationClass)
   }
 
   initRelation<Entity extends Base<RefType>>(RelationClass: Class<Entity>) {
