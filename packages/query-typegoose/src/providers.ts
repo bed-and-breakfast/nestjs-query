@@ -44,7 +44,9 @@ function createTypegooseQueryServiceProvider<Entity extends Base>(
   return {
     provide: getQueryServiceToken({ name: modelName }),
     useFactory(ModelClass: ReturnModelType<new () => Entity>, referenceCacheService: ReferenceCacheService) {
-      referenceCacheService.enableCache(model as TypegooseClass)
+      if (cache) {
+        referenceCacheService.enableCache(model as TypegooseClass)
+      }
 
       // initialize default serializer for documents, this is the type that mongoose returns from queries
       // eslint-disable-next-line @typescript-eslint/no-unsafe-return
