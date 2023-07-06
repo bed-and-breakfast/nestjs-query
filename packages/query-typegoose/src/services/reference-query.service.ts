@@ -1,5 +1,5 @@
 /* eslint-disable no-underscore-dangle */
-import { NotFoundException } from '@nestjs/common'
+import { NotFoundException, Optional } from '@nestjs/common'
 import {
   AggregateQuery,
   AggregateResponse,
@@ -32,7 +32,7 @@ export abstract class ReferenceQueryService<Entity extends Base> {
 
   protected constructor(
     readonly Model: ReturnModelType<new () => Entity>,
-    protected readonly referenceCacheService: ReferenceCacheService
+    @Optional() protected readonly referenceCacheService?: ReferenceCacheService
   ) {}
 
   abstract getById(id: string | number, opts?: GetByIdOptions<Entity>): Promise<DocumentType<Entity>>
@@ -176,32 +176,34 @@ export abstract class ReferenceQueryService<Entity extends Base> {
         match: filterQuery
       })
 
-      references = arrayDto.map((d, i) => {
-        let populatedRef: Relation | undefined
+      references = await Promise.all(
+        arrayDto.map(async (d, i) => {
+          let populatedRef: Relation | undefined
 
-        if (typeof foundEntities[i] !== 'undefined') {
-          populatedRef = foundEntities[i].get(relationName)
-        }
-
-        if (populatedRef) {
-          if (populatedRef._id) {
-            this.referenceCacheService.set(RelationClass, populatedRef._id, populatedRef)
+          if (typeof foundEntities[i] !== 'undefined') {
+            populatedRef = foundEntities[i].get(relationName)
           }
-        }
 
-        return [d, populatedRef ? assembler.convertToDTO(populatedRef) : undefined]
-      })
+          if (populatedRef) {
+            if (populatedRef._id) {
+              await this.referenceCacheService.set(RelationClass, populatedRef._id, populatedRef)
+            }
+          }
+
+          return [d, populatedRef ? assembler.convertToDTO(populatedRef) : undefined]
+        })
+      )
     } else {
       const unresolvedReferences: string[] = []
 
       // Find unresolved references
-      arrayDto.forEach((d) => {
+      for (const d of arrayDto) {
         if (d[relationName]) {
-          if (!this.referenceCacheService.get(RelationClass, d[relationName])) {
+          if (!(await this.referenceCacheService.get(RelationClass, d[relationName]))) {
             unresolvedReferences.push(d[relationName])
           }
         }
-      })
+      }
 
       if (unresolvedReferences.length > 1) {
         console.log('unresolvedReferences', unresolvedReferences)
@@ -209,20 +211,22 @@ export abstract class ReferenceQueryService<Entity extends Base> {
 
       // Fetch and cache unresolved references
       const unresolvedReferenceResults = await relationModel.find({ _id: { $in: unresolvedReferences.map((ref) => ref) } }).exec()
-      unresolvedReferenceResults.forEach((ref) => {
+      for (const ref of unresolvedReferenceResults) {
         if (ref._id) {
-          this.referenceCacheService.set(RelationClass, ref._id, ref as unknown as Relation)
+          await this.referenceCacheService.set(RelationClass, ref._id, ref as unknown as Relation)
         }
-      })
+      }
 
       // Set reference results
-      references = arrayDto.map((d) => {
-        if (d[relationName]) {
-          return [d, assembler.convertToDTO(this.referenceCacheService.get(RelationClass, d[relationName]))]
-        }
+      references = await Promise.all(
+        arrayDto.map(async (d) => {
+          if (d[relationName]) {
+            return [d, assembler.convertToDTO(await this.referenceCacheService.get(RelationClass, d[relationName]))]
+          }
 
-        return [d, undefined]
-      })
+          return [d, undefined]
+        })
+      )
     }
 
     // console.log(
@@ -303,15 +307,15 @@ export abstract class ReferenceQueryService<Entity extends Base> {
       const unresolvedReferences: string[] = []
 
       // Find unresolved references
-      arrayDto.forEach((d) => {
+      for (const d of arrayDto) {
         if (d[relationName]) {
-          d[relationName].forEach((referenceId: unknown) => {
-            if (!this.referenceCacheService.get(RelationClass, d[relationName])) {
-              unresolvedReferences.push(referenceId.toString())
+          for (const referenceId of d[relationName]) {
+            if (!(await this.referenceCacheService.get(RelationClass, d[relationName]))) {
+              unresolvedReferences.push((referenceId as unknown).toString())
             }
-          })
+          }
         }
-      })
+      }
 
       if (unresolvedReferences.length > 1) {
         console.log('unresolvedReferences', unresolvedReferences)
@@ -319,23 +323,29 @@ export abstract class ReferenceQueryService<Entity extends Base> {
 
       // Fetch and cache unresolved references
       const unresolvedReferenceResults = await relationModel.find({ _id: { $in: unresolvedReferences.map((ref) => ref) } }).exec()
-      unresolvedReferenceResults.forEach((ref) => {
+      for (const ref of unresolvedReferenceResults) {
         if (ref._id) {
-          this.referenceCacheService.set(RelationClass, ref._id, ref as unknown as Relation)
+          await this.referenceCacheService.set(RelationClass, ref._id, ref as unknown as Relation)
         }
-      })
+      }
 
       // Set reference results
-      references = arrayDto.map((d) => {
-        if (d[relationName]) {
-          return [
-            d,
-            assembler.convertToDTOs(d[relationName].map((reference) => this.referenceCacheService.get(RelationClass, reference)))
-          ]
-        }
+      references = await Promise.all(
+        arrayDto.map(async (d) => {
+          if (d[relationName]) {
+            return [
+              d,
+              assembler.convertToDTOs(
+                await Promise.all(
+                  d[relationName].map(async (reference) => this.referenceCacheService.get(RelationClass, reference))
+                )
+              )
+            ]
+          }
 
-        return [d, []]
-      })
+          return [d, []]
+        })
+      )
     }
 
     return Array.isArray(dto) ? new Map(references) : references[0][1]
@@ -379,10 +389,10 @@ export abstract class ReferenceQueryService<Entity extends Base> {
   //       populatedRef = [populatedRef]
   //     }
   //
-  //     populatedRef.forEach((ref) => {
+  //     for (const ref of populatedRef) {
   //       if (ref) {
   //         if (ref._id) {
-  //           this.referenceCacheService.set(RelationClass, ref._id, ref)
+  //           await this.referenceCacheService.set(RelationClass, ref._id, ref)
   //         }
   //       }
   //     })

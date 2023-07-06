@@ -9,7 +9,8 @@ const typegoose_1 = require("@typegoose/typegoose");
 const lodash_omit_1 = tslib_1.__importDefault(require("lodash.omit"));
 const query_1 = require("../query");
 const typegoose_types_helper_1 = require("../typegoose-types.helper");
-class ReferenceQueryService {
+const reference_cache_service_1 = require("./reference-cache.service");
+let ReferenceQueryService = class ReferenceQueryService {
     constructor(Model, referenceCacheService) {
         this.Model = Model;
         this.referenceCacheService = referenceCacheService;
@@ -77,46 +78,46 @@ class ReferenceQueryService {
                 path: relationName,
                 match: filterQuery
             });
-            references = arrayDto.map((d, i) => {
+            references = await Promise.all(arrayDto.map(async (d, i) => {
                 let populatedRef;
                 if (typeof foundEntities[i] !== 'undefined') {
                     populatedRef = foundEntities[i].get(relationName);
                 }
                 if (populatedRef) {
                     if (populatedRef._id) {
-                        this.referenceCacheService.set(RelationClass, populatedRef._id, populatedRef);
+                        await this.referenceCacheService.set(RelationClass, populatedRef._id, populatedRef);
                     }
                 }
                 return [d, populatedRef ? assembler.convertToDTO(populatedRef) : undefined];
-            });
+            }));
         }
         else {
             const unresolvedReferences = [];
             // Find unresolved references
-            arrayDto.forEach((d) => {
+            for (const d of arrayDto) {
                 if (d[relationName]) {
-                    if (!this.referenceCacheService.get(RelationClass, d[relationName])) {
+                    if (!(await this.referenceCacheService.get(RelationClass, d[relationName]))) {
                         unresolvedReferences.push(d[relationName]);
                     }
                 }
-            });
+            }
             if (unresolvedReferences.length > 1) {
                 console.log('unresolvedReferences', unresolvedReferences);
             }
             // Fetch and cache unresolved references
             const unresolvedReferenceResults = await relationModel.find({ _id: { $in: unresolvedReferences.map((ref) => ref) } }).exec();
-            unresolvedReferenceResults.forEach((ref) => {
+            for (const ref of unresolvedReferenceResults) {
                 if (ref._id) {
-                    this.referenceCacheService.set(RelationClass, ref._id, ref);
+                    await this.referenceCacheService.set(RelationClass, ref._id, ref);
                 }
-            });
+            }
             // Set reference results
-            references = arrayDto.map((d) => {
+            references = await Promise.all(arrayDto.map(async (d) => {
                 if (d[relationName]) {
-                    return [d, assembler.convertToDTO(this.referenceCacheService.get(RelationClass, d[relationName]))];
+                    return [d, assembler.convertToDTO(await this.referenceCacheService.get(RelationClass, d[relationName]))];
                 }
                 return [d, undefined];
-            });
+            }));
         }
         // console.log(
         //   RelationClass.name,
@@ -164,35 +165,35 @@ class ReferenceQueryService {
         else {
             const unresolvedReferences = [];
             // Find unresolved references
-            arrayDto.forEach((d) => {
+            for (const d of arrayDto) {
                 if (d[relationName]) {
-                    d[relationName].forEach((referenceId) => {
-                        if (!this.referenceCacheService.get(RelationClass, d[relationName])) {
+                    for (const referenceId of d[relationName]) {
+                        if (!(await this.referenceCacheService.get(RelationClass, d[relationName]))) {
                             unresolvedReferences.push(referenceId.toString());
                         }
-                    });
+                    }
                 }
-            });
+            }
             if (unresolvedReferences.length > 1) {
                 console.log('unresolvedReferences', unresolvedReferences);
             }
             // Fetch and cache unresolved references
             const unresolvedReferenceResults = await relationModel.find({ _id: { $in: unresolvedReferences.map((ref) => ref) } }).exec();
-            unresolvedReferenceResults.forEach((ref) => {
+            for (const ref of unresolvedReferenceResults) {
                 if (ref._id) {
-                    this.referenceCacheService.set(RelationClass, ref._id, ref);
+                    await this.referenceCacheService.set(RelationClass, ref._id, ref);
                 }
-            });
+            }
             // Set reference results
-            references = arrayDto.map((d) => {
+            references = await Promise.all(arrayDto.map(async (d) => {
                 if (d[relationName]) {
                     return [
                         d,
-                        assembler.convertToDTOs(d[relationName].map((reference) => this.referenceCacheService.get(RelationClass, reference)))
+                        assembler.convertToDTOs(await Promise.all(d[relationName].map(async (reference) => this.referenceCacheService.get(RelationClass, reference))))
                     ];
                 }
                 return [d, []];
-            });
+            }));
         }
         return Array.isArray(dto) ? new Map(references) : references[0][1];
     }
@@ -234,10 +235,10 @@ class ReferenceQueryService {
     //       populatedRef = [populatedRef]
     //     }
     //
-    //     populatedRef.forEach((ref) => {
+    //     for (const ref of populatedRef) {
     //       if (ref) {
     //         if (ref._id) {
-    //           this.referenceCacheService.set(RelationClass, ref._id, ref)
+    //           await this.referenceCacheService.set(RelationClass, ref._id, ref)
     //         }
     //       }
     //     })
@@ -386,6 +387,10 @@ class ReferenceQueryService {
         }
         return entity;
     }
-}
+};
+ReferenceQueryService = tslib_1.__decorate([
+    tslib_1.__param(1, (0, common_1.Optional)()),
+    tslib_1.__metadata("design:paramtypes", [Object, reference_cache_service_1.ReferenceCacheService])
+], ReferenceQueryService);
 exports.ReferenceQueryService = ReferenceQueryService;
 //# sourceMappingURL=reference-query.service.js.map

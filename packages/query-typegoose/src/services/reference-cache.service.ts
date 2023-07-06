@@ -1,29 +1,29 @@
-import { Injectable, OnApplicationBootstrap } from '@nestjs/common'
+import { CACHE_MANAGER } from '@nestjs/cache-manager'
+import { Inject, Injectable, OnApplicationBootstrap } from '@nestjs/common'
 import { Class } from '@ptc-org/nestjs-query-core'
 import { getModelForClass, ReturnModelType } from '@typegoose/typegoose'
 import { Base } from '@typegoose/typegoose/lib/defaultClasses'
+import { Cache } from 'cache-manager'
 import { RefType } from 'mongoose'
 
-import { TypegooseClass } from '../typegoose-interface.helpers'
+import { TypegooseClass, TypegooseClassWithOptions } from '../typegoose-interface.helpers'
 
 @Injectable()
 export class ReferenceCacheService implements OnApplicationBootstrap {
   protected readonly cacheModels: Set<TypegooseClass> = new Set<TypegooseClass>()
 
-  protected readonly relationCache: Map<Class<Base<RefType>>, Map<Base<RefType>['_id'] | Base<RefType>['id'], Base<RefType>>> =
-    new Map()
-
   protected readonly relationModels: Map<Class<Base<RefType>>, ReturnModelType<Class<Base<RefType>>>> = new Map()
 
-  constructor() {}
+  constructor(@Inject(CACHE_MANAGER) private cacheManager: Cache) {}
 
-  enableCache(model: TypegooseClass) {
-    console.log('enable cache', model.name)
+  enableCache(model: TypegooseClass | TypegooseClassWithOptions) {
+    const RelationClass = (model as TypegooseClassWithOptions).typegooseClass ?? (model as TypegooseClass)
 
-    this.cacheModels.add(model)
-    this.cacheModels.add(model)
+    this.cacheModels.add(RelationClass)
 
-    console.log('enabled cache', this.cacheModels.values())
+    if ((model as TypegooseClassWithOptions).cache) {
+      this.relationModels.set(RelationClass, getModelForClass(RelationClass) as ReturnModelType<Class<Base<RefType>>>)
+    }
 
     Reflect.defineMetadata('cacheProvider', this, model)
   }
@@ -32,35 +32,23 @@ export class ReferenceCacheService implements OnApplicationBootstrap {
     return this.cacheModels.has(RelationClass)
   }
 
-  initRelation<Entity extends Base<RefType>>(RelationClass: Class<Entity>) {
-    if (!this.relationCache.get(RelationClass)) {
-      this.relationCache.set(RelationClass, new Map())
-    }
-
-    if (!this.relationModels.get(RelationClass)) {
-      this.relationModels.set(RelationClass, getModelForClass(RelationClass) as ReturnModelType<Class<Base<RefType>>>)
-    }
-  }
-
   async onApplicationBootstrap() {
-    if (this.cacheModels) {
-      for (const cacheModel of this.cacheModels) {
-        await this.setAll(cacheModel)
+    if (this.relationModels) {
+      for (const model of this.relationModels.keys()) {
+        await this.setAll(model)
       }
     }
   }
 
-  get<Entity extends Base<RefType>>(RelationClass: Class<Entity>, id: unknown): Entity {
+  async get<Entity extends Base<RefType>>(RelationClass: Class<Entity>, id: unknown): Promise<Entity> {
     if (!this.isCachedRelation(RelationClass)) return undefined
 
-    return this.relationCache.get(RelationClass).get(id.toString()) as Entity
+    return this.cacheManager.get(RelationClass.name + ':' + id.toString())
   }
 
-  set<Entity extends Base<RefType>>(RelationClass: Class<Entity>, id: unknown, value: Entity) {
+  async set<Entity extends Base<RefType>>(RelationClass: Class<Entity>, id: unknown, value: Entity) {
     if (this.isCachedRelation(RelationClass)) {
-      this.initRelation(RelationClass)
-
-      this.relationCache.get(RelationClass).set(id.toString(), value)
+      await this.cacheManager.set(RelationClass.name + ':' + id.toString(), value)
 
       console.log('set', RelationClass.name, id.toString())
     }
@@ -68,23 +56,21 @@ export class ReferenceCacheService implements OnApplicationBootstrap {
 
   async setAll<Entity extends Base<RefType>>(RelationClass: Class<Entity>) {
     if (this.isCachedRelation(RelationClass)) {
-      this.initRelation(RelationClass)
-
       const relations = await this.relationModels.get(RelationClass).find().exec()
 
-      relations.forEach((relation) => {
+      for (const relation of relations) {
         if (relation._id) {
-          this.relationCache.get(RelationClass).set(relation._id.toString(), relation)
+          await this.cacheManager.set(RelationClass.name + ':' + relation._id.toString(), relation)
         }
-      })
+      }
 
       console.log(RelationClass.name, relations.length)
     }
   }
 
-  invalidate<Entity extends Base<RefType>>(RelationClass: Class<Entity>, id: unknown) {
+  async invalidate<Entity extends Base<RefType>>(RelationClass: Class<Entity>, id: unknown) {
     if (this.isCachedRelation(RelationClass)) {
-      this.relationCache.get(RelationClass).delete(id.toString())
+      await this.cacheManager.del(RelationClass.name + ':' + id.toString())
     }
   }
 }

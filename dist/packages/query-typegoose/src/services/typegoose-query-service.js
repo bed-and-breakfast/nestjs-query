@@ -1,11 +1,13 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TypegooseQueryService = void 0;
+const tslib_1 = require("tslib");
 const common_1 = require("@nestjs/common");
 const typegoose_1 = require("@typegoose/typegoose");
 const query_1 = require("../query");
+const reference_cache_service_1 = require("./reference-cache.service");
 const reference_query_service_1 = require("./reference-query.service");
-class TypegooseQueryService extends reference_query_service_1.ReferenceQueryService {
+let TypegooseQueryService = class TypegooseQueryService extends reference_query_service_1.ReferenceQueryService {
     constructor(Model, referenceCacheService, filterQueryBuilder = new query_1.FilterQueryBuilder(Model)) {
         super(Model, referenceCacheService);
         this.Model = Model;
@@ -242,6 +244,11 @@ class TypegooseQueryService extends reference_query_service_1.ReferenceQueryServ
         });
         return query;
     }
-}
+};
+TypegooseQueryService = tslib_1.__decorate([
+    tslib_1.__param(1, (0, common_1.Optional)()),
+    tslib_1.__metadata("design:paramtypes", [Object, reference_cache_service_1.ReferenceCacheService,
+        query_1.FilterQueryBuilder])
+], TypegooseQueryService);
 exports.TypegooseQueryService = TypegooseQueryService;
 //# sourceMappingURL=typegoose-query-service.js.map

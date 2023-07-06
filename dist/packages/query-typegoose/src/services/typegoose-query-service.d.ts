@@ -10,9 +10,9 @@ export interface TypegooseQueryServiceOpts {
 }
 export declare class TypegooseQueryService<Entity extends Base> extends ReferenceQueryService<Entity> implements QueryService<Entity> {
     readonly Model: ReturnModelType<new () => Entity>;
-    protected readonly referenceCacheService: ReferenceCacheService;
+    protected readonly referenceCacheService?: ReferenceCacheService;
     readonly filterQueryBuilder: FilterQueryBuilder<Entity>;
-    constructor(Model: ReturnModelType<new () => Entity>, referenceCacheService: ReferenceCacheService, filterQueryBuilder?: FilterQueryBuilder<Entity>);
+    constructor(Model: ReturnModelType<new () => Entity>, referenceCacheService?: ReferenceCacheService, filterQueryBuilder?: FilterQueryBuilder<Entity>);
     /**
      * Query for multiple entities, using a Query from `@ptc-org/nestjs-query-core`.
      *

@@ -3000,10 +3000,13 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@bed-and-breakfast/nestjs-query-typegoose@workspace:packages/query-typegoose"
   dependencies:
+    "@nestjs/cache-manager": ^2.0.1
+    cache-manager: ^5.2.3
     camel-case: ^4.1.2
     is-class: 0.0.9
     lodash.escaperegexp: ^4.1.2
     lodash.merge: ^4.6.2
+    lodash.omit: ^4.5.0
     speedgoose: ^1.2.24
     tslib: ^2.4.0
   peerDependencies:
@@ -4581,6 +4584,19 @@ __metadata:
     apollo-server-fastify:
       optional: true
   checksum: 319856254267aeac2fb6f4d0d10d3023b797a56b7a29ae88f11f8447b518a622bc1ffb21b5adaefe4aefad0b7fecf84f171770b9df76f35eb497b05cbee9f517
+  languageName: node
+  linkType: hard
+
+"@nestjs/cache-manager@npm:^2.0.1":
+  version: 2.0.1
+  resolution: "@nestjs/cache-manager@npm:2.0.1"
+  peerDependencies:
+    "@nestjs/common": ^9.0.0 || ^10.0.0
+    "@nestjs/core": ^9.0.0 || ^10.0.0
+    cache-manager: <=5
+    reflect-metadata: ^0.1.12
+    rxjs: ^7.0.0
+  checksum: 47aa6a9b818a4819669752d0fa8708e205b8c439fb4e30661a1a24f66b457d3b681fbc298630d8a99a2fc665052785dc78be7fca6c1f979e8b668fe98e2a020e
   languageName: node
   linkType: hard
 
@@ -8176,6 +8192,16 @@ __metadata:
     tar: ^6.1.11
     unique-filename: ^3.0.0
   checksum: 83312d74acf4d17e378fc1f09ace1dedcb0a1b1033a0e9e22246052b8715cda7bdc8b7ab6dcadd3cb3f2965266def476835488cad5aea810159d452749757fbd
+  languageName: node
+  linkType: hard
+
+"cache-manager@npm:^5.2.3":
+  version: 5.2.3
+  resolution: "cache-manager@npm:5.2.3"
+  dependencies:
+    lodash.clonedeep: ^4.5.0
+    lru-cache: ^9.1.2
+  checksum: 2bcd6a385e5575bf9577a209e02c9f5074cd476e6eb08a0f108e45d80c20f4e91fbff163493fe345f166f8ecb232687f20541bc4f42fb2167f8770f9f8b26c51
   languageName: node
   linkType: hard
 
@@ -14548,6 +14574,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"lodash.clonedeep@npm:^4.5.0":
+  version: 4.5.0
+  resolution: "lodash.clonedeep@npm:4.5.0"
+  checksum: 92c46f094b064e876a23c97f57f81fbffd5d760bf2d8a1c61d85db6d1e488c66b0384c943abee4f6af7debf5ad4e4282e74ff83177c9e63d8ff081a4837c3489
+  languageName: node
+  linkType: hard
+
 "lodash.curry@npm:^4.0.1":
   version: 4.1.1
   resolution: "lodash.curry@npm:4.1.1"
@@ -14870,6 +14903,13 @@ __metadata:
   version: 7.18.3
   resolution: "lru-cache@npm:7.18.3"
   checksum: e550d772384709deea3f141af34b6d4fa392e2e418c1498c078de0ee63670f1f46f5eee746e8ef7e69e1c895af0d4224e62ee33e66a543a14763b0f2e74c1356
+  languageName: node
+  linkType: hard
+
+"lru-cache@npm:^9.1.2":
+  version: 9.1.2
+  resolution: "lru-cache@npm:9.1.2"
+  checksum: d3415634be3908909081fc4c56371a8d562d9081eba70543d86871b978702fffd0e9e362b83921b27a29ae2b37b90f55675aad770a54ac83bb3e4de5049d4b15
   languageName: node
   linkType: hard
 

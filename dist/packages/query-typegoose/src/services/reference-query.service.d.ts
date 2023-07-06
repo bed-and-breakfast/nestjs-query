@@ -7,9 +7,9 @@ import { ReturnModelType } from '../typegoose-types.helper';
 import { ReferenceCacheService } from './reference-cache.service';
 export declare abstract class ReferenceQueryService<Entity extends Base> {
     readonly Model: ReturnModelType<new () => Entity>;
-    protected readonly referenceCacheService: ReferenceCacheService;
+    protected readonly referenceCacheService?: ReferenceCacheService;
     abstract readonly filterQueryBuilder: FilterQueryBuilder<Entity>;
-    protected constructor(Model: ReturnModelType<new () => Entity>, referenceCacheService: ReferenceCacheService);
+    protected constructor(Model: ReturnModelType<new () => Entity>, referenceCacheService?: ReferenceCacheService);
     abstract getById(id: string | number, opts?: GetByIdOptions<Entity>): Promise<DocumentType<Entity>>;
     aggregateRelations<Relation>(RelationClass: Class<Relation>, relationName: string, entities: DocumentType<Entity>[], filter: Filter<Relation>, aggregate: AggregateQuery<Relation>): Promise<Map<DocumentType<Entity>, AggregateResponse<DocumentType<Relation>>[]>>;
     aggregateRelations<Relation>(RelationClass: Class<Relation>, relationName: string, dto: DocumentType<Entity>, filter: Filter<Relation>, aggregate: AggregateQuery<Relation>): Promise<AggregateResponse<DocumentType<Relation>>[]>;

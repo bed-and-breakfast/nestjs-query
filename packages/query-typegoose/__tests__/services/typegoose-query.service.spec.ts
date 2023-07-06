@@ -1,12 +1,11 @@
 /* eslint-disable no-underscore-dangle,@typescript-eslint/no-unsafe-return */
 import { InjectModel, TypegooseModule } from '@m8a/nestjs-typegoose'
-import { ConsoleLogger } from '@nestjs/common'
+import { ConsoleLogger, Optional } from '@nestjs/common'
 import { Test, TestingModule } from '@nestjs/testing'
 import { FindRelationOptions, SortDirection } from '@ptc-org/nestjs-query-core'
 import { DocumentType, getModelForClass, mongoose } from '@typegoose/typegoose'
 
-import { NestjsQueryTypegooseModule } from '../../src'
-import { NestjsQueryTypegooseCacheModule } from '../../src/cache-module'
+import { NestjsQueryTypegooseCacheModule, NestjsQueryTypegooseModule } from '../../src'
 import { TypegooseQueryService } from '../../src/services'
 import { ReferenceCacheService } from '../../src/services/reference-cache.service'
 import { ReturnModelType } from '../../src/typegoose-types.helper'
@@ -44,7 +43,7 @@ describe('TypegooseQueryService', () => {
   class TestEntityService extends TypegooseQueryService<TestEntity> {
     constructor(
       @InjectModel(TestEntity) readonly model: ReturnModelType<typeof TestEntity>,
-      protected readonly referenceCacheService: ReferenceCacheService
+      @Optional() protected readonly referenceCacheService?: ReferenceCacheService
     ) {
       super(model, referenceCacheService)
       TestEntityModel = model
@@ -54,7 +53,7 @@ describe('TypegooseQueryService', () => {
   class TestReferenceService extends TypegooseQueryService<TestReference> {
     constructor(
       @InjectModel(TestReference) readonly model: ReturnModelType<typeof TestReference>,
-      protected readonly referenceCacheService: ReferenceCacheService
+      @Optional() protected readonly referenceCacheService?: ReferenceCacheService
     ) {
       super(model, referenceCacheService)
       TestReferenceModel = model
@@ -76,7 +75,7 @@ describe('TypegooseQueryService', () => {
       imports: [
         NestjsQueryTypegooseCacheModule,
         TypegooseModule.forRoot(mongo.getConnectionUri()),
-        NestjsQueryTypegooseModule.forFeature([TestEntity, TestReference], [TestEntity, TestReference])
+        NestjsQueryTypegooseModule.forFeature([TestEntity, TestReference])
       ],
       providers: [TestReferenceService, TestEntityService]
     })

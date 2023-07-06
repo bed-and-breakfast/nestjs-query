@@ -31,8 +31,7 @@ function ensureProperInput(item: TypegooseInput): ClassOrDiscriminator | undefin
 }
 
 function createTypegooseQueryServiceProvider<Entity extends Base>(
-  model: TypegooseClass | TypegooseClassWithOptions,
-  cache: boolean
+  model: TypegooseClass | TypegooseClassWithOptions
 ): FactoryProvider {
   const inputModel = ensureProperInput(model)
   if (!inputModel) {
@@ -43,9 +42,9 @@ function createTypegooseQueryServiceProvider<Entity extends Base>(
 
   return {
     provide: getQueryServiceToken({ name: modelName }),
-    useFactory(ModelClass: ReturnModelType<new () => Entity>, referenceCacheService: ReferenceCacheService) {
-      if (cache) {
-        referenceCacheService.enableCache(model as TypegooseClass)
+    useFactory(ModelClass: ReturnModelType<new () => Entity>, referenceCacheService?: ReferenceCacheService) {
+      if ((model as TypegooseClassWithOptions).cache) {
+        referenceCacheService.enableCache(model)
       }
 
       // initialize default serializer for documents, this is the type that mongoose returns from queries
@@ -58,8 +57,5 @@ function createTypegooseQueryServiceProvider<Entity extends Base>(
   }
 }
 
-export const createTypegooseQueryServiceProviders = (
-  models: (TypegooseClass | TypegooseClassWithOptions)[],
-  cacheModels: TypegooseClass[]
-): FactoryProvider[] =>
-  models.map((model) => createTypegooseQueryServiceProvider(model, cacheModels?.includes(model as TypegooseClass)))
+export const createTypegooseQueryServiceProviders = (models: (TypegooseClass | TypegooseClassWithOptions)[]): FactoryProvider[] =>
+  models.map((model) => createTypegooseQueryServiceProvider(model))

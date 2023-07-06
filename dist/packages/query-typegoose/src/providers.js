@@ -19,7 +19,7 @@ function ensureProperInput(item) {
     }
     return undefined;
 }
-function createTypegooseQueryServiceProvider(model, cache) {
+function createTypegooseQueryServiceProvider(model) {
     const inputModel = ensureProperInput(model);
     if (!inputModel) {
         // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
@@ -29,7 +29,7 @@ function createTypegooseQueryServiceProvider(model, cache) {
     return {
         provide: (0, nestjs_query_core_1.getQueryServiceToken)({ name: modelName }),
         useFactory(ModelClass, referenceCacheService) {
-            if (cache) {
+            if (model.cache) {
                 referenceCacheService.enableCache(model);
             }
             // initialize default serializer for documents, this is the type that mongoose returns from queries
@@ -40,6 +40,6 @@ function createTypegooseQueryServiceProvider(model, cache) {
         inject: [(0, nestjs_typegoose_1.getModelToken)(modelName), reference_cache_service_1.ReferenceCacheService]
     };
 }
-const createTypegooseQueryServiceProviders = (models, cacheModels) => models.map((model) => createTypegooseQueryServiceProvider(model, cacheModels?.includes(model)));
+const createTypegooseQueryServiceProviders = (models) => models.map((model) => createTypegooseQueryServiceProvider(model));
 exports.createTypegooseQueryServiceProviders = createTypegooseQueryServiceProviders;
 //# sourceMappingURL=providers.js.map

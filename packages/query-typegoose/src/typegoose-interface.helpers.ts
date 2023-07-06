@@ -1,4 +1,5 @@
 import { mongoose } from '@typegoose/typegoose'
+import { Cache } from 'cache-manager'
 
 export interface TypegooseClass {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -12,6 +13,12 @@ export interface TypegooseClassWrapper {
 export interface TypegooseClassWithOptions extends TypegooseClassWrapper {
   schemaOptions?: mongoose.SchemaOptions
   discriminators?: (TypegooseClass | TypegooseDiscriminator)[]
+  cache?:
+    | true
+    | {
+        loadAll?: boolean
+        cacheManager?: Cache
+      }
 }
 
 export interface TypegooseDiscriminator extends TypegooseClassWrapper {

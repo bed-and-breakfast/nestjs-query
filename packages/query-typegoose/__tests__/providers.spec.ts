@@ -12,7 +12,7 @@ describe('createTypegooseQueryServiceProviders', () => {
 
     expect(providers).toHaveLength(1)
     expect(providers[0].provide).toBe(getQueryServiceToken(TestEntity))
-    expect(providers[0].inject).toEqual([getModelToken(TestEntity.name)])
+    expect(providers[0].inject[0]).toEqual(getModelToken(TestEntity.name))
     expect(providers[0].useFactory(TestEntity)).toBeInstanceOf(TypegooseQueryService)
   })
 })

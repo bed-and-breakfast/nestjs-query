@@ -1,4 +1,4 @@
-import { NotFoundException } from '@nestjs/common'
+import { NotFoundException, Optional } from '@nestjs/common'
 import {
   AggregateQuery,
   AggregateResponse,
@@ -29,7 +29,7 @@ export interface TypegooseQueryServiceOpts {
 export class TypegooseQueryService<Entity extends Base> extends ReferenceQueryService<Entity> implements QueryService<Entity> {
   constructor(
     readonly Model: ReturnModelType<new () => Entity>,
-    protected readonly referenceCacheService: ReferenceCacheService,
+    @Optional() protected readonly referenceCacheService?: ReferenceCacheService,
     readonly filterQueryBuilder: FilterQueryBuilder<Entity> = new FilterQueryBuilder(Model)
   ) {
     super(Model, referenceCacheService)
