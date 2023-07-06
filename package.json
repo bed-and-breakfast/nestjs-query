@@ -11,6 +11,8 @@
     "test:e2e": "nx e2e examples"
   },
   "dependencies": {
+    "@nestjs/cache-manager": "^2.0.1",
+    "cache-manager": "^5.2.3",
     "@apollo/federation": "0.38.1",
     "@docusaurus/core": "2.2.0",
     "@docusaurus/preset-classic": "2.2.0",

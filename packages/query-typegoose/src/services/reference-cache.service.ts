@@ -21,7 +21,10 @@ export class ReferenceCacheService implements OnApplicationBootstrap {
 
     this.cacheModels.add(RelationClass)
 
-    if ((model as TypegooseClassWithOptions).cache) {
+    if (
+      typeof (model as TypegooseClassWithOptions).cache === 'object' &&
+      ((model as TypegooseClassWithOptions).cache as { loadAll?: boolean }).loadAll
+    ) {
       this.relationModels.set(RelationClass, getModelForClass(RelationClass) as ReturnModelType<Class<Base<RefType>>>)
     }
 
