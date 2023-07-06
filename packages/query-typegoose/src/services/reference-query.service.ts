@@ -198,7 +198,7 @@ export abstract class ReferenceQueryService<Entity extends Base> {
 
       // Find unresolved references
       for (const d of arrayDto) {
-        if (d[relationName]) {
+        if (d[relationName] && !unresolvedReferences.includes(d[relationName])) {
           if (!(await this.referenceCacheService.get(RelationClass, d[relationName]))) {
             unresolvedReferences.push(d[relationName])
           }
@@ -294,23 +294,33 @@ export abstract class ReferenceQueryService<Entity extends Base> {
       })
       // .cacheQuery()
 
-      references = arrayDto.map((d, i) => {
-        let populatedRef: Relation[] | undefined
+      references = await Promise.all(
+        arrayDto.map(async (d, i) => {
+          let populatedRef: Relation[] | undefined
 
-        if (typeof foundEntities[i] !== 'undefined') {
-          populatedRef = foundEntities[i].get(relationName)
-        }
+          if (typeof foundEntities[i] !== 'undefined') {
+            populatedRef = foundEntities[i].get(relationName)
 
-        return [d, populatedRef ? assembler.convertToDTOs(populatedRef) : []]
-      })
+            for (const p of populatedRef) {
+              if (p) {
+                if (p._id) {
+                  await this.referenceCacheService.set(RelationClass, p._id, p)
+                }
+              }
+            }
+          }
+
+          return [d, populatedRef ? assembler.convertToDTOs(populatedRef) : []]
+        })
+      )
     } else {
       const unresolvedReferences: string[] = []
 
       // Find unresolved references
       for (const d of arrayDto) {
-        if (d[relationName]) {
+        if (d[relationName] && !unresolvedReferences[d[relationName]]) {
           for (const referenceId of d[relationName]) {
-            if (!(await this.referenceCacheService.get(RelationClass, d[relationName]))) {
+            if (!(await this.referenceCacheService.get(RelationClass, referenceId))) {
               unresolvedReferences.push((referenceId as unknown).toString())
             }
           }
@@ -335,11 +345,13 @@ export abstract class ReferenceQueryService<Entity extends Base> {
           if (d[relationName]) {
             return [
               d,
-              assembler.convertToDTOs(
-                await Promise.all(
-                  d[relationName].map(async (reference) => this.referenceCacheService.get(RelationClass, reference))
+              assembler
+                .convertToDTOs(
+                  await Promise.all(
+                    d[relationName].map(async (reference) => this.referenceCacheService.get(RelationClass, reference))
+                  )
                 )
-              )
+                .filter((item) => item !== undefined)
             ]
           }
 
