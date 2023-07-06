@@ -163,7 +163,7 @@ export abstract class ReferenceQueryService<Entity extends Base> {
 
     if (
       !this.referenceCacheService.isCachedRelation(RelationClass) ||
-      opts?.filter ||
+      (opts?.filter && Object.keys(opts.filter).length > 0) ||
       !(relationName in arrayDto[0]) /* @TODO Replace with: arrayDto[0].schema.virtuals[relationName] (after updating tests) */
     ) {
       console.log('no cache', RelationClass, opts?.filter)
@@ -273,9 +273,9 @@ export abstract class ReferenceQueryService<Entity extends Base> {
 
     if (
       !this.referenceCacheService.isCachedRelation(RelationClass) ||
-      query.filter ||
-      query.paging ||
-      query.sorting ||
+      (query.filter && Object.keys(query.filter).length > 0) ||
+      (query.paging && Object.keys(query.paging).length > 0) ||
+      (query.sorting && query.sorting.length > 0) ||
       !(relationName in arrayDto[0]) /* @TODO Replace with: arrayDto[0].schema.virtuals[relationName] (after updating tests) */
     ) {
       console.log('no cache', RelationClass, query)
