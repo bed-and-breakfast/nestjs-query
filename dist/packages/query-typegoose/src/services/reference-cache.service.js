@@ -43,7 +43,8 @@ let ReferenceCacheService = class ReferenceCacheService {
     }
     async setAll(RelationClass) {
         if (this.isCachedRelation(RelationClass)) {
-            const relations = await this.relationModels.get(RelationClass).find().exec();
+            const find = this.relationModels.get(RelationClass).find();
+            const relations = await (find.withDeleted ? find.withDeleted() : find).exec();
             for (const relation of relations) {
                 if (relation._id) {
                     await this.cacheManager.set(RelationClass.name + ':' + relation._id.toString(), relation);

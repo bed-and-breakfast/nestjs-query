@@ -164,7 +164,8 @@ export abstract class ReferenceQueryService<Entity extends Base> {
     if (
       !this.referenceCacheService.isCachedRelation(RelationClass) ||
       (opts?.filter && Object.keys(opts.filter).length > 0) ||
-      !(relationName in arrayDto[0]) /* @TODO Replace with: arrayDto[0].schema.virtuals[relationName] (after updating tests) */
+      arrayDto[0].schema?.virtuals?.[relationName]
+      // !(relationName in arrayDto[0]) /* @TODO Replace with: arrayDto[0].schema.virtuals[relationName] (after updating tests) */
     ) {
       console.log('no cache', RelationClass, opts?.filter)
 
@@ -207,13 +208,15 @@ export abstract class ReferenceQueryService<Entity extends Base> {
 
       if (unresolvedReferences.length > 1) {
         console.log('unresolvedReferences', unresolvedReferences)
-      }
 
-      // Fetch and cache unresolved references
-      const unresolvedReferenceResults = await relationModel.find({ _id: { $in: unresolvedReferences.map((ref) => ref) } }).exec()
-      for (const ref of unresolvedReferenceResults) {
-        if (ref._id) {
-          await this.referenceCacheService.set(RelationClass, ref._id, ref as unknown as Relation)
+        // Fetch and cache unresolved references
+        const unresolvedReferenceResults = await relationModel
+          .find({ _id: { $in: unresolvedReferences.map((ref) => ref) } })
+          .exec()
+        for (const ref of unresolvedReferenceResults) {
+          if (ref._id) {
+            await this.referenceCacheService.set(RelationClass, ref._id, ref as unknown as Relation)
+          }
         }
       }
 
@@ -280,7 +283,8 @@ export abstract class ReferenceQueryService<Entity extends Base> {
       (query.filter && Object.keys(query.filter).length > 0) ||
       (query.paging && Object.keys(query.paging).length > 0) ||
       (query.sorting && query.sorting.length > 0) ||
-      !(relationName in arrayDto[0]) /* @TODO Replace with: arrayDto[0].schema.virtuals[relationName] (after updating tests) */
+      arrayDto[0].schema?.virtuals?.[relationName]
+      // !(relationName in arrayDto[0]) /* @TODO Replace with: arrayDto[0].schema.virtuals[relationName] (after updating tests) */
     ) {
       console.log('no cache', RelationClass, query)
 
@@ -329,13 +333,15 @@ export abstract class ReferenceQueryService<Entity extends Base> {
 
       if (unresolvedReferences.length > 1) {
         console.log('unresolvedReferences', unresolvedReferences)
-      }
 
-      // Fetch and cache unresolved references
-      const unresolvedReferenceResults = await relationModel.find({ _id: { $in: unresolvedReferences.map((ref) => ref) } }).exec()
-      for (const ref of unresolvedReferenceResults) {
-        if (ref._id) {
-          await this.referenceCacheService.set(RelationClass, ref._id, ref as unknown as Relation)
+        // Fetch and cache unresolved references
+        const unresolvedReferenceResults = await relationModel
+          .find({ _id: { $in: unresolvedReferences.map((ref) => ref) } })
+          .exec()
+        for (const ref of unresolvedReferenceResults) {
+          if (ref._id) {
+            await this.referenceCacheService.set(RelationClass, ref._id, ref as unknown as Relation)
+          }
         }
       }
 

@@ -59,7 +59,9 @@ export class ReferenceCacheService implements OnApplicationBootstrap {
 
   async setAll<Entity extends Base<RefType>>(RelationClass: Class<Entity>) {
     if (this.isCachedRelation(RelationClass)) {
-      const relations = await this.relationModels.get(RelationClass).find().exec()
+      const find = this.relationModels.get(RelationClass).find()
+
+      const relations = await (find.withDeleted ? find.withDeleted() : find).exec()
 
       for (const relation of relations) {
         if (relation._id) {
