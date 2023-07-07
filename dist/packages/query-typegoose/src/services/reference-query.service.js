@@ -103,7 +103,7 @@ let ReferenceQueryService = class ReferenceQueryService {
                     }
                 }
             }
-            if (unresolvedReferences.length > 1) {
+            if (unresolvedReferences.length > 0) {
                 console.log('unresolvedReferences', unresolvedReferences);
                 // Fetch and cache unresolved references
                 const unresolvedReferenceResults = await relationModel
@@ -187,7 +187,7 @@ let ReferenceQueryService = class ReferenceQueryService {
                     }
                 }
             }
-            if (unresolvedReferences.length > 1) {
+            if (unresolvedReferences.length > 0) {
                 console.log('unresolvedReferences', unresolvedReferences);
                 // Fetch and cache unresolved references
                 const unresolvedReferenceResults = await relationModel

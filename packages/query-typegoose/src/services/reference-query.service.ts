@@ -206,7 +206,7 @@ export abstract class ReferenceQueryService<Entity extends Base> {
         }
       }
 
-      if (unresolvedReferences.length > 1) {
+      if (unresolvedReferences.length > 0) {
         console.log('unresolvedReferences', unresolvedReferences)
 
         // Fetch and cache unresolved references
@@ -331,7 +331,7 @@ export abstract class ReferenceQueryService<Entity extends Base> {
         }
       }
 
-      if (unresolvedReferences.length > 1) {
+      if (unresolvedReferences.length > 0) {
         console.log('unresolvedReferences', unresolvedReferences)
 
         // Fetch and cache unresolved references
