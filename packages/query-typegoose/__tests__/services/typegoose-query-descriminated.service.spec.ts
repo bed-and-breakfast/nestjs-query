@@ -107,93 +107,91 @@ describe('TypegooseQueryService-With Descriminates', () => {
       const queryService = moduleRef.get(TestDiscriminatedEntityService)
       const queryResult = await queryService.query({})
 
-      expect(convertDocuments(queryResult)).toEqual(expect.arrayContaining(TEST_DISCRIMINATED_ENTITIES))
+      expect(queryResult).toEqual(expect.arrayContaining(TEST_DISCRIMINATED_ENTITIES))
     })
 
     it('should support eq operator', async () => {
       const queryService = moduleRef.get(TestDiscriminatedEntityService)
       const queryResult = await queryService.query({ filter: { stringType: { eq: 'foo11-descrim' } } })
-      expect(convertDocuments(queryResult)).toEqual([TEST_DISCRIMINATED_ENTITIES[0]])
+      expect(queryResult).toEqual([TEST_DISCRIMINATED_ENTITIES[0]])
     })
 
     it('should support neq operator', async () => {
       const queryService = moduleRef.get(TestDiscriminatedEntityService)
       const queryResult = await queryService.query({ filter: { stringType: { neq: 'foo1-descrim' } } })
-      expect(convertDocuments(queryResult)).toEqual(expect.arrayContaining(TEST_DISCRIMINATED_ENTITIES.slice(1)))
+      expect(queryResult).toEqual(expect.arrayContaining(TEST_DISCRIMINATED_ENTITIES.slice(1)))
     })
 
     it('should support gt operator', async () => {
       const queryService = moduleRef.get(TestDiscriminatedEntityService)
       const queryResult = await queryService.query({ filter: { numberType: { gt: 5 } } })
-      expect(convertDocuments(queryResult)).toEqual(expect.arrayContaining(TEST_DISCRIMINATED_ENTITIES.slice(5)))
+      expect(queryResult).toEqual(expect.arrayContaining(TEST_DISCRIMINATED_ENTITIES.slice(5)))
     })
 
     it('should support gte operator', async () => {
       const queryService = moduleRef.get(TestDiscriminatedEntityService)
       const queryResult = await queryService.query({ filter: { numberType: { gte: 5 } } })
-      expect(convertDocuments(queryResult)).toEqual(expect.arrayContaining(TEST_DISCRIMINATED_ENTITIES.slice(4)))
+      expect(queryResult).toEqual(expect.arrayContaining(TEST_DISCRIMINATED_ENTITIES.slice(4)))
     })
 
     it('should support lt operator', async () => {
       const queryService = moduleRef.get(TestDiscriminatedEntityService)
       const queryResult = await queryService.query({ filter: { numberType: { lt: 15 } } })
-      expect(convertDocuments(queryResult)).toEqual(expect.arrayContaining(TEST_DISCRIMINATED_ENTITIES.slice(0, 4)))
+      expect(queryResult).toEqual(expect.arrayContaining(TEST_DISCRIMINATED_ENTITIES.slice(0, 4)))
     })
 
     it('should support lte operator', async () => {
       const queryService = moduleRef.get(TestDiscriminatedEntityService)
       const queryResult = await queryService.query({ filter: { numberType: { lte: 15 } } })
-      expect(convertDocuments(queryResult)).toEqual(expect.arrayContaining(TEST_DISCRIMINATED_ENTITIES.slice(0, 5)))
+      expect(queryResult).toEqual(expect.arrayContaining(TEST_DISCRIMINATED_ENTITIES.slice(0, 5)))
     })
 
     it('should support in operator', async () => {
       const queryService = moduleRef.get(TestDiscriminatedEntityService)
       const queryResult = await queryService.query({ filter: { numberType: { in: [11, 12, 13] } } })
-      expect(convertDocuments(queryResult)).toEqual(expect.arrayContaining(TEST_DISCRIMINATED_ENTITIES.slice(0, 3)))
+      expect(queryResult).toEqual(expect.arrayContaining(TEST_DISCRIMINATED_ENTITIES.slice(0, 3)))
     })
 
     it('should support notIn operator', async () => {
       const queryService = moduleRef.get(TestDiscriminatedEntityService)
       const queryResult = await queryService.query({ filter: { numberType: { notIn: [11, 12, 13] } } })
-      expect(convertDocuments(queryResult)).toEqual(expect.arrayContaining(TEST_DISCRIMINATED_ENTITIES.slice(4)))
+      expect(queryResult).toEqual(expect.arrayContaining(TEST_DISCRIMINATED_ENTITIES.slice(4)))
     })
 
     it('should support is operator', async () => {
       const queryService = moduleRef.get(TestDiscriminatedEntityService)
       const queryResult = await queryService.query({ filter: { boolType: { is: true } } })
-      expect(convertDocuments(queryResult)).toEqual(expect.arrayContaining(TEST_DISCRIMINATED_ENTITIES.filter((e) => e.boolType)))
+      expect(queryResult).toEqual(expect.arrayContaining(TEST_DISCRIMINATED_ENTITIES.filter((e) => e.boolType)))
     })
 
     it('should support isNot operator', async () => {
       const queryService = moduleRef.get(TestDiscriminatedEntityService)
       const queryResult = await queryService.query({ filter: { boolType: { isNot: true } } })
-      expect(convertDocuments(queryResult)).toEqual(
-        expect.arrayContaining(TEST_DISCRIMINATED_ENTITIES.filter((e) => !e.boolType))
-      )
+      expect(queryResult).toEqual(expect.arrayContaining(TEST_DISCRIMINATED_ENTITIES.filter((e) => !e.boolType)))
     })
 
     it('should support like operator', async () => {
       const queryService = moduleRef.get(TestDiscriminatedEntityService)
       const queryResult = await queryService.query({ filter: { stringType: { like: 'foo%' } } })
-      expect(convertDocuments(queryResult)).toEqual(expect.arrayContaining(TEST_DISCRIMINATED_ENTITIES))
+      expect(queryResult).toEqual(expect.arrayContaining(TEST_DISCRIMINATED_ENTITIES))
     })
 
     it('should support notLike operator', async () => {
       const queryService = moduleRef.get(TestDiscriminatedEntityService)
       const queryResult = await queryService.query({ filter: { stringType: { notLike: 'foo%' } } })
-      expect(convertDocuments(queryResult)).toEqual([])
+      expect(queryResult).toEqual([])
     })
 
     it('should support iLike operator', async () => {
       const queryService = moduleRef.get(TestDiscriminatedEntityService)
       const queryResult = await queryService.query({ filter: { stringType: { iLike: 'FOO%' } } })
-      expect(convertDocuments(queryResult)).toEqual(expect.arrayContaining(TEST_DISCRIMINATED_ENTITIES))
+      expect(queryResult).toEqual(expect.arrayContaining(TEST_DISCRIMINATED_ENTITIES))
     })
 
     it('should support notILike operator', async () => {
       const queryService = moduleRef.get(TestDiscriminatedEntityService)
       const queryResult = await queryService.query({ filter: { stringType: { notILike: 'FOO%' } } })
-      expect(convertDocuments(queryResult)).toEqual([])
+      expect(queryResult).toEqual([])
     })
   })
 
@@ -408,7 +406,7 @@ describe('TypegooseQueryService-With Descriminates', () => {
       const entity = TEST_DISCRIMINATED_ENTITIES[0]
       const queryService = moduleRef.get(TestDiscriminatedEntityService)
       const found = await queryService.findById(entity._id.toString())
-      expect(convertDocument(found)).toEqual(entity)
+      expect(found).toEqual(entity)
     })
 
     it('return undefined if not found', async () => {
@@ -424,7 +422,7 @@ describe('TypegooseQueryService-With Descriminates', () => {
         const found = await queryService.findById(entity._id.toString(), {
           filter: { stringType: { eq: entity.stringType } }
         })
-        expect(convertDocument(found)).toEqual(entity)
+        expect(found).toEqual(entity)
       })
 
       it('should return an undefined if an entity with the pk and filter is not found', async () => {
@@ -443,7 +441,7 @@ describe('TypegooseQueryService-With Descriminates', () => {
       const entity = TEST_DISCRIMINATED_ENTITIES[0]
       const queryService = moduleRef.get(TestDiscriminatedEntityService)
       const found = await queryService.getById(entity._id.toHexString())
-      expect(convertDocument(found)).toEqual(entity)
+      expect(found).toEqual(entity)
     })
 
     it('return undefined if not found', () => {
@@ -459,7 +457,7 @@ describe('TypegooseQueryService-With Descriminates', () => {
         const found = await queryService.getById(entity._id.toHexString(), {
           filter: { stringType: { eq: entity.stringType } }
         })
-        expect(convertDocument(found)).toEqual(entity)
+        expect(found).toEqual(entity)
       })
 
       it('should return an undefined if an entity with the pk and filter is not found', async () => {
@@ -1616,7 +1614,7 @@ describe('TypegooseQueryService-With Descriminates', () => {
         entity._id.toHexString(),
         TEST_REFERENCES_FOR_DISCRIMINATES.slice(0, 3).map((r) => r._id.toHexString())
       )
-      expect(queryResult.toObject()).toEqual(
+      expect(queryResult).toEqual(
         expect.objectContaining({
           _id: entity._id,
           testReferences: []
@@ -1632,7 +1630,7 @@ describe('TypegooseQueryService-With Descriminates', () => {
       const entity = TEST_DISCRIMINATED_ENTITIES[0]
       const queryService = moduleRef.get(TestDiscriminatedEntityService)
       const queryResult = await queryService.removeRelations('testReferences', entity._id.toHexString(), [])
-      expect(queryResult.toObject()).toEqual(
+      expect(queryResult).toEqual(
         expect.objectContaining({
           _id: entity._id,
           testReferences: expect.arrayContaining(TEST_REFERENCES_FOR_DISCRIMINATES.slice(0, 3).map((r) => r._id))

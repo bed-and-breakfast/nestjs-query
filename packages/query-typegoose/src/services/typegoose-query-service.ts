@@ -48,9 +48,9 @@ export class TypegooseQueryService<Entity extends Base> extends ReferenceQuerySe
    * ```
    * @param query - The Query used to filter, page, and sort rows.
    */
-  async query(query: Query<Entity>): Promise<DocumentType<Entity>[]> {
+  async query(query: Query<Entity>): Promise<Entity[]> {
     const { filterQuery, options } = this.filterQueryBuilder.buildQuery(query)
-    const entities = await this.Model.find(filterQuery, {}, options).exec()
+    const entities = await this.Model.find(filterQuery, {}, options).lean()
     return entities
   }
 
@@ -79,9 +79,9 @@ export class TypegooseQueryService<Entity extends Base> extends ReferenceQuerySe
    * @param id - The id of the record to find.
    * @param opts - Additional options
    */
-  async findById(id: string | number, opts?: FindByIdOptions<Entity>): Promise<DocumentType<Entity> | undefined> {
+  async findById(id: string | number, opts?: FindByIdOptions<Entity>): Promise<Entity | undefined> {
     const filterQuery = this.filterQueryBuilder.buildIdFilterQuery(id, opts?.filter)
-    const doc = await this.Model.findOne(filterQuery)
+    const doc = await this.Model.findOne(filterQuery).lean()
     if (!doc) {
       return undefined
     }
@@ -102,7 +102,7 @@ export class TypegooseQueryService<Entity extends Base> extends ReferenceQuerySe
    * @param id - The id of the record to find.
    * @param opts - Additional options
    */
-  async getById(id: string, opts?: GetByIdOptions<Entity>): Promise<DocumentType<Entity>> {
+  async getById(id: string, opts?: GetByIdOptions<Entity>): Promise<Entity> {
     const doc = await this.findById(id, opts)
     if (!doc) {
       throw new NotFoundException(`Unable to find ${this.Model.modelName} with id: ${id}`)

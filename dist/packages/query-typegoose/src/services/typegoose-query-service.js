@@ -29,7 +29,7 @@ let TypegooseQueryService = class TypegooseQueryService extends reference_query_
      */
     async query(query) {
         const { filterQuery, options } = this.filterQueryBuilder.buildQuery(query);
-        const entities = await this.Model.find(filterQuery, {}, options).exec();
+        const entities = await this.Model.find(filterQuery, {}, options).lean();
         return entities;
     }
     async aggregate(filter, aggregateQuery) {
@@ -57,7 +57,7 @@ let TypegooseQueryService = class TypegooseQueryService extends reference_query_
      */
     async findById(id, opts) {
         const filterQuery = this.filterQueryBuilder.buildIdFilterQuery(id, opts?.filter);
-        const doc = await this.Model.findOne(filterQuery);
+        const doc = await this.Model.findOne(filterQuery).lean();
         if (!doc) {
             return undefined;
         }

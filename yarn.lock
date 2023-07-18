@@ -3001,12 +3001,17 @@ __metadata:
   resolution: "@bed-and-breakfast/nestjs-query-typegoose@workspace:packages/query-typegoose"
   dependencies:
     "@nestjs/cache-manager": ^2.0.1
+    "@types/mongoose-lean-virtuals": ^0.5.3
     cache-manager: ^5.2.3
     camel-case: ^4.1.2
     is-class: 0.0.9
     lodash.escaperegexp: ^4.1.2
     lodash.merge: ^4.6.2
     lodash.omit: ^4.5.0
+    mongoose-lean-defaults: ^2.2.1
+    mongoose-lean-getters: ^1.1.0
+    mongoose-lean-id: ^0.5.0
+    mongoose-lean-virtuals: ^0.9.1
     speedgoose: ^1.2.24
     tslib: ^2.4.0
   peerDependencies:
@@ -6110,6 +6115,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/mongoose-lean-virtuals@npm:^0.5.3":
+  version: 0.5.3
+  resolution: "@types/mongoose-lean-virtuals@npm:0.5.3"
+  dependencies:
+    mongoose: ^6.3.0
+  checksum: 52c96ed4ea039bdd45e267ab286328430b24531b11d4852d055b594716169658c0926146e1d38d2afd9aa21b1b968bb368e2595a3603d1ec91b49a8ba0370652
+  languageName: node
+  linkType: hard
+
 "@types/ms@npm:*":
   version: 0.7.31
   resolution: "@types/ms@npm:0.7.31"
@@ -7493,6 +7507,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"array.prototype.flat@npm:1.2.3":
+  version: 1.2.3
+  resolution: "array.prototype.flat@npm:1.2.3"
+  dependencies:
+    define-properties: ^1.1.3
+    es-abstract: ^1.17.0-next.1
+  checksum: ba4cf6e53871902a09fa7f56ff097e836f18d59de0219fe271e3d1a895a7ea98a62fa946cbdae95e73b774991206a32a26822227d081bd2cc5c771b95f851753
+  languageName: node
+  linkType: hard
+
 "array.prototype.flat@npm:^1.3.1":
   version: 1.3.1
   resolution: "array.prototype.flat@npm:1.3.1"
@@ -7514,6 +7538,20 @@ __metadata:
     es-abstract: ^1.20.4
     es-shim-unscopables: ^1.0.0
   checksum: 8c1c43a4995f12cf12523436da28515184c753807b3f0bc2ca6c075f71c470b099e2090cc67dba8e5280958fea401c1d0c59e1db0143272aef6cd1103921a987
+  languageName: node
+  linkType: hard
+
+"arraybuffer.prototype.slice@npm:^1.0.1":
+  version: 1.0.1
+  resolution: "arraybuffer.prototype.slice@npm:1.0.1"
+  dependencies:
+    array-buffer-byte-length: ^1.0.0
+    call-bind: ^1.0.2
+    define-properties: ^1.2.0
+    get-intrinsic: ^1.2.1
+    is-array-buffer: ^3.0.2
+    is-shared-array-buffer: ^1.0.2
+  checksum: e3e9b2a3e988ebfeddce4c7e8f69df730c9e48cb04b0d40ff0874ce3d86b3d1339dd520ffde5e39c02610bc172ecfbd4bc93324b1cabd9554c44a56b131ce0ce
   languageName: node
   linkType: hard
 
@@ -8035,7 +8073,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"bson@npm:^4.7.0":
+"bson@npm:^4.7.0, bson@npm:^4.7.2":
   version: 4.7.2
   resolution: "bson@npm:4.7.2"
   dependencies:
@@ -9784,7 +9822,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"define-properties@npm:^1.1.3, define-properties@npm:^1.1.4":
+"define-properties@npm:^1.1.3, define-properties@npm:^1.1.4, define-properties@npm:^1.2.0":
   version: 1.2.0
   resolution: "define-properties@npm:1.2.0"
   dependencies:
@@ -10296,6 +10334,53 @@ __metadata:
   dependencies:
     is-arrayish: ^0.2.1
   checksum: c1c2b8b65f9c91b0f9d75f0debaa7ec5b35c266c2cac5de412c1a6de86d4cbae04ae44e510378cb14d032d0645a36925d0186f8bb7367bcc629db256b743a001
+  languageName: node
+  linkType: hard
+
+"es-abstract@npm:^1.17.0-next.1":
+  version: 1.22.1
+  resolution: "es-abstract@npm:1.22.1"
+  dependencies:
+    array-buffer-byte-length: ^1.0.0
+    arraybuffer.prototype.slice: ^1.0.1
+    available-typed-arrays: ^1.0.5
+    call-bind: ^1.0.2
+    es-set-tostringtag: ^2.0.1
+    es-to-primitive: ^1.2.1
+    function.prototype.name: ^1.1.5
+    get-intrinsic: ^1.2.1
+    get-symbol-description: ^1.0.0
+    globalthis: ^1.0.3
+    gopd: ^1.0.1
+    has: ^1.0.3
+    has-property-descriptors: ^1.0.0
+    has-proto: ^1.0.1
+    has-symbols: ^1.0.3
+    internal-slot: ^1.0.5
+    is-array-buffer: ^3.0.2
+    is-callable: ^1.2.7
+    is-negative-zero: ^2.0.2
+    is-regex: ^1.1.4
+    is-shared-array-buffer: ^1.0.2
+    is-string: ^1.0.7
+    is-typed-array: ^1.1.10
+    is-weakref: ^1.0.2
+    object-inspect: ^1.12.3
+    object-keys: ^1.1.1
+    object.assign: ^4.1.4
+    regexp.prototype.flags: ^1.5.0
+    safe-array-concat: ^1.0.0
+    safe-regex-test: ^1.0.0
+    string.prototype.trim: ^1.2.7
+    string.prototype.trimend: ^1.0.6
+    string.prototype.trimstart: ^1.0.6
+    typed-array-buffer: ^1.0.0
+    typed-array-byte-length: ^1.0.0
+    typed-array-byte-offset: ^1.0.0
+    typed-array-length: ^1.0.4
+    unbox-primitive: ^1.0.2
+    which-typed-array: ^1.1.10
+  checksum: 614e2c1c3717cb8d30b6128ef12ea110e06fd7d75ad77091ca1c5dbfb00da130e62e4bbbbbdda190eada098a22b27fe0f99ae5a1171dac2c8663b1e8be8a3a9b
   languageName: node
   linkType: hard
 
@@ -11558,7 +11643,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"functions-have-names@npm:^1.2.2":
+"functions-have-names@npm:^1.2.2, functions-have-names@npm:^1.2.3":
   version: 1.2.3
   resolution: "functions-have-names@npm:1.2.3"
   checksum: c3f1f5ba20f4e962efb71344ce0a40722163e85bee2101ce25f88214e78182d2d2476aa85ef37950c579eb6cf6ee811c17b3101bb84004bb75655f3e33f3fdb5
@@ -11629,6 +11714,18 @@ __metadata:
     has: ^1.0.3
     has-symbols: ^1.0.3
   checksum: 78fc0487b783f5c58cf2dccafc3ae656ee8d2d8062a8831ce4a95e7057af4587a1d4882246c033aca0a7b4965276f4802b45cc300338d1b77a73d3e3e3f4877d
+  languageName: node
+  linkType: hard
+
+"get-intrinsic@npm:^1.2.1":
+  version: 1.2.1
+  resolution: "get-intrinsic@npm:1.2.1"
+  dependencies:
+    function-bind: ^1.1.1
+    has: ^1.0.3
+    has-proto: ^1.0.1
+    has-symbols: ^1.0.3
+  checksum: 5b61d88552c24b0cf6fa2d1b3bc5459d7306f699de060d76442cce49a4721f52b8c560a33ab392cf5575b7810277d54ded9d4d39a1ea61855619ebc005aa7e5f
   languageName: node
   linkType: hard
 
@@ -15574,6 +15671,24 @@ __metadata:
   languageName: node
   linkType: hard
 
+"mongodb@npm:4.16.0":
+  version: 4.16.0
+  resolution: "mongodb@npm:4.16.0"
+  dependencies:
+    "@aws-sdk/credential-providers": ^3.186.0
+    bson: ^4.7.2
+    mongodb-connection-string-url: ^2.5.4
+    saslprep: ^1.0.3
+    socks: ^2.7.1
+  dependenciesMeta:
+    "@aws-sdk/credential-providers":
+      optional: true
+    saslprep:
+      optional: true
+  checksum: f0b1347739cc362b82b3aabc7e7d4d74bc7a344ed1bbafd6f92681bcab440f6cc618ffa0438d41d2789cb34818f3b09d4c78f517b42160ebae55bf2c96f13953
+  languageName: node
+  linkType: hard
+
 "mongodb@npm:5.1.0":
   version: 5.1.0
   resolution: "mongodb@npm:5.1.0"
@@ -15600,6 +15715,49 @@ __metadata:
   languageName: node
   linkType: hard
 
+"mongoose-lean-defaults@npm:^2.2.1":
+  version: 2.2.1
+  resolution: "mongoose-lean-defaults@npm:2.2.1"
+  dependencies:
+    mpath: ^0.9.0
+  peerDependencies:
+    mongoose: ">=5.11.0"
+  checksum: 9610e6239a9f161eb9f07c92ebda9e43829af6c328a12c14f80df02a4d180a5b424e9e900ad011f4537a7fe8c8a54979b1dbe8cfe50cada92500db563570f48d
+  languageName: node
+  linkType: hard
+
+"mongoose-lean-getters@npm:^1.1.0":
+  version: 1.1.0
+  resolution: "mongoose-lean-getters@npm:1.1.0"
+  dependencies:
+    mpath: 0.9.x
+  peerDependencies:
+    mongoose: ">= 7.1.0"
+  checksum: 22c729246f61dab9a5ee644961e377dbb7bc4a81cbf9af5eff0466178c6102be86f6b188f259b7c4b72d4aac0ae8d1a47e9b89b2ff05a5ed43d3417de2ff4185
+  languageName: node
+  linkType: hard
+
+"mongoose-lean-id@npm:^0.5.0":
+  version: 0.5.0
+  resolution: "mongoose-lean-id@npm:0.5.0"
+  peerDependencies:
+    mongoose: 7.x
+  checksum: 01029db31b8d4ba7d82c640696ba8cd895299a89bbdaeeb0f6babaadea202facd8a41f59676b68026606f31175f9556665a6a89696f41d308fd5221cfd586234
+  languageName: node
+  linkType: hard
+
+"mongoose-lean-virtuals@npm:^0.9.1":
+  version: 0.9.1
+  resolution: "mongoose-lean-virtuals@npm:0.9.1"
+  dependencies:
+    array.prototype.flat: 1.2.3
+    mpath: ^0.8.4
+  peerDependencies:
+    mongoose: ">=5.11.10"
+  checksum: 2b884782c4e30122fe5a99930c9abe78c27ef6738b96743642986152583e5903615e16074f834d8d97182d6c7e4fedff9812cecd6c3fcd3e2ee2aa75db2f1b6a
+  languageName: node
+  linkType: hard
+
 "mongoose@npm:6.7.5":
   version: 6.7.5
   resolution: "mongoose@npm:6.7.5"
@@ -15612,6 +15770,21 @@ __metadata:
     ms: 2.1.3
     sift: 16.0.1
   checksum: 6f1aac04e87b20ed2a26110d86e28472d6ebdd78f4eb4d957f938b2672b2b0850693440dce77507e0d6396a3193cd74b1bc8d7bfd8621273f14302b23620dc53
+  languageName: node
+  linkType: hard
+
+"mongoose@npm:^6.3.0":
+  version: 6.11.4
+  resolution: "mongoose@npm:6.11.4"
+  dependencies:
+    bson: ^4.7.2
+    kareem: 2.5.1
+    mongodb: 4.16.0
+    mpath: 0.9.0
+    mquery: 4.0.3
+    ms: 2.1.3
+    sift: 16.0.1
+  checksum: f062aa9b368921256e1a22410f532323c57d48959a88d0bd1b8f948e6048399d17aa391638073a1254c8937312e18a9637ea676b9fd92e0c5ae6588f5dbd589e
   languageName: node
   linkType: hard
 
@@ -15630,10 +15803,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mpath@npm:0.9.0, mpath@npm:^0.9.0":
+"mpath@npm:0.9.0, mpath@npm:0.9.x, mpath@npm:^0.9.0":
   version: 0.9.0
   resolution: "mpath@npm:0.9.0"
   checksum: 1052f1f926db04502440f76164ae16ed53aa41f3ce34e7e64e3ed451b7d91ede295c3b600801c5f9eb862f03d9d59b7aa5aaf690c341fc521bef025d0f5cd773
+  languageName: node
+  linkType: hard
+
+"mpath@npm:^0.8.4":
+  version: 0.8.4
+  resolution: "mpath@npm:0.8.4"
+  checksum: 06ad1d443766626fa361b67a4eca9cd4c36a71e475e92e8a5c242dbbc9a911adac00ce971177843b48475356df609f847342548da7701a976a2ab4116135caf0
   languageName: node
   linkType: hard
 
@@ -15812,6 +15992,7 @@ __metadata:
     "@jscutlery/semver": 2.26.0
     "@m8a/nestjs-typegoose": 11.0.0
     "@nestjs/apollo": ^10.0.22
+    "@nestjs/cache-manager": ^2.0.1
     "@nestjs/cli": 8.2.8
     "@nestjs/common": 9.3.12
     "@nestjs/core": 9.3.12
@@ -15839,6 +16020,7 @@ __metadata:
     "@types/lodash.merge": 4.6.7
     "@types/lodash.omit": 4.5.7
     "@types/lodash.pick": 4.4.7
+    "@types/mongoose-lean-virtuals": ^0.5.3
     "@types/node": 18.11.18
     "@types/passport-jwt": 3.0.8
     "@types/passport-local": 1.0.35
@@ -15852,6 +16034,7 @@ __metadata:
     apollo-server-express: 3.11.1
     apollo-server-plugin-base: 3.7.1
     apollo-server-types: 3.7.1
+    cache-manager: ^5.2.3
     class-transformer: 0.5.1
     class-validator: 0.14.0
     clsx: ^1.2.1
@@ -15876,6 +16059,10 @@ __metadata:
     jest-snapshot-serializer-raw: 1.2.0
     mongodb-memory-server: 8.10.2
     mongoose: ^7.0.3
+    mongoose-lean-defaults: ^2.2.1
+    mongoose-lean-getters: ^1.1.0
+    mongoose-lean-id: ^0.5.0
+    mongoose-lean-virtuals: ^0.9.1
     mysql2: 3.0.1
     nx: 15.3.3
     passport: 0.6.0
@@ -18274,6 +18461,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"regexp.prototype.flags@npm:^1.5.0":
+  version: 1.5.0
+  resolution: "regexp.prototype.flags@npm:1.5.0"
+  dependencies:
+    call-bind: ^1.0.2
+    define-properties: ^1.2.0
+    functions-have-names: ^1.2.3
+  checksum: c541687cdbdfff1b9a07f6e44879f82c66bbf07665f9a7544c5fd16acdb3ec8d1436caab01662d2fbcad403f3499d49ab0b77fbc7ef29ef961d98cc4bc9755b4
+  languageName: node
+  linkType: hard
+
 "regexpp@npm:^3.2.0":
   version: 3.2.0
   resolution: "regexpp@npm:3.2.0"
@@ -18678,6 +18876,18 @@ __metadata:
   dependencies:
     tslib: ^2.1.0
   checksum: 61b4d4fd323c1043d8d6ceb91f24183b28bcf5def4f01ca111511d5c6b66755bc5578587fe714ef5d67cf4c9f2e26f4490d4e1d8cabf9bd5967687835e9866a2
+  languageName: node
+  linkType: hard
+
+"safe-array-concat@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "safe-array-concat@npm:1.0.0"
+  dependencies:
+    call-bind: ^1.0.2
+    get-intrinsic: ^1.2.0
+    has-symbols: ^1.0.3
+    isarray: ^2.0.5
+  checksum: f43cb98fe3b566327d0c09284de2b15fb85ae964a89495c1b1a5d50c7c8ed484190f4e5e71aacc167e16231940079b326f2c0807aea633d47cc7322f40a6b57f
   languageName: node
   linkType: hard
 
@@ -20610,6 +20820,42 @@ __metadata:
   languageName: node
   linkType: hard
 
+"typed-array-buffer@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "typed-array-buffer@npm:1.0.0"
+  dependencies:
+    call-bind: ^1.0.2
+    get-intrinsic: ^1.2.1
+    is-typed-array: ^1.1.10
+  checksum: 3e0281c79b2a40cd97fe715db803884301993f4e8c18e8d79d75fd18f796e8cd203310fec8c7fdb5e6c09bedf0af4f6ab8b75eb3d3a85da69328f28a80456bd3
+  languageName: node
+  linkType: hard
+
+"typed-array-byte-length@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "typed-array-byte-length@npm:1.0.0"
+  dependencies:
+    call-bind: ^1.0.2
+    for-each: ^0.3.3
+    has-proto: ^1.0.1
+    is-typed-array: ^1.1.10
+  checksum: b03db16458322b263d87a702ff25388293f1356326c8a678d7515767ef563ef80e1e67ce648b821ec13178dd628eb2afdc19f97001ceae7a31acf674c849af94
+  languageName: node
+  linkType: hard
+
+"typed-array-byte-offset@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "typed-array-byte-offset@npm:1.0.0"
+  dependencies:
+    available-typed-arrays: ^1.0.5
+    call-bind: ^1.0.2
+    for-each: ^0.3.3
+    has-proto: ^1.0.1
+    is-typed-array: ^1.1.10
+  checksum: 04f6f02d0e9a948a95fbfe0d5a70b002191fae0b8fe0fe3130a9b2336f043daf7a3dda56a31333c35a067a97e13f539949ab261ca0f3692c41603a46a94e960b
+  languageName: node
+  linkType: hard
+
 "typed-array-length@npm:^1.0.4":
   version: 1.0.4
   resolution: "typed-array-length@npm:1.0.4"
@@ -21686,6 +21932,19 @@ __metadata:
   version: 2.0.0
   resolution: "which-module@npm:2.0.0"
   checksum: 809f7fd3dfcb2cdbe0180b60d68100c88785084f8f9492b0998c051d7a8efe56784492609d3f09ac161635b78ea29219eb1418a98c15ce87d085bce905705c9c
+  languageName: node
+  linkType: hard
+
+"which-typed-array@npm:^1.1.10":
+  version: 1.1.11
+  resolution: "which-typed-array@npm:1.1.11"
+  dependencies:
+    available-typed-arrays: ^1.0.5
+    call-bind: ^1.0.2
+    for-each: ^0.3.3
+    gopd: ^1.0.1
+    has-tostringtag: ^1.0.0
+  checksum: 711ffc8ef891ca6597b19539075ec3e08bb9b4c2ca1f78887e3c07a977ab91ac1421940505a197758fb5939aa9524976d0a5bbcac34d07ed6faa75cedbb17206
   languageName: node
   linkType: hard
 

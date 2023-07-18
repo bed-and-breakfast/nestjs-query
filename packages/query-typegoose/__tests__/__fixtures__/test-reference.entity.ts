@@ -1,8 +1,10 @@
+import { RelationCache } from '@bed-and-breakfast/nestjs-query-typegoose'
 import { ObjectId } from '@ptc-org/nestjs-query-graphql'
 import { mongoose, prop, Ref } from '@typegoose/typegoose'
 
 import { TestEntity } from './test.entity'
 
+@RelationCache()
 export class TestReference {
   @ObjectId()
   _id!: mongoose.Types.ObjectId

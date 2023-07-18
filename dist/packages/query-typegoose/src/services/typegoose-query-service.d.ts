@@ -26,7 +26,7 @@ export declare class TypegooseQueryService<Entity extends Base> extends Referenc
      * ```
      * @param query - The Query used to filter, page, and sort rows.
      */
-    query(query: Query<Entity>): Promise<DocumentType<Entity>[]>;
+    query(query: Query<Entity>): Promise<Entity[]>;
     aggregate(filter: Filter<Entity>, aggregateQuery: AggregateQuery<Entity>): Promise<AggregateResponse<Entity>[]>;
     count(filter: Filter<Entity>): Promise<number>;
     /**
@@ -39,7 +39,7 @@ export declare class TypegooseQueryService<Entity extends Base> extends Referenc
      * @param id - The id of the record to find.
      * @param opts - Additional options
      */
-    findById(id: string | number, opts?: FindByIdOptions<Entity>): Promise<DocumentType<Entity> | undefined>;
+    findById(id: string | number, opts?: FindByIdOptions<Entity>): Promise<Entity | undefined>;
     /**
      * Gets an entity by it's `id`. If the entity is not found a rejected promise is returned.
      *
@@ -54,7 +54,7 @@ export declare class TypegooseQueryService<Entity extends Base> extends Referenc
      * @param id - The id of the record to find.
      * @param opts - Additional options
      */
-    getById(id: string, opts?: GetByIdOptions<Entity>): Promise<DocumentType<Entity>>;
+    getById(id: string, opts?: GetByIdOptions<Entity>): Promise<Entity>;
     /**
      * Creates a single entity.
      *

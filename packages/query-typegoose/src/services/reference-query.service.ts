@@ -35,7 +35,7 @@ export abstract class ReferenceQueryService<Entity extends Base> {
     @Optional() protected readonly referenceCacheService?: ReferenceCacheService
   ) {}
 
-  abstract getById(id: string | number, opts?: GetByIdOptions<Entity>): Promise<DocumentType<Entity>>
+  abstract getById(id: string | number, opts?: GetByIdOptions<Entity>): Promise<Entity>
 
   public aggregateRelations<Relation>(
     RelationClass: Class<Relation>,
@@ -124,27 +124,27 @@ export abstract class ReferenceQueryService<Entity extends Base> {
     if (!refFilter) {
       return 0
     }
-    return relationModel.countDocuments(referenceQueryBuilder.buildFilterQuery(refFilter)).exec()
+    return relationModel.countDocuments(referenceQueryBuilder.buildFilterQuery(refFilter)).lean()
   }
 
   public findRelation<Relation extends Base<RefType>>(
     RelationClass: Class<Relation>,
     relationName: string,
-    dtos: DocumentType<Entity>[],
+    dtos: Entity[],
     opts?: FindRelationOptions<Relation>
   ): Promise<Map<Entity, Relation | undefined>>
 
   public findRelation<Relation extends Base<RefType>>(
     RelationClass: Class<Relation>,
     relationName: string,
-    dto: DocumentType<Entity>,
+    dto: Entity,
     opts?: FindRelationOptions<Relation>
   ): Promise<DocumentType<Relation> | undefined>
 
   public async findRelation<Relation extends Base<RefType>>(
     RelationClass: Class<Relation>,
     relationName: string,
-    dto: DocumentType<Entity> | DocumentType<Entity>[],
+    dto: Entity | Entity[],
     opts?: FindRelationOptions<Relation>
   ): Promise<(Relation | undefined) | Map<Entity, Relation | undefined>> {
     const relationModel = getModelForClass(RelationClass)
@@ -153,18 +153,18 @@ export abstract class ReferenceQueryService<Entity extends Base> {
     const assembler = AssemblerFactory.getAssembler(RelationClass, this.getReferenceEntity(relationName))
     const filterQuery = referenceQueryBuilder.buildFilterQuery(assembler.convertQuery({ filter: opts?.filter }).filter)
 
-    let arrayDto = dto as DocumentType<Entity>[]
+    let arrayDto = dto as Entity[]
 
     if (!Array.isArray(dto)) {
       arrayDto = [dto]
     }
 
-    let references: [DocumentType<Entity>, Relation | undefined][]
+    let references: [Entity, Relation | undefined][]
 
     if (
       !this.referenceCacheService.isCachedRelation(RelationClass) ||
       (opts?.filter && Object.keys(opts.filter).length > 0) ||
-      arrayDto[0].schema?.virtuals?.[relationName]
+      this.getReferenceModel(relationName).schema?.virtuals?.[relationName]
       // !(relationName in arrayDto[0]) /* @TODO Replace with: arrayDto[0].schema.virtuals[relationName] (after updating tests) */
     ) {
       console.log('no cache', RelationClass, opts?.filter)
@@ -172,17 +172,19 @@ export abstract class ReferenceQueryService<Entity extends Base> {
       // references = await this.queryRelation(RelationClass, relationName, arrayDto, { filter: opts?.filter })
 
       // eslint-disable-next-line no-underscore-dangle
-      const foundEntities = await this.Model.find({ _id: { $in: arrayDto.map((d) => d._id ?? d.id) } }).populate({
-        path: relationName,
-        match: filterQuery
-      })
+      const foundEntities = await this.Model.find({ _id: { $in: arrayDto.map((d) => d._id ?? d.id) } })
+        .populate({
+          path: relationName,
+          match: filterQuery
+        })
+        .lean()
 
       references = await Promise.all(
         arrayDto.map(async (d, i) => {
           let populatedRef: Relation | undefined
 
           if (typeof foundEntities[i] !== 'undefined') {
-            populatedRef = foundEntities[i].get(relationName)
+            populatedRef = foundEntities[i][relationName]
           }
 
           if (populatedRef) {
@@ -212,7 +214,7 @@ export abstract class ReferenceQueryService<Entity extends Base> {
         // Fetch and cache unresolved references
         const unresolvedReferenceResults = await relationModel
           .find({ _id: { $in: unresolvedReferences.map((ref) => ref) } })
-          .exec()
+          .lean()
         for (const ref of unresolvedReferenceResults) {
           if (ref._id) {
             await this.referenceCacheService.set(RelationClass, ref._id, ref as unknown as Relation)
@@ -247,21 +249,21 @@ export abstract class ReferenceQueryService<Entity extends Base> {
   public queryRelations<Relation extends Base<RefType>>(
     RelationClass: Class<Relation>,
     relationName: string,
-    entities: DocumentType<Entity>[],
+    entities: Entity[],
     query: Query<Relation>
   ): Promise<Map<DocumentType<Entity>, DocumentType<Relation>[]>>
 
   public queryRelations<Relation extends Base<RefType>>(
     RelationClass: Class<Relation>,
     relationName: string,
-    dto: DocumentType<Entity>,
+    dto: Entity,
     query: Query<Relation>
   ): Promise<DocumentType<Relation>[]>
 
   public async queryRelations<Relation extends Base<RefType>>(
     RelationClass: Class<Relation>,
     relationName: string,
-    dto: DocumentType<Entity> | DocumentType<Entity>[],
+    dto: Entity | Entity[],
     query: Query<Relation>
   ): Promise<Relation[] | Map<Entity, Relation[]>> {
     const relationModel = getModelForClass(RelationClass)
@@ -270,20 +272,20 @@ export abstract class ReferenceQueryService<Entity extends Base> {
     const assembler = AssemblerFactory.getAssembler(RelationClass, this.getReferenceEntity(relationName))
     const { filterQuery, options } = referenceQueryBuilder.buildQuery(assembler.convertQuery(query))
 
-    let arrayDto = dto as DocumentType<Entity>[]
+    let arrayDto = dto as Entity[]
 
     if (!Array.isArray(dto)) {
       arrayDto = [dto]
     }
 
-    let references: [DocumentType<Entity>, Relation[]][]
+    let references: [Entity, Relation[]][]
 
     if (
       !this.referenceCacheService.isCachedRelation(RelationClass) ||
       (query.filter && Object.keys(query.filter).length > 0) ||
       (query.paging && Object.keys(query.paging).length > 0) ||
       (query.sorting && query.sorting.length > 0) ||
-      arrayDto[0].schema?.virtuals?.[relationName]
+      this.getReferenceModel(relationName).schema?.virtuals?.[relationName]
       // !(relationName in arrayDto[0]) /* @TODO Replace with: arrayDto[0].schema.virtuals[relationName] (after updating tests) */
     ) {
       console.log('no cache', RelationClass, query)
@@ -337,7 +339,7 @@ export abstract class ReferenceQueryService<Entity extends Base> {
         // Fetch and cache unresolved references
         const unresolvedReferenceResults = await relationModel
           .find({ _id: { $in: unresolvedReferences.map((ref) => ref) } })
-          .exec()
+          .lean()
         for (const ref of unresolvedReferenceResults) {
           if (ref._id) {
             await this.referenceCacheService.set(RelationClass, ref._id, ref as unknown as Relation)
@@ -426,7 +428,7 @@ export abstract class ReferenceQueryService<Entity extends Base> {
     id: string,
     relationIds: (string | number)[],
     opts?: ModifyRelationOptions<Entity, Relation>
-  ): Promise<DocumentType<Entity>> {
+  ): Promise<Entity> {
     this.checkForReference('AddRelations', relationName, false)
     const refCount = await this.getRefCount(relationName, relationIds, opts?.relationFilter)
     if (relationIds.length !== refCount) {
@@ -443,7 +445,7 @@ export abstract class ReferenceQueryService<Entity extends Base> {
     id: string,
     relationIds: (string | number)[],
     opts?: ModifyRelationOptions<Entity, Relation>
-  ): Promise<DocumentType<Entity>> {
+  ): Promise<Entity> {
     this.checkForReference('AddRelations', relationName, false)
     const refCount = await this.getRefCount(relationName, relationIds, opts?.relationFilter)
 
@@ -459,7 +461,7 @@ export abstract class ReferenceQueryService<Entity extends Base> {
     id: string | number,
     relationId: string | number,
     opts?: ModifyRelationOptions<Entity, Relation>
-  ): Promise<DocumentType<Entity>> {
+  ): Promise<Entity> {
     this.checkForReference('SetRelation', relationName, false)
     const refCount = await this.getRefCount(relationName, [relationId], opts?.relationFilter)
     if (refCount !== 1) {
@@ -474,7 +476,7 @@ export abstract class ReferenceQueryService<Entity extends Base> {
     id: string | number,
     relationId: string | number,
     opts?: ModifyRelationOptions<Entity, Relation>
-  ): Promise<DocumentType<Entity>> {
+  ): Promise<Entity> {
     this.checkForReference('RemoveRelation', relationName, false)
     const refCount = await this.getRefCount(relationName, [relationId], opts?.relationFilter)
     if (refCount !== 1) {
@@ -494,7 +496,7 @@ export abstract class ReferenceQueryService<Entity extends Base> {
     id: string | number,
     relationIds: string[] | number[],
     opts?: ModifyRelationOptions<Entity, Relation>
-  ): Promise<DocumentType<Entity>> {
+  ): Promise<Entity> {
     this.checkForReference('RemoveRelations', relationName, false)
     const refCount = await this.getRefCount(relationName, relationIds, opts?.relationFilter)
     if (relationIds.length !== refCount) {
@@ -584,7 +586,7 @@ export abstract class ReferenceQueryService<Entity extends Base> {
   ): Promise<number> {
     const referenceModel = this.getReferenceModel<Relation>(relationName)
     const referenceQueryBuilder = this.getReferenceQueryBuilder(relationName)
-    return referenceModel.countDocuments(referenceQueryBuilder.buildIdFilterQuery(relationIds, filter)).exec()
+    return referenceModel.countDocuments(referenceQueryBuilder.buildIdFilterQuery(relationIds, filter)).lean()
   }
 
   private getReferenceQueryBuilder<Ref>(refName: string): FilterQueryBuilder<Ref> {
@@ -608,10 +610,10 @@ export abstract class ReferenceQueryService<Entity extends Base> {
     id: string | number,
     filter: Filter<Entity>,
     query: mongoose.UpdateQuery<DocumentType<Entity>>
-  ): Promise<DocumentType<Entity>> {
+  ): Promise<Entity> {
     const entity = await this.Model.findOneAndUpdate(this.filterQueryBuilder.buildIdFilterQuery(id, filter), query, {
       new: true
-    }).exec()
+    }).lean()
     if (!entity) {
       throw new NotFoundException(`Unable to find ${this.Model.modelName} with id: ${id}`)
     }

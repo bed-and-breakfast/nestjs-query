@@ -25,9 +25,16 @@
     "lodash.escaperegexp": "^4.1.2",
     "lodash.merge": "^4.6.2",
     "lodash.omit": "^4.5.0",
+    "mongoose-lean-defaults": "^2.2.1",
+    "mongoose-lean-getters": "^1.1.0",
+    "mongoose-lean-id": "^0.5.0",
+    "mongoose-lean-virtuals": "^0.9.1",
     "speedgoose": "^1.2.24",
     "tslib": "^2.4.0",
     "@ptc-org/nestjs-query-core": "2.4.0"
+  },
+  "devDependencies": {
+    "@types/mongoose-lean-virtuals": "^0.5.3"
   },
   "peerDependencies": {
     "@m8a/nestjs-typegoose": "^9.0.0 || ^10.0.0 || ^11.0.0",

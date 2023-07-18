@@ -55,7 +55,7 @@ let ReferenceQueryService = class ReferenceQueryService {
         if (!refFilter) {
             return 0;
         }
-        return relationModel.countDocuments(referenceQueryBuilder.buildFilterQuery(refFilter)).exec();
+        return relationModel.countDocuments(referenceQueryBuilder.buildFilterQuery(refFilter)).lean();
     }
     async findRelation(RelationClass, relationName, dto, opts) {
         const relationModel = (0, typegoose_1.getModelForClass)(RelationClass);
@@ -70,20 +70,22 @@ let ReferenceQueryService = class ReferenceQueryService {
         let references;
         if (!this.referenceCacheService.isCachedRelation(RelationClass) ||
             (opts?.filter && Object.keys(opts.filter).length > 0) ||
-            arrayDto[0].schema?.virtuals?.[relationName]
+            this.getReferenceModel(relationName).schema?.virtuals?.[relationName]
         // !(relationName in arrayDto[0]) /* @TODO Replace with: arrayDto[0].schema.virtuals[relationName] (after updating tests) */
         ) {
             console.log('no cache', RelationClass, opts?.filter);
             // references = await this.queryRelation(RelationClass, relationName, arrayDto, { filter: opts?.filter })
             // eslint-disable-next-line no-underscore-dangle
-            const foundEntities = await this.Model.find({ _id: { $in: arrayDto.map((d) => d._id ?? d.id) } }).populate({
+            const foundEntities = await this.Model.find({ _id: { $in: arrayDto.map((d) => d._id ?? d.id) } })
+                .populate({
                 path: relationName,
                 match: filterQuery
-            });
+            })
+                .lean();
             references = await Promise.all(arrayDto.map(async (d, i) => {
                 let populatedRef;
                 if (typeof foundEntities[i] !== 'undefined') {
-                    populatedRef = foundEntities[i].get(relationName);
+                    populatedRef = foundEntities[i][relationName];
                 }
                 if (populatedRef) {
                     if (populatedRef._id) {
@@ -108,7 +110,7 @@ let ReferenceQueryService = class ReferenceQueryService {
                 // Fetch and cache unresolved references
                 const unresolvedReferenceResults = await relationModel
                     .find({ _id: { $in: unresolvedReferences.map((ref) => ref) } })
-                    .exec();
+                    .lean();
                 for (const ref of unresolvedReferenceResults) {
                     if (ref._id) {
                         await this.referenceCacheService.set(RelationClass, ref._id, ref);
@@ -148,7 +150,7 @@ let ReferenceQueryService = class ReferenceQueryService {
             (query.filter && Object.keys(query.filter).length > 0) ||
             (query.paging && Object.keys(query.paging).length > 0) ||
             (query.sorting && query.sorting.length > 0) ||
-            arrayDto[0].schema?.virtuals?.[relationName]
+            this.getReferenceModel(relationName).schema?.virtuals?.[relationName]
         // !(relationName in arrayDto[0]) /* @TODO Replace with: arrayDto[0].schema.virtuals[relationName] (after updating tests) */
         ) {
             console.log('no cache', RelationClass, query);
@@ -192,7 +194,7 @@ let ReferenceQueryService = class ReferenceQueryService {
                 // Fetch and cache unresolved references
                 const unresolvedReferenceResults = await relationModel
                     .find({ _id: { $in: unresolvedReferences.map((ref) => ref) } })
-                    .exec();
+                    .lean();
                 for (const ref of unresolvedReferenceResults) {
                     if (ref._id) {
                         await this.referenceCacheService.set(RelationClass, ref._id, ref);
@@ -378,7 +380,7 @@ let ReferenceQueryService = class ReferenceQueryService {
     getRefCount(relationName, relationIds, filter) {
         const referenceModel = this.getReferenceModel(relationName);
         const referenceQueryBuilder = this.getReferenceQueryBuilder(relationName);
-        return referenceModel.countDocuments(referenceQueryBuilder.buildIdFilterQuery(relationIds, filter)).exec();
+        return referenceModel.countDocuments(referenceQueryBuilder.buildIdFilterQuery(relationIds, filter)).lean();
     }
     getReferenceQueryBuilder(refName) {
         return new query_1.FilterQueryBuilder(this.getReferenceModel(refName));
@@ -398,7 +400,7 @@ let ReferenceQueryService = class ReferenceQueryService {
     async findAndUpdate(id, filter, query) {
         const entity = await this.Model.findOneAndUpdate(this.filterQueryBuilder.buildIdFilterQuery(id, filter), query, {
             new: true
-        }).exec();
+        }).lean();
         if (!entity) {
             throw new common_1.NotFoundException(`Unable to find ${this.Model.modelName} with id: ${id}`);
         }
