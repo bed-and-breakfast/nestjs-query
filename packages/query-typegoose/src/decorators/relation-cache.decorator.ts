@@ -1,20 +1,15 @@
 import { Class } from '@ptc-org/nestjs-query-core'
-import { plugin } from '@typegoose/typegoose'
 import { Base } from '@typegoose/typegoose/lib/defaultClasses'
 import { RefType } from 'mongoose'
-import mongooseLeanDefaults from 'mongoose-lean-defaults'
-import mongooseLeanGetters from 'mongoose-lean-getters'
-import mongooseLeanId from 'mongoose-lean-id'
-import mongooseLeanVirtuals from 'mongoose-lean-virtuals'
 
 import { ReferenceCacheService } from '../services/reference-cache.service'
 
 export const RelationCache = <DTO extends Base<RefType>>() => {
   return <Cls extends Class<DTO>>(DTOClass: Cls): Cls | void => {
-    plugin(mongooseLeanId)(DTOClass)
-    plugin(mongooseLeanVirtuals)(DTOClass)
-    plugin(mongooseLeanGetters)(DTOClass)
-    plugin(mongooseLeanDefaults)(DTOClass)
+    // plugin(mongooseLeanId)(DTOClass)
+    // plugin(mongooseLeanVirtuals)(DTOClass)
+    // plugin(mongooseLeanGetters)(DTOClass)
+    // plugin(mongooseLeanDefaults)(DTOClass)
 
     const invalidateCache = (dto: DTO) => {
       const t: ReferenceCacheService = Reflect.getOwnMetadata('cacheProvider', DTOClass)

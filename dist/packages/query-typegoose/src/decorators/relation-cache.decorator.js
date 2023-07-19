@@ -1,18 +1,12 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.RelationCache = void 0;
-const tslib_1 = require("tslib");
-const typegoose_1 = require("@typegoose/typegoose");
-const mongoose_lean_defaults_1 = tslib_1.__importDefault(require("mongoose-lean-defaults"));
-const mongoose_lean_getters_1 = tslib_1.__importDefault(require("mongoose-lean-getters"));
-const mongoose_lean_id_1 = tslib_1.__importDefault(require("mongoose-lean-id"));
-const mongoose_lean_virtuals_1 = tslib_1.__importDefault(require("mongoose-lean-virtuals"));
 const RelationCache = () => {
     return (DTOClass) => {
-        (0, typegoose_1.plugin)(mongoose_lean_id_1.default)(DTOClass);
-        (0, typegoose_1.plugin)(mongoose_lean_virtuals_1.default)(DTOClass);
-        (0, typegoose_1.plugin)(mongoose_lean_getters_1.default)(DTOClass);
-        (0, typegoose_1.plugin)(mongoose_lean_defaults_1.default)(DTOClass);
+        // plugin(mongooseLeanId)(DTOClass)
+        // plugin(mongooseLeanVirtuals)(DTOClass)
+        // plugin(mongooseLeanGetters)(DTOClass)
+        // plugin(mongooseLeanDefaults)(DTOClass)
         const invalidateCache = (dto) => {
             const t = Reflect.getOwnMetadata('cacheProvider', DTOClass);
             t.invalidate(DTOClass, dto._id);

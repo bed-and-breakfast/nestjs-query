@@ -1,9 +1,13 @@
 import { getModelToken } from '@m8a/nestjs-typegoose'
 import { FactoryProvider } from '@nestjs/common'
 import { AssemblerSerializer, getQueryServiceToken } from '@ptc-org/nestjs-query-core'
-import { DocumentType, mongoose } from '@typegoose/typegoose'
+import { DocumentType, mongoose, plugin } from '@typegoose/typegoose'
 import { Base } from '@typegoose/typegoose/lib/defaultClasses'
 import { isClass } from 'is-class'
+import mongooseLeanDefaults from 'mongoose-lean-defaults'
+import mongooseLeanGetters from 'mongoose-lean-getters'
+import mongooseLeanId from 'mongoose-lean-id'
+import mongooseLeanVirtuals from 'mongoose-lean-virtuals'
 
 import { TypegooseQueryService } from './services'
 import { ReferenceCacheService } from './services/reference-cache.service'
@@ -34,6 +38,12 @@ function createTypegooseQueryServiceProvider<Entity extends Base>(
   model: TypegooseClass | TypegooseClassWithOptions
 ): FactoryProvider {
   const inputModel = ensureProperInput(model)
+
+  plugin(mongooseLeanId)(inputModel.typegooseClass)
+  plugin(mongooseLeanVirtuals)(inputModel.typegooseClass)
+  plugin(mongooseLeanGetters)(inputModel.typegooseClass)
+  plugin(mongooseLeanDefaults)(inputModel.typegooseClass)
+
   if (!inputModel) {
     // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
     throw new Error(`Model definitions ${model} is incorrect.`)
