@@ -2,6 +2,7 @@ import { AggregateQuery, AggregateResponse, DeepPartial, DeleteManyResponse, Del
 import { DocumentType, mongoose } from '@typegoose/typegoose';
 import { Base } from '@typegoose/typegoose/lib/defaultClasses';
 import { FilterQueryBuilder } from '../query';
+import { TypegooseClass } from '../typegoose-interface.helpers';
 import { ReturnModelType } from '../typegoose-types.helper';
 import { ReferenceCacheService } from './reference-cache.service';
 import { ReferenceQueryService } from './reference-query.service';
@@ -9,10 +10,11 @@ export interface TypegooseQueryServiceOpts {
     toObjectOptions?: mongoose.ToObjectOptions;
 }
 export declare class TypegooseQueryService<Entity extends Base> extends ReferenceQueryService<Entity> implements QueryService<Entity> {
+    readonly Entity: TypegooseClass;
     readonly Model: ReturnModelType<new () => Entity>;
     protected readonly referenceCacheService?: ReferenceCacheService;
     readonly filterQueryBuilder: FilterQueryBuilder<Entity>;
-    constructor(Model: ReturnModelType<new () => Entity>, referenceCacheService?: ReferenceCacheService, filterQueryBuilder?: FilterQueryBuilder<Entity>);
+    constructor(Entity: TypegooseClass, Model: ReturnModelType<new () => Entity>, referenceCacheService?: ReferenceCacheService, filterQueryBuilder?: FilterQueryBuilder<Entity>);
     /**
      * Query for multiple entities, using a Query from `@ptc-org/nestjs-query-core`.
      *

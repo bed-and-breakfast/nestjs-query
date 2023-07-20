@@ -44,7 +44,7 @@ function createTypegooseQueryServiceProvider(model) {
             // initialize default serializer for documents, this is the type that mongoose returns from queries
             // eslint-disable-next-line @typescript-eslint/no-unsafe-return
             (0, nestjs_query_core_1.AssemblerSerializer)((obj) => obj.toObject({ virtuals: true }))(ModelClass);
-            return new services_1.TypegooseQueryService(ModelClass, referenceCacheService);
+            return new services_1.TypegooseQueryService(inputModel.typegooseClass, ModelClass, referenceCacheService);
         },
         inject: [(0, nestjs_typegoose_1.getModelToken)(modelName), reference_cache_service_1.ReferenceCacheService]
     };

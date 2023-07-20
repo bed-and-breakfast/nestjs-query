@@ -4,12 +4,16 @@ exports.TypegooseQueryService = void 0;
 const tslib_1 = require("tslib");
 const common_1 = require("@nestjs/common");
 const typegoose_1 = require("@typegoose/typegoose");
+const class_transformer_1 = require("class-transformer");
 const query_1 = require("../query");
 const reference_cache_service_1 = require("./reference-cache.service");
 const reference_query_service_1 = require("./reference-query.service");
 let TypegooseQueryService = class TypegooseQueryService extends reference_query_service_1.ReferenceQueryService {
-    constructor(Model, referenceCacheService, filterQueryBuilder = new query_1.FilterQueryBuilder(Model)) {
+    constructor(
+    // @TODO Casting should probably be handled by assembler
+    Entity, Model, referenceCacheService, filterQueryBuilder = new query_1.FilterQueryBuilder(Model)) {
         super(Model, referenceCacheService);
+        this.Entity = Entity;
         this.Model = Model;
         this.referenceCacheService = referenceCacheService;
         this.filterQueryBuilder = filterQueryBuilder;
@@ -30,7 +34,7 @@ let TypegooseQueryService = class TypegooseQueryService extends reference_query_
     async query(query) {
         const { filterQuery, options } = this.filterQueryBuilder.buildQuery(query);
         const entities = await this.Model.find(filterQuery, {}, options).lean();
-        return entities;
+        return entities.map((entity) => (0, class_transformer_1.plainToClass)(this.Entity, entity));
     }
     async aggregate(filter, aggregateQuery) {
         const { aggregate, filterQuery, options } = this.filterQueryBuilder.buildAggregateQuery(aggregateQuery, filter);
@@ -61,7 +65,8 @@ let TypegooseQueryService = class TypegooseQueryService extends reference_query_
         if (!doc) {
             return undefined;
         }
-        return doc;
+        console.log((0, class_transformer_1.plainToClass)(this.Entity, doc));
+        return (0, class_transformer_1.plainToClass)(this.Entity, doc);
     }
     /**
      * Gets an entity by it's `id`. If the entity is not found a rejected promise is returned.
@@ -246,8 +251,8 @@ let TypegooseQueryService = class TypegooseQueryService extends reference_query_
     }
 };
 TypegooseQueryService = tslib_1.__decorate([
-    tslib_1.__param(1, (0, common_1.Optional)()),
-    tslib_1.__metadata("design:paramtypes", [Object, reference_cache_service_1.ReferenceCacheService,
+    tslib_1.__param(2, (0, common_1.Optional)()),
+    tslib_1.__metadata("design:paramtypes", [Object, Object, reference_cache_service_1.ReferenceCacheService,
         query_1.FilterQueryBuilder])
 ], TypegooseQueryService);
 exports.TypegooseQueryService = TypegooseQueryService;
