@@ -32,7 +32,7 @@ describe('TypegooseQueryService-With Descriminates', () => {
       @InjectModel(TestReference) readonly model: ReturnModelType<typeof TestReference>,
       @Optional() protected readonly referenceCacheService?: ReferenceCacheService
     ) {
-      super(model, referenceCacheService)
+      super(TestReference, model, referenceCacheService)
       TestReferenceModel = model
     }
   }
@@ -42,7 +42,7 @@ describe('TypegooseQueryService-With Descriminates', () => {
       @InjectModel(TestDiscriminatedEntity) readonly model: ReturnModelType<typeof TestDiscriminatedEntity>,
       @Optional() protected readonly referenceCacheService?: ReferenceCacheService
     ) {
-      super(model, referenceCacheService)
+      super(TestDiscriminatedEntity, model, referenceCacheService)
       TestDiscriminatedEntityModel = model
     }
   }

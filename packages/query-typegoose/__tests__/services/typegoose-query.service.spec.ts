@@ -45,7 +45,7 @@ describe('TypegooseQueryService', () => {
       @InjectModel(TestEntity) readonly model: ReturnModelType<typeof TestEntity>,
       @Optional() protected readonly referenceCacheService?: ReferenceCacheService
     ) {
-      super(model, referenceCacheService)
+      super(TestEntity, model, referenceCacheService)
       TestEntityModel = model
     }
   }
@@ -55,7 +55,7 @@ describe('TypegooseQueryService', () => {
       @InjectModel(TestReference) readonly model: ReturnModelType<typeof TestReference>,
       @Optional() protected readonly referenceCacheService?: ReferenceCacheService
     ) {
-      super(model, referenceCacheService)
+      super(TestReference, model, referenceCacheService)
       TestReferenceModel = model
     }
   }

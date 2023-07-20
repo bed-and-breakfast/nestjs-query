@@ -15,9 +15,11 @@ import {
 } from '@ptc-org/nestjs-query-core'
 import { DocumentType, mongoose } from '@typegoose/typegoose'
 import { Base } from '@typegoose/typegoose/lib/defaultClasses'
+import { plainToClass } from 'class-transformer'
 import { PipelineStage } from 'mongoose'
 
 import { AggregateBuilder, FilterQueryBuilder } from '../query'
+import { TypegooseClass } from '../typegoose-interface.helpers'
 import { ReturnModelType, UpdateArrayQuery } from '../typegoose-types.helper'
 import { ReferenceCacheService } from './reference-cache.service'
 import { ReferenceQueryService } from './reference-query.service'
@@ -28,6 +30,8 @@ export interface TypegooseQueryServiceOpts {
 
 export class TypegooseQueryService<Entity extends Base> extends ReferenceQueryService<Entity> implements QueryService<Entity> {
   constructor(
+    // @TODO Casting should probably be handled by assembler
+    readonly Entity: TypegooseClass,
     readonly Model: ReturnModelType<new () => Entity>,
     @Optional() protected readonly referenceCacheService?: ReferenceCacheService,
     readonly filterQueryBuilder: FilterQueryBuilder<Entity> = new FilterQueryBuilder(Model)
@@ -51,7 +55,8 @@ export class TypegooseQueryService<Entity extends Base> extends ReferenceQuerySe
   async query(query: Query<Entity>): Promise<Entity[]> {
     const { filterQuery, options } = this.filterQueryBuilder.buildQuery(query)
     const entities = await this.Model.find(filterQuery, {}, options).lean()
-    return entities
+
+    return entities.map((entity) => plainToClass(this.Entity, entity) as typeof entity)
   }
 
   async aggregate(filter: Filter<Entity>, aggregateQuery: AggregateQuery<Entity>): Promise<AggregateResponse<Entity>[]> {
@@ -85,7 +90,10 @@ export class TypegooseQueryService<Entity extends Base> extends ReferenceQuerySe
     if (!doc) {
       return undefined
     }
-    return doc
+
+    console.log(plainToClass(this.Entity, doc))
+
+    return plainToClass(this.Entity, doc) as typeof doc
   }
 
   /**

@@ -61,7 +61,7 @@ function createTypegooseQueryServiceProvider<Entity extends Base>(
       // eslint-disable-next-line @typescript-eslint/no-unsafe-return
       AssemblerSerializer((obj: DocumentType<unknown>) => obj.toObject({ virtuals: true }))(ModelClass)
 
-      return new TypegooseQueryService(ModelClass, referenceCacheService)
+      return new TypegooseQueryService(inputModel.typegooseClass, ModelClass, referenceCacheService)
     },
     inject: [getModelToken(modelName), ReferenceCacheService]
   }
