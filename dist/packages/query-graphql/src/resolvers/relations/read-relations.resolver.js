@@ -108,7 +108,13 @@ const ReadManyRelationMixin = (DTOClass, relation) => (Base) => {
             const relationQuery = await (0, helpers_1.transformAndValidate)(RelationQA, q);
             const relationLoader = loader_1.DataLoaderFactory.getOrCreateLoader(context, relationLoaderName, queryLoader.createLoader(this.service));
             const relationCountLoader = loader_1.DataLoaderFactory.getOrCreateLoader(context, countRelationLoaderName, countLoader.createLoader(this.service));
-            return CT.createFromPromise((query) => relationLoader.load({ dto, query }), (0, nestjs_query_core_1.mergeQuery)(relationQuery, { filter: relationFilter, relations }), (filter) => relationCountLoader.load({ dto, filter }));
+            return CT.createFromPromise((query) => {
+                console.log('query', query);
+                return relationLoader.load({ dto, query });
+            }, (0, nestjs_query_core_1.mergeQuery)(relationQuery, { filter: relationFilter, relations }), (filter) => {
+                console.log('filter', filter);
+                return relationCountLoader.load({ dto, filter });
+            });
         }
     };
     tslib_1.__decorate([

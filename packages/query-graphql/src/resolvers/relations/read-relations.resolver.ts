@@ -163,9 +163,17 @@ const ReadManyRelationMixin =
         )
 
         return CT.createFromPromise(
-          (query) => relationLoader.load({ dto, query }),
+          (query) => {
+            console.log('query', query)
+
+            return relationLoader.load({ dto, query })
+          },
           mergeQuery(relationQuery, { filter: relationFilter, relations }),
-          (filter) => relationCountLoader.load({ dto, filter })
+          (filter) => {
+            console.log('filter', filter)
+
+            return relationCountLoader.load({ dto, filter })
+          }
         )
       }
     }
