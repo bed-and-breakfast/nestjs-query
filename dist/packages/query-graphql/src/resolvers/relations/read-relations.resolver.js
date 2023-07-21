@@ -2,17 +2,25 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ReadRelationsResolver = exports.ReadRelationsMixin = void 0;
 const tslib_1 = require("tslib");
+const common_1 = require("@nestjs/common");
 const graphql_1 = require("@nestjs/graphql");
 const nestjs_query_core_1 = require("@ptc-org/nestjs-query-core");
 const auth_1 = require("../../auth");
-const common_1 = require("../../common");
+const common_2 = require("../../common");
 const decorators_1 = require("../../decorators");
+const graphql_resolve_info_utils_1 = require("../../decorators/graphql-resolve-info.utils");
 const interceptors_1 = require("../../interceptors");
 const loader_1 = require("../../loader");
 const types_1 = require("../../types");
 const helpers_1 = require("../helpers");
 const resolver_interface_1 = require("../resolver.interface");
 const helpers_2 = require("./helpers");
+const Info = (DTOClass) => {
+    return (0, common_1.createParamDecorator)((data, ctx) => {
+        const info = graphql_1.GqlExecutionContext.create(ctx).getInfo();
+        return (0, graphql_resolve_info_utils_1.simplifyResolveInfo)(info);
+    })();
+};
 const ReadOneRelationMixin = (DTOClass, relation) => (Base) => {
     var _a;
     if (relation.disableRead) {
@@ -20,13 +28,16 @@ const ReadOneRelationMixin = (DTOClass, relation) => (Base) => {
     }
     const commonResolverOpts = (0, helpers_2.removeRelationOpts)(relation);
     const relationDTO = relation.DTO;
-    const { baseNameLower, baseName } = (0, common_1.getDTONames)(relationDTO, { dtoName: relation.dtoName });
+    const { baseNameLower, baseName } = (0, common_2.getDTONames)(relationDTO, { dtoName: relation.dtoName });
     const relationName = relation.relationName ?? baseNameLower;
     const loaderName = `load${baseName}For${DTOClass.name}`;
     const findLoader = new loader_1.FindRelationsLoader(relationDTO, relationName);
     let ReadOneMixin = class ReadOneMixin extends Base {
-        async [_a = `find${baseName}`](dto, context, authFilter, relations) {
-            return loader_1.DataLoaderFactory.getOrCreateLoader(context, loaderName, findLoader.createLoader(this.service, {
+        async [_a = `find${baseName}`](dto, context, info, authFilter, relations) {
+            // const ctx = GqlExecutionContext.create(context)
+            // const info = ctx.getInfo()
+            console.log('info', info, relations);
+            const results = await loader_1.DataLoaderFactory.getOrCreateLoader(context, loaderName, findLoader.createLoader(this.service, {
                 withDeleted: relation.withDeleted,
                 lookedAhead: relation.enableLookAhead
             })).load({
@@ -34,6 +45,8 @@ const ReadOneRelationMixin = (DTOClass, relation) => (Base) => {
                 filter: authFilter,
                 relations
             });
+            console.log(results);
+            return results;
         }
     };
     tslib_1.__decorate([
@@ -44,9 +57,10 @@ const ReadOneRelationMixin = (DTOClass, relation) => (Base) => {
             operationGroup: auth_1.OperationGroup.READ,
             many: false
         })),
-        tslib_1.__param(3, (0, decorators_1.GraphQLLookAheadRelations)(DTOClass)),
+        tslib_1.__param(2, Info(DTOClass)),
+        tslib_1.__param(4, (0, decorators_1.GraphQLLookAheadRelations)(DTOClass)),
         tslib_1.__metadata("design:type", Function),
-        tslib_1.__metadata("design:paramtypes", [Object, Object, Object, Array]),
+        tslib_1.__metadata("design:paramtypes", [Object, Object, Object, Object, Array]),
         tslib_1.__metadata("design:returntype", Promise)
     ], ReadOneMixin.prototype, _a, null);
     ReadOneMixin = tslib_1.__decorate([
@@ -61,8 +75,8 @@ const ReadManyRelationMixin = (DTOClass, relation) => (Base) => {
     }
     const commonResolverOpts = (0, helpers_2.removeRelationOpts)(relation);
     const relationDTO = relation.DTO;
-    const dtoName = (0, common_1.getDTONames)(DTOClass).baseName;
-    const { pluralBaseNameLower, pluralBaseName } = (0, common_1.getDTONames)(relationDTO, { dtoName: relation.dtoName });
+    const dtoName = (0, common_2.getDTONames)(DTOClass).baseName;
+    const { pluralBaseNameLower, pluralBaseName } = (0, common_2.getDTONames)(relationDTO, { dtoName: relation.dtoName });
     const relationName = relation.relationName ?? pluralBaseNameLower;
     const relationLoaderName = `load${pluralBaseName}For${DTOClass.name}`;
     const countRelationLoaderName = `count${pluralBaseName}For${DTOClass.name}`;

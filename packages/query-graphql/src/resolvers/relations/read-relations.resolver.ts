@@ -1,10 +1,12 @@
-import { ExecutionContext } from '@nestjs/common'
-import { Args, ArgsType, Context, Parent, Resolver } from '@nestjs/graphql'
+import { createParamDecorator, ExecutionContext } from '@nestjs/common'
+import { Args, ArgsType, Context, GqlExecutionContext, Parent, Resolver } from '@nestjs/graphql'
 import { Class, Filter, mergeQuery, QueryService, SelectRelation } from '@ptc-org/nestjs-query-core'
+import { GraphQLResolveInfo as ResolveInfo } from 'graphql'
 
 import { OperationGroup } from '../../auth'
 import { getDTONames } from '../../common'
 import { GraphQLLookAheadRelations, RelationAuthorizerFilter, ResolverField } from '../../decorators'
+import { QueryResolveTree, simplifyResolveInfo } from '../../decorators/graphql-resolve-info.utils'
 import { AuthorizerInterceptor } from '../../interceptors'
 import { CountRelationsLoader, DataLoaderFactory, FindRelationsLoader, QueryRelationsLoader } from '../../loader'
 import { QueryArgsType } from '../../types'
@@ -15,6 +17,13 @@ import { RelationsOpts, ResolverRelation } from './relations.interface'
 
 export interface ReadRelationsResolverOpts extends RelationsOpts {
   enableTotalCount?: boolean
+}
+
+const Info = <DTO>(DTOClass: Class<DTO>): ParameterDecorator => {
+  return createParamDecorator((data: unknown, ctx: ExecutionContext): QueryResolveTree<DTO> => {
+    const info = GqlExecutionContext.create(ctx).getInfo<ResolveInfo>()
+    return simplifyResolveInfo(info)
+  })()
 }
 
 const ReadOneRelationMixin =
@@ -47,11 +56,18 @@ const ReadOneRelationMixin =
           operationGroup: OperationGroup.READ,
           many: false
         })
+        @Info(DTOClass)
+        info: QueryResolveTree<DTO>,
         authFilter?: Filter<Relation>,
         @GraphQLLookAheadRelations(DTOClass)
         relations?: SelectRelation<Relation>[]
       ): Promise<Relation | undefined> {
-        return DataLoaderFactory.getOrCreateLoader(
+        // const ctx = GqlExecutionContext.create(context)
+        // const info = ctx.getInfo()
+
+        console.log('info', info, relations)
+
+        const results = await DataLoaderFactory.getOrCreateLoader(
           context,
           loaderName,
           findLoader.createLoader(this.service, {
@@ -63,6 +79,10 @@ const ReadOneRelationMixin =
           filter: authFilter,
           relations
         })
+
+        console.log(results)
+
+        return results
       }
     }
 
