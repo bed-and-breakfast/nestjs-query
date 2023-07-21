@@ -62,7 +62,11 @@ const ReadOneRelationMixin =
         @Info<DTO>()
         info?: QueryResolveTree<DTO>
       ): Promise<Relation | undefined> {
-        console.log('info', info)
+        console.log(info, dto[relationName])
+
+        if (Object.values(info.fields).length === 1 && (info.fields as { id?: unknown }).id) {
+          return { id: dto[relationName] } as Relation
+        }
 
         const results = await DataLoaderFactory.getOrCreateLoader(
           context,
@@ -132,8 +136,20 @@ const ReadManyRelationMixin =
         })
         relationFilter?: Filter<Relation>,
         @GraphQLLookAheadRelations(relationDTO)
-        relations?: SelectRelation<Relation>[]
+        relations?: SelectRelation<Relation>[],
+        @Info<DTO>()
+        info?: QueryResolveTree<DTO>
       ): Promise<InstanceType<typeof CT>> {
+        console.log(info, dto[relationName], relationFilter)
+
+        if (Object.values(info.fields).length === 1 && (info.fields as { id?: unknown }).id) {
+          // return CT.createFromPromise(
+          //   (query) => relationLoader.load({ dto, query }),
+          //   mergeQuery(relationQuery, { filter: relationFilter, relations }),
+          //   (filter) => relationCountLoader.load({ dto, filter })
+          // )
+        }
+
         const relationQuery = await transformAndValidate(RelationQA, q)
         const relationLoader = DataLoaderFactory.getOrCreateLoader(
           context,
@@ -145,6 +161,7 @@ const ReadManyRelationMixin =
           countRelationLoaderName,
           countLoader.createLoader(this.service)
         )
+
         return CT.createFromPromise(
           (query) => relationLoader.load({ dto, query }),
           mergeQuery(relationQuery, { filter: relationFilter, relations }),

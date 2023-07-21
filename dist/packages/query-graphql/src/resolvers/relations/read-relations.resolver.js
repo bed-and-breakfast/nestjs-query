@@ -34,7 +34,10 @@ const ReadOneRelationMixin = (DTOClass, relation) => (Base) => {
     const findLoader = new loader_1.FindRelationsLoader(relationDTO, relationName);
     let ReadOneMixin = class ReadOneMixin extends Base {
         async [_a = `find${baseName}`](dto, context, authFilter, relations, info) {
-            console.log('info', info);
+            console.log(info, dto[relationName]);
+            if (Object.values(info.fields).length === 1 && info.fields.id) {
+                return { id: dto[relationName] };
+            }
             const results = await loader_1.DataLoaderFactory.getOrCreateLoader(context, loaderName, findLoader.createLoader(this.service, {
                 withDeleted: relation.withDeleted,
                 lookedAhead: relation.enableLookAhead
@@ -93,7 +96,15 @@ const ReadManyRelationMixin = (DTOClass, relation) => (Base) => {
     // disable keyset pagination for relations otherwise recursive paging will not work
     const { ConnectionType: CT } = RelationQA;
     let ReadManyMixin = class ReadManyMixin extends Base {
-        async [_a = `query${pluralBaseName}`](dto, q, context, relationFilter, relations) {
+        async [_a = `query${pluralBaseName}`](dto, q, context, relationFilter, relations, info) {
+            console.log(info, dto[relationName], relationFilter);
+            if (Object.values(info.fields).length === 1 && info.fields.id) {
+                // return CT.createFromPromise(
+                //   (query) => relationLoader.load({ dto, query }),
+                //   mergeQuery(relationQuery, { filter: relationFilter, relations }),
+                //   (filter) => relationCountLoader.load({ dto, filter })
+                // )
+            }
             const relationQuery = await (0, helpers_1.transformAndValidate)(RelationQA, q);
             const relationLoader = loader_1.DataLoaderFactory.getOrCreateLoader(context, relationLoaderName, queryLoader.createLoader(this.service));
             const relationCountLoader = loader_1.DataLoaderFactory.getOrCreateLoader(context, countRelationLoaderName, countLoader.createLoader(this.service));
@@ -110,8 +121,9 @@ const ReadManyRelationMixin = (DTOClass, relation) => (Base) => {
             many: true
         })),
         tslib_1.__param(4, (0, decorators_1.GraphQLLookAheadRelations)(relationDTO)),
+        tslib_1.__param(5, Info()),
         tslib_1.__metadata("design:type", Function),
-        tslib_1.__metadata("design:paramtypes", [Object, RelationQA, Object, Object, Array]),
+        tslib_1.__metadata("design:paramtypes", [Object, RelationQA, Object, Object, Array, Object]),
         tslib_1.__metadata("design:returntype", Promise)
     ], ReadManyMixin.prototype, _a, null);
     ReadManyMixin = tslib_1.__decorate([
