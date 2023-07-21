@@ -15,7 +15,7 @@ const types_1 = require("../../types");
 const helpers_1 = require("../helpers");
 const resolver_interface_1 = require("../resolver.interface");
 const helpers_2 = require("./helpers");
-const Info = () => {
+const GraphQLInfo = () => {
     return (0, common_1.createParamDecorator)((data, ctx) => {
         const info = graphql_1.GqlExecutionContext.create(ctx).getInfo();
         return (0, graphql_resolve_info_utils_1.simplifyResolveInfo)(info);
@@ -34,7 +34,6 @@ const ReadOneRelationMixin = (DTOClass, relation) => (Base) => {
     const findLoader = new loader_1.FindRelationsLoader(relationDTO, relationName);
     let ReadOneMixin = class ReadOneMixin extends Base {
         async [_a = `find${baseName}`](dto, context, authFilter, relations, info) {
-            console.log(info, dto[relationName]);
             if (Object.values(info.fields).length === 1 && info.fields.id) {
                 return { id: dto[relationName] };
             }
@@ -46,7 +45,6 @@ const ReadOneRelationMixin = (DTOClass, relation) => (Base) => {
                 filter: authFilter,
                 relations
             });
-            console.log(results);
             return results;
         }
     };
@@ -59,7 +57,7 @@ const ReadOneRelationMixin = (DTOClass, relation) => (Base) => {
             many: false
         })),
         tslib_1.__param(3, (0, decorators_1.GraphQLLookAheadRelations)(DTOClass)),
-        tslib_1.__param(4, Info()),
+        tslib_1.__param(4, GraphQLInfo()),
         tslib_1.__metadata("design:type", Function),
         tslib_1.__metadata("design:paramtypes", [Object, Object, Object, Array, Object]),
         tslib_1.__metadata("design:returntype", Promise)
@@ -97,24 +95,21 @@ const ReadManyRelationMixin = (DTOClass, relation) => (Base) => {
     const { ConnectionType: CT } = RelationQA;
     let ReadManyMixin = class ReadManyMixin extends Base {
         async [_a = `query${pluralBaseName}`](dto, q, context, relationFilter, relations, info) {
-            console.log(info, dto[relationName], relationFilter);
-            if (Object.values(info.fields).length === 1 && info.fields.id) {
-                // return CT.createFromPromise(
-                //   (query) => relationLoader.load({ dto, query }),
-                //   mergeQuery(relationQuery, { filter: relationFilter, relations }),
-                //   (filter) => relationCountLoader.load({ dto, filter })
-                // )
-            }
             const relationQuery = await (0, helpers_1.transformAndValidate)(RelationQA, q);
+            if (Object.values(info.fields).length === 1 && info.fields.id) {
+                if ((!info.args.filter || Object.keys(info.args.filter).length === 0) &&
+                    (!info.args.sorting || info.args.sorting.length === 0) &&
+                    (!info.args.paging || Object.keys(info.args.paging).length === 0)) {
+                    return CT.createFromPromise(
+                    // eslint-disable-next-line @typescript-eslint/require-await
+                    async () => dto[relationName].map((id) => ({ id })), (0, nestjs_query_core_1.mergeQuery)(relationQuery, { filter: relationFilter, relations }), 
+                    // eslint-disable-next-line @typescript-eslint/require-await
+                    async () => dto[relationName].length);
+                }
+            }
             const relationLoader = loader_1.DataLoaderFactory.getOrCreateLoader(context, relationLoaderName, queryLoader.createLoader(this.service));
             const relationCountLoader = loader_1.DataLoaderFactory.getOrCreateLoader(context, countRelationLoaderName, countLoader.createLoader(this.service));
-            return CT.createFromPromise((query) => {
-                console.log('query', query);
-                return relationLoader.load({ dto, query });
-            }, (0, nestjs_query_core_1.mergeQuery)(relationQuery, { filter: relationFilter, relations }), (filter) => {
-                console.log('filter', filter);
-                return relationCountLoader.load({ dto, filter });
-            });
+            return CT.createFromPromise((query) => relationLoader.load({ dto, query }), (0, nestjs_query_core_1.mergeQuery)(relationQuery, { filter: relationFilter, relations }), (filter) => relationCountLoader.load({ dto, filter }));
         }
     };
     tslib_1.__decorate([
@@ -127,7 +122,7 @@ const ReadManyRelationMixin = (DTOClass, relation) => (Base) => {
             many: true
         })),
         tslib_1.__param(4, (0, decorators_1.GraphQLLookAheadRelations)(relationDTO)),
-        tslib_1.__param(5, Info()),
+        tslib_1.__param(5, GraphQLInfo()),
         tslib_1.__metadata("design:type", Function),
         tslib_1.__metadata("design:paramtypes", [Object, RelationQA, Object, Object, Array, Object]),
         tslib_1.__metadata("design:returntype", Promise)

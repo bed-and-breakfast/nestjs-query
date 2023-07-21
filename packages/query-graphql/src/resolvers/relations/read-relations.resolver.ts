@@ -19,7 +19,7 @@ export interface ReadRelationsResolverOpts extends RelationsOpts {
   enableTotalCount?: boolean
 }
 
-const Info = <DTO>(): ParameterDecorator => {
+const GraphQLInfo = <DTO>(): ParameterDecorator => {
   return createParamDecorator((data: unknown, ctx: ExecutionContext): QueryResolveTree<DTO> => {
     const info = GqlExecutionContext.create(ctx).getInfo<ResolveInfo>()
     return simplifyResolveInfo(info)
@@ -59,11 +59,9 @@ const ReadOneRelationMixin =
         authFilter?: Filter<Relation>,
         @GraphQLLookAheadRelations(DTOClass)
         relations?: SelectRelation<Relation>[],
-        @Info<DTO>()
+        @GraphQLInfo<DTO>()
         info?: QueryResolveTree<DTO>
       ): Promise<Relation | undefined> {
-        console.log(info, dto[relationName])
-
         if (Object.values(info.fields).length === 1 && (info.fields as { id?: unknown }).id) {
           return { id: dto[relationName] } as Relation
         }
@@ -80,8 +78,6 @@ const ReadOneRelationMixin =
           filter: authFilter,
           relations
         })
-
-        console.log(results)
 
         return results
       }
@@ -137,20 +133,27 @@ const ReadManyRelationMixin =
         relationFilter?: Filter<Relation>,
         @GraphQLLookAheadRelations(relationDTO)
         relations?: SelectRelation<Relation>[],
-        @Info<DTO>()
+        @GraphQLInfo<DTO>()
         info?: QueryResolveTree<DTO>
       ): Promise<InstanceType<typeof CT>> {
-        console.log(info, dto[relationName], relationFilter)
+        const relationQuery = await transformAndValidate(RelationQA, q)
 
         if (Object.values(info.fields).length === 1 && (info.fields as { id?: unknown }).id) {
-          // return CT.createFromPromise(
-          //   (query) => relationLoader.load({ dto, query }),
-          //   mergeQuery(relationQuery, { filter: relationFilter, relations }),
-          //   (filter) => relationCountLoader.load({ dto, filter })
-          // )
+          if (
+            (!info.args.filter || Object.keys(info.args.filter).length === 0) &&
+            (!info.args.sorting || info.args.sorting.length === 0) &&
+            (!info.args.paging || Object.keys(info.args.paging).length === 0)
+          ) {
+            return CT.createFromPromise(
+              // eslint-disable-next-line @typescript-eslint/require-await
+              async (): Promise<Relation[]> => (dto[relationName] as string[]).map((id) => ({ id })) as Relation[],
+              mergeQuery(relationQuery, { filter: relationFilter, relations }),
+              // eslint-disable-next-line @typescript-eslint/require-await
+              async (): Promise<number> => (dto[relationName] as string[]).length
+            )
+          }
         }
 
-        const relationQuery = await transformAndValidate(RelationQA, q)
         const relationLoader = DataLoaderFactory.getOrCreateLoader(
           context,
           relationLoaderName,
@@ -163,17 +166,9 @@ const ReadManyRelationMixin =
         )
 
         return CT.createFromPromise(
-          (query) => {
-            console.log('query', query)
-
-            return relationLoader.load({ dto, query })
-          },
+          (query) => relationLoader.load({ dto, query }),
           mergeQuery(relationQuery, { filter: relationFilter, relations }),
-          (filter) => {
-            console.log('filter', filter)
-
-            return relationCountLoader.load({ dto, filter })
-          }
+          (filter) => relationCountLoader.load({ dto, filter })
         )
       }
     }
