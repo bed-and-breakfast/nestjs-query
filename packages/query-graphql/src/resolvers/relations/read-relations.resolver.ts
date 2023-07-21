@@ -19,7 +19,7 @@ export interface ReadRelationsResolverOpts extends RelationsOpts {
   enableTotalCount?: boolean
 }
 
-const Info = <DTO>(DTOClass: Class<DTO>): ParameterDecorator => {
+const Info = <DTO>(): ParameterDecorator => {
   return createParamDecorator((data: unknown, ctx: ExecutionContext): QueryResolveTree<DTO> => {
     const info = GqlExecutionContext.create(ctx).getInfo<ResolveInfo>()
     return simplifyResolveInfo(info)
@@ -56,16 +56,13 @@ const ReadOneRelationMixin =
           operationGroup: OperationGroup.READ,
           many: false
         })
-        @Info(DTOClass)
-        info: QueryResolveTree<DTO>,
         authFilter?: Filter<Relation>,
         @GraphQLLookAheadRelations(DTOClass)
-        relations?: SelectRelation<Relation>[]
+        relations?: SelectRelation<Relation>[],
+        @Info<DTO>()
+        info?: QueryResolveTree<DTO>
       ): Promise<Relation | undefined> {
-        // const ctx = GqlExecutionContext.create(context)
-        // const info = ctx.getInfo()
-
-        console.log('info', info, relations)
+        console.log('info', info)
 
         const results = await DataLoaderFactory.getOrCreateLoader(
           context,

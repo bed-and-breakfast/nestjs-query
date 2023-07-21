@@ -15,7 +15,7 @@ const types_1 = require("../../types");
 const helpers_1 = require("../helpers");
 const resolver_interface_1 = require("../resolver.interface");
 const helpers_2 = require("./helpers");
-const Info = (DTOClass) => {
+const Info = () => {
     return (0, common_1.createParamDecorator)((data, ctx) => {
         const info = graphql_1.GqlExecutionContext.create(ctx).getInfo();
         return (0, graphql_resolve_info_utils_1.simplifyResolveInfo)(info);
@@ -33,10 +33,8 @@ const ReadOneRelationMixin = (DTOClass, relation) => (Base) => {
     const loaderName = `load${baseName}For${DTOClass.name}`;
     const findLoader = new loader_1.FindRelationsLoader(relationDTO, relationName);
     let ReadOneMixin = class ReadOneMixin extends Base {
-        async [_a = `find${baseName}`](dto, context, info, authFilter, relations) {
-            // const ctx = GqlExecutionContext.create(context)
-            // const info = ctx.getInfo()
-            console.log('info', info, relations);
+        async [_a = `find${baseName}`](dto, context, authFilter, relations, info) {
+            console.log('info', info);
             const results = await loader_1.DataLoaderFactory.getOrCreateLoader(context, loaderName, findLoader.createLoader(this.service, {
                 withDeleted: relation.withDeleted,
                 lookedAhead: relation.enableLookAhead
@@ -57,10 +55,10 @@ const ReadOneRelationMixin = (DTOClass, relation) => (Base) => {
             operationGroup: auth_1.OperationGroup.READ,
             many: false
         })),
-        tslib_1.__param(2, Info(DTOClass)),
-        tslib_1.__param(4, (0, decorators_1.GraphQLLookAheadRelations)(DTOClass)),
+        tslib_1.__param(3, (0, decorators_1.GraphQLLookAheadRelations)(DTOClass)),
+        tslib_1.__param(4, Info()),
         tslib_1.__metadata("design:type", Function),
-        tslib_1.__metadata("design:paramtypes", [Object, Object, Object, Object, Array]),
+        tslib_1.__metadata("design:paramtypes", [Object, Object, Object, Array, Object]),
         tslib_1.__metadata("design:returntype", Promise)
     ], ReadOneMixin.prototype, _a, null);
     ReadOneMixin = tslib_1.__decorate([

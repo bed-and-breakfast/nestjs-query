@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.simplifyResolveInfo = void 0;
 const graphql_1 = require("graphql");
+const values_1 = require("graphql/execution/values");
 function getFieldFromAST(fieldNode, parentType) {
     if (fieldNode.kind === graphql_1.Kind.FIELD) {
         if (!(parentType instanceof graphql_1.GraphQLUnionType)) {
@@ -61,7 +62,7 @@ function parseFieldNodes(inASTs, resolveInfo, initTree, parentType) {
         const parsedField = {
             name: fieldNode.name.value,
             alias,
-            args: (0, graphql_1.getArgumentValues)(field, fieldNode, resolveInfo.variableValues),
+            args: (0, values_1.getArgumentValues)(field, fieldNode, resolveInfo.variableValues),
             fields: fieldNode.selectionSet && (0, graphql_1.isCompositeType)(fieldGqlTypeOrUndefined)
                 ? parseFieldNodes(fieldNode.selectionSet.selections, resolveInfo, {}, fieldGqlTypeOrUndefined)
                 : {}

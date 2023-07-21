@@ -1,14 +1,5 @@
-import {
-  ASTNode,
-  DirectiveNode,
-  FieldNode,
-  getArgumentValues,
-  getNamedType,
-  GraphQLField,
-  GraphQLUnionType,
-  isCompositeType,
-  Kind
-} from 'graphql'
+import { ASTNode, DirectiveNode, FieldNode, getNamedType, GraphQLField, GraphQLUnionType, isCompositeType, Kind } from 'graphql'
+import { getArgumentValues } from 'graphql/execution/values'
 
 import type { CursorConnectionType, OffsetConnectionType } from '../types'
 import type { Query } from '@ptc-org/nestjs-query-core'
