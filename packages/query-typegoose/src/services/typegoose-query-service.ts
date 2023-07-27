@@ -91,8 +91,6 @@ export class TypegooseQueryService<Entity extends Base> extends ReferenceQuerySe
       return undefined
     }
 
-    console.log(plainToClass(this.Entity, doc))
-
     return plainToClass(this.Entity, doc) as typeof doc
   }
 

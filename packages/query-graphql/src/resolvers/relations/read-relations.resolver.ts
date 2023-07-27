@@ -62,7 +62,7 @@ const ReadOneRelationMixin =
         @GraphQLInfo<DTO>()
         info?: QueryResolveTree<DTO>
       ): Promise<Relation | undefined> {
-        if (Object.values(info.fields).length === 1 && (info.fields as { id?: unknown }).id) {
+        if (info?.fields && Object.values(info.fields).length === 1 && (info.fields as { id?: unknown }).id) {
           return { id: dto[relationName] } as Relation
         }
 
@@ -138,7 +138,7 @@ const ReadManyRelationMixin =
       ): Promise<InstanceType<typeof CT>> {
         const relationQuery = await transformAndValidate(RelationQA, q)
 
-        if (Object.values(info.fields).length === 1 && (info.fields as { id?: unknown }).id) {
+        if (info?.fields && Object.values(info.fields).length === 1 && (info.fields as { id?: unknown }).id) {
           if (
             (!info.args.filter || Object.keys(info.args.filter).length === 0) &&
             (!info.args.sorting || info.args.sorting.length === 0) &&
