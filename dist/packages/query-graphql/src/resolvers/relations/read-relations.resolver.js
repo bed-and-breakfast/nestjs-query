@@ -34,7 +34,7 @@ const ReadOneRelationMixin = (DTOClass, relation) => (Base) => {
     const findLoader = new loader_1.FindRelationsLoader(relationDTO, relationName);
     let ReadOneMixin = class ReadOneMixin extends Base {
         async [_a = `find${baseName}`](dto, context, authFilter, relations, info) {
-            if (Object.values(info.fields).length === 1 && info.fields.id) {
+            if (info?.fields && Object.values(info.fields).length === 1 && info.fields.id) {
                 return { id: dto[relationName] };
             }
             const results = await loader_1.DataLoaderFactory.getOrCreateLoader(context, loaderName, findLoader.createLoader(this.service, {
@@ -96,7 +96,7 @@ const ReadManyRelationMixin = (DTOClass, relation) => (Base) => {
     let ReadManyMixin = class ReadManyMixin extends Base {
         async [_a = `query${pluralBaseName}`](dto, q, context, relationFilter, relations, info) {
             const relationQuery = await (0, helpers_1.transformAndValidate)(RelationQA, q);
-            if (Object.values(info.fields).length === 1 && info.fields.id) {
+            if (info?.fields && Object.values(info.fields).length === 1 && info.fields.id) {
                 if ((!info.args.filter || Object.keys(info.args.filter).length === 0) &&
                     (!info.args.sorting || info.args.sorting.length === 0) &&
                     (!info.args.paging || Object.keys(info.args.paging).length === 0)) {

@@ -65,7 +65,6 @@ let TypegooseQueryService = class TypegooseQueryService extends reference_query_
         if (!doc) {
             return undefined;
         }
-        console.log((0, class_transformer_1.plainToClass)(this.Entity, doc));
         return (0, class_transformer_1.plainToClass)(this.Entity, doc);
     }
     /**
