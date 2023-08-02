@@ -82,10 +82,12 @@ let ReferenceQueryService = class ReferenceQueryService {
                 match: filterQuery
             })
                 .lean();
-            references = await Promise.all(arrayDto.map(async (d, i) => {
+            references = await Promise.all(arrayDto.map(async (d) => {
                 let populatedRef;
-                if (typeof foundEntities[i] !== 'undefined') {
-                    populatedRef = foundEntities[i][relationName];
+                const foundEntity = foundEntities.find((entity) => (entity._id.toString() ?? entity.id.toString()) === (d._id.toString() ?? d.id.toString()));
+                // @TODO add tests with multiple entities that checks for order
+                if (typeof foundEntity !== 'undefined') {
+                    populatedRef = foundEntity[relationName];
                 }
                 if (populatedRef) {
                     if (populatedRef._id) {
@@ -162,10 +164,12 @@ let ReferenceQueryService = class ReferenceQueryService {
                 ...(options.limit ? { perDocumentLimit: options.limit, options: (0, lodash_omit_1.default)(options, 'limit') } : { options })
             });
             // .cacheQuery()
-            references = await Promise.all(arrayDto.map(async (d, i) => {
+            references = await Promise.all(arrayDto.map(async (d) => {
                 let populatedRef;
-                if (typeof foundEntities[i] !== 'undefined') {
-                    populatedRef = foundEntities[i].get(relationName);
+                const foundEntity = foundEntities.find((entity) => (entity._id.toString() ?? entity.id.toString()) === (d._id.toString() ?? d.id.toString()));
+                // @TODO add tests with multiple entities that checks for order
+                if (typeof foundEntity !== 'undefined') {
+                    populatedRef = foundEntity.get(relationName);
                     for (const p of populatedRef) {
                         if (p) {
                             if (p._id) {
@@ -239,11 +243,15 @@ let ReferenceQueryService = class ReferenceQueryService {
     //   })
     //   // .cacheQuery()
     //
-    //   const references = arrayDto.map((d, i) => {
+    //   const references = arrayDto.map((d) => {
     //     let populatedRef: Relation | Relation[] | undefined
+    //     const foundEntity = foundEntities.find(
+    //       (entity) => (entity._id.toString() ?? entity.id.toString()) === (d._id.toString() ?? d.id.toString())
+    //     )
     //
-    //     if (typeof foundEntities[i] !== 'undefined') {
-    //       populatedRef = foundEntities[i].get(relationName)
+    //     // @TODO add tests with multiple entities that checks for order
+    //     if (typeof foundEntity !== 'undefined') {
+    //       populatedRef = foundEntity.get(relationName)
     //     }
     //
     //     if (!populatedRef) {

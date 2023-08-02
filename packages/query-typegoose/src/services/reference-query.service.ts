@@ -180,11 +180,15 @@ export abstract class ReferenceQueryService<Entity extends Base> {
         .lean()
 
       references = await Promise.all(
-        arrayDto.map(async (d, i) => {
+        arrayDto.map(async (d) => {
           let populatedRef: Relation | undefined
+          const foundEntity = foundEntities.find(
+            (entity) => (entity._id.toString() ?? entity.id.toString()) === (d._id.toString() ?? d.id.toString())
+          )
 
-          if (typeof foundEntities[i] !== 'undefined') {
-            populatedRef = foundEntities[i][relationName]
+          // @TODO add tests with multiple entities that checks for order
+          if (typeof foundEntity !== 'undefined') {
+            populatedRef = foundEntity[relationName]
           }
 
           if (populatedRef) {
@@ -301,11 +305,15 @@ export abstract class ReferenceQueryService<Entity extends Base> {
       // .cacheQuery()
 
       references = await Promise.all(
-        arrayDto.map(async (d, i) => {
+        arrayDto.map(async (d) => {
           let populatedRef: Relation[] | undefined
+          const foundEntity = foundEntities.find(
+            (entity) => (entity._id.toString() ?? entity.id.toString()) === (d._id.toString() ?? d.id.toString())
+          )
 
-          if (typeof foundEntities[i] !== 'undefined') {
-            populatedRef = foundEntities[i].get(relationName)
+          // @TODO add tests with multiple entities that checks for order
+          if (typeof foundEntity !== 'undefined') {
+            populatedRef = foundEntity.get(relationName)
 
             for (const p of populatedRef) {
               if (p) {
@@ -394,11 +402,15 @@ export abstract class ReferenceQueryService<Entity extends Base> {
   //   })
   //   // .cacheQuery()
   //
-  //   const references = arrayDto.map((d, i) => {
+  //   const references = arrayDto.map((d) => {
   //     let populatedRef: Relation | Relation[] | undefined
+  //     const foundEntity = foundEntities.find(
+  //       (entity) => (entity._id.toString() ?? entity.id.toString()) === (d._id.toString() ?? d.id.toString())
+  //     )
   //
-  //     if (typeof foundEntities[i] !== 'undefined') {
-  //       populatedRef = foundEntities[i].get(relationName)
+  //     // @TODO add tests with multiple entities that checks for order
+  //     if (typeof foundEntity !== 'undefined') {
+  //       populatedRef = foundEntity.get(relationName)
   //     }
   //
   //     if (!populatedRef) {
