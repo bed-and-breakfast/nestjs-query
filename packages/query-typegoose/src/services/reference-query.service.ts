@@ -230,7 +230,11 @@ export abstract class ReferenceQueryService<Entity extends Base> {
       references = await Promise.all(
         arrayDto.map(async (d) => {
           if (d[relationName]) {
-            return [d, assembler.convertToDTO(await this.referenceCacheService.get(RelationClass, d[relationName]))]
+            const relation = await this.referenceCacheService.get(RelationClass, d[relationName])
+
+            if ((relation as { deleted?: boolean }).deleted !== true) {
+              return [d, assembler.convertToDTO(relation)]
+            }
           }
 
           return [d, undefined]
@@ -367,7 +371,7 @@ export abstract class ReferenceQueryService<Entity extends Base> {
                     d[relationName].map(async (reference) => this.referenceCacheService.get(RelationClass, reference))
                   )
                 )
-                .filter((item) => item !== undefined)
+                .filter((item) => item !== undefined && (item as { deleted?: boolean }).deleted !== true)
             ]
           }
 

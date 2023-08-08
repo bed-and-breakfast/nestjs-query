@@ -122,7 +122,10 @@ let ReferenceQueryService = class ReferenceQueryService {
             // Set reference results
             references = await Promise.all(arrayDto.map(async (d) => {
                 if (d[relationName]) {
-                    return [d, assembler.convertToDTO(await this.referenceCacheService.get(RelationClass, d[relationName]))];
+                    const relation = await this.referenceCacheService.get(RelationClass, d[relationName]);
+                    if (relation.deleted !== true) {
+                        return [d, assembler.convertToDTO(relation)];
+                    }
                 }
                 return [d, undefined];
             }));
@@ -212,7 +215,7 @@ let ReferenceQueryService = class ReferenceQueryService {
                         d,
                         assembler
                             .convertToDTOs(await Promise.all(d[relationName].map(async (reference) => this.referenceCacheService.get(RelationClass, reference))))
-                            .filter((item) => item !== undefined)
+                            .filter((item) => item !== undefined && item.deleted !== true)
                     ];
                 }
                 return [d, []];
