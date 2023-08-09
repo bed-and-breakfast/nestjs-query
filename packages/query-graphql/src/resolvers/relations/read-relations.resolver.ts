@@ -138,8 +138,10 @@ const ReadManyRelationMixin =
       ): Promise<InstanceType<typeof CT>> {
         const relationQuery = await transformAndValidate(RelationQA, q)
 
+        // @TODO Test loading only ids, also with virtuals
         if (info?.fields && Object.values(info.fields).length === 1 && (info.fields as { id?: unknown }).id) {
           if (
+            Array.isArray(dto[relationName]) &&
             (!info.args.filter || Object.keys(info.args.filter).length === 0) &&
             (!info.args.sorting || info.args.sorting.length === 0) &&
             (!info.args.paging || Object.keys(info.args.paging).length === 0)

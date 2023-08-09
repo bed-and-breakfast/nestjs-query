@@ -96,8 +96,10 @@ const ReadManyRelationMixin = (DTOClass, relation) => (Base) => {
     let ReadManyMixin = class ReadManyMixin extends Base {
         async [_a = `query${pluralBaseName}`](dto, q, context, relationFilter, relations, info) {
             const relationQuery = await (0, helpers_1.transformAndValidate)(RelationQA, q);
+            // @TODO Test loading only ids, also with virtuals
             if (info?.fields && Object.values(info.fields).length === 1 && info.fields.id) {
-                if ((!info.args.filter || Object.keys(info.args.filter).length === 0) &&
+                if (Array.isArray(dto[relationName]) &&
+                    (!info.args.filter || Object.keys(info.args.filter).length === 0) &&
                     (!info.args.sorting || info.args.sorting.length === 0) &&
                     (!info.args.paging || Object.keys(info.args.paging).length === 0)) {
                     return CT.createFromPromise(
