@@ -1,4 +1,3 @@
-/// <reference types="mongoose/types/schemaoptions" />
 import { mongoose } from '@typegoose/typegoose';
 import { Cache } from 'cache-manager';
 export interface TypegooseClass {
@@ -10,7 +9,8 @@ export interface TypegooseClassWrapper {
 export interface TypegooseClassWithOptions extends TypegooseClassWrapper {
     schemaOptions?: mongoose.SchemaOptions;
     discriminators?: (TypegooseClass | TypegooseDiscriminator)[];
-    cache?: true | {
+    cache?: true;
+    cacheRelations?: true | {
         loadAll?: boolean;
         cacheManager?: Cache;
     };

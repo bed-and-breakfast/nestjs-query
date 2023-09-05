@@ -12,7 +12,7 @@ export const RelationCache = <DTO extends Base<RefType>>() => {
     // plugin(mongooseLeanDefaults)(DTOClass)
 
     const invalidateCache = (dto: DTO) => {
-      const t: ReferenceCacheService = Reflect.getOwnMetadata('cacheProvider', DTOClass)
+      const t: ReferenceCacheService = Reflect.getOwnMetadata('relationCacheProvider', DTOClass)
       t.invalidate(DTOClass, dto._id)
     }
 
@@ -74,7 +74,7 @@ export const RelationCache = <DTO extends Base<RefType>>() => {
     //   'findOneAndUpdate',
     //   function (dto) {
     //     const schema = this.model.schema
-    //     const referenceCacheService: ReferenceCacheService = Reflect.getOwnMetadata('cacheProvider', DTOClass)
+    //     const referenceCacheService: ReferenceCacheService = Reflect.getOwnMetadata('relationCacheProvider', DTOClass)
     //
     //     console.log(
     //       'findOneAndUpdate',

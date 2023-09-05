@@ -33,7 +33,7 @@ let TypegooseQueryService = class TypegooseQueryService extends reference_query_
      */
     async query(query) {
         const { filterQuery, options } = this.filterQueryBuilder.buildQuery(query);
-        const entities = await this.Model.find(filterQuery, {}, options).lean();
+        const entities = await this.Model.find(filterQuery, {}, options).lean().cacheQuery();
         return entities.map((entity) => (0, class_transformer_1.plainToClass)(this.Entity, entity));
     }
     async aggregate(filter, aggregateQuery) {
@@ -42,12 +42,13 @@ let TypegooseQueryService = class TypegooseQueryService extends reference_query_
         if (options.sort) {
             aggPipeline.push({ $sort: options.sort ?? {} });
         }
-        const aggResult = await this.Model.aggregate(aggPipeline).exec();
+        // @ts-ignore
+        const aggResult = await this.Model.aggregate(aggPipeline).cachePipeline();
         return query_1.AggregateBuilder.convertToAggregateResponse(aggResult);
     }
-    count(filter) {
+    async count(filter) {
         const filterQuery = this.filterQueryBuilder.buildFilterQuery(filter);
-        return this.Model.countDocuments(filterQuery).exec();
+        return (await this.Model.countDocuments(filterQuery).cacheQuery()) ?? 0;
     }
     /**
      * Find an entity by it's `id`.
@@ -61,7 +62,7 @@ let TypegooseQueryService = class TypegooseQueryService extends reference_query_
      */
     async findById(id, opts) {
         const filterQuery = this.filterQueryBuilder.buildIdFilterQuery(id, opts?.filter);
-        const doc = await this.Model.findOne(filterQuery).lean();
+        const doc = await this.Model.findOne(filterQuery).lean().cacheQuery();
         if (!doc) {
             return undefined;
         }
@@ -174,6 +175,7 @@ let TypegooseQueryService = class TypegooseQueryService extends reference_query_
      */
     async deleteOne(id, opts) {
         const filterQuery = this.filterQueryBuilder.buildIdFilterQuery(id, opts?.filter);
+        await this.referenceCacheService.invalidate(this.Entity, id);
         const doc = await this.Model.findOneAndDelete(filterQuery);
         if (!doc) {
             throw new common_1.NotFoundException(`Unable to find ${this.Model.modelName} with id: ${id}`);
@@ -195,7 +197,16 @@ let TypegooseQueryService = class TypegooseQueryService extends reference_query_
      */
     async deleteMany(filter) {
         const filterQuery = this.filterQueryBuilder.buildFilterQuery(filter);
-        const res = await this.Model.deleteMany(filterQuery).exec();
+        if (this.referenceCacheService.isCachedRelation(this.Entity)) {
+            const toBeDeleted = await this.Model.find(filterQuery).select('_id').cacheQuery();
+            const deletePromises = [];
+            toBeDeleted.forEach((id) => {
+                console.log('DID', id);
+                deletePromises.push(this.referenceCacheService.invalidate(this.Entity, id));
+            });
+            await Promise.all(deletePromises);
+        }
+        const res = await this.Model.deleteMany(filterQuery);
         return { deletedCount: res.deletedCount || 0 };
     }
     ensureIdIsNotPresent(e) {

@@ -85,7 +85,8 @@ export abstract class ReferenceQueryService<Entity extends Base> {
     if (options.sort) {
       aggPipeline.push({ $sort: options.sort ?? {} })
     }
-    const aggResult = await relationModel.aggregate<Record<string, unknown>>(aggPipeline).exec()
+    // @ts-ignore
+    const aggResult = await relationModel.aggregate<Record<string, unknown>>(aggPipeline).cachePipeline()
     return AggregateBuilder.convertToAggregateResponse(aggResult)
   }
 
@@ -124,7 +125,8 @@ export abstract class ReferenceQueryService<Entity extends Base> {
     if (!refFilter) {
       return 0
     }
-    return relationModel.countDocuments(referenceQueryBuilder.buildFilterQuery(refFilter)).lean()
+    // @ts-ignore
+    return relationModel.countDocuments(referenceQueryBuilder.buildFilterQuery(refFilter)).lean().cacheQuery()
   }
 
   public findRelation<Relation extends Base<RefType>>(
@@ -165,10 +167,8 @@ export abstract class ReferenceQueryService<Entity extends Base> {
       !this.referenceCacheService.isCachedRelation(RelationClass) ||
       (opts?.filter && Object.keys(opts.filter).length > 0) ||
       this.getReferenceModel(relationName).schema?.virtuals?.[relationName]
-      // !(relationName in arrayDto[0]) /* @TODO Replace with: arrayDto[0].schema.virtuals[relationName] (after updating tests) */
+      // !(relationName in arrayDto[0]) /* @TODO Replace with: arrayDto[0].schema.virtuals[relationName] (after updating tests) (this.isVirtualPath()) */
     ) {
-      console.log('no cache', RelationClass, opts?.filter)
-
       // references = await this.queryRelation(RelationClass, relationName, arrayDto, { filter: opts?.filter })
 
       // eslint-disable-next-line no-underscore-dangle
@@ -178,6 +178,8 @@ export abstract class ReferenceQueryService<Entity extends Base> {
           match: filterQuery
         })
         .lean()
+      // @TODO Fix populate in speedgoose
+      // .cacheQuery()
 
       references = await Promise.all(
         arrayDto.map(async (d) => {
@@ -219,6 +221,8 @@ export abstract class ReferenceQueryService<Entity extends Base> {
         const unresolvedReferenceResults = await relationModel
           .find({ _id: { $in: unresolvedReferences.map((ref) => ref) } })
           .lean()
+          .cacheQuery()
+
         for (const ref of unresolvedReferenceResults) {
           if (ref._id) {
             await this.referenceCacheService.set(RelationClass, ref._id, ref as unknown as Relation)
@@ -294,18 +298,19 @@ export abstract class ReferenceQueryService<Entity extends Base> {
       (query.paging && Object.keys(query.paging).length > 0) ||
       (query.sorting && query.sorting.length > 0) ||
       this.getReferenceModel(relationName).schema?.virtuals?.[relationName]
-      // !(relationName in arrayDto[0]) /* @TODO Replace with: arrayDto[0].schema.virtuals[relationName] (after updating tests) */
+      // !(relationName in arrayDto[0]) /* @TODO Replace with: arrayDto[0].schema.virtuals[relationName] (after updating tests) (this.isVirtualPath()) */
     ) {
-      console.log('no cache', RelationClass, query)
-
       // references = await this.queryRelation(RelationClass, relationName, arrayDto, query, true)
 
       // eslint-disable-next-line no-underscore-dangle
-      const foundEntities = await this.Model.find({ _id: { $in: arrayDto.map((d) => d._id ?? d.id) } }).populate({
-        path: relationName,
-        match: filterQuery,
-        ...(options.limit ? { perDocumentLimit: options.limit, options: omit(options, 'limit') } : { options })
-      })
+      const foundEntities = await this.Model.find({ _id: { $in: arrayDto.map((d) => d._id ?? d.id) } })
+        .populate({
+          path: relationName,
+          match: filterQuery,
+          ...(options.limit ? { perDocumentLimit: options.limit, options: omit(options, 'limit') } : { options })
+        })
+        .lean()
+      // @TODO Fix populate in speedgoose
       // .cacheQuery()
 
       references = await Promise.all(
@@ -317,7 +322,7 @@ export abstract class ReferenceQueryService<Entity extends Base> {
 
           // @TODO add tests with multiple entities that checks for order
           if (typeof foundEntity !== 'undefined') {
-            populatedRef = foundEntity.get(relationName)
+            populatedRef = foundEntity[relationName]
 
             for (const p of populatedRef) {
               if (p) {
@@ -352,6 +357,8 @@ export abstract class ReferenceQueryService<Entity extends Base> {
         const unresolvedReferenceResults = await relationModel
           .find({ _id: { $in: unresolvedReferences.map((ref) => ref) } })
           .lean()
+          .cacheQuery()
+
         for (const ref of unresolvedReferenceResults) {
           if (ref._id) {
             await this.referenceCacheService.set(RelationClass, ref._id, ref as unknown as Relation)
@@ -404,7 +411,8 @@ export abstract class ReferenceQueryService<Entity extends Base> {
   //     match: filterQuery,
   //     ...(options.limit ? { perDocumentLimit: options.limit, options: omit(options, 'limit') } : { options })
   //   })
-  //   // .cacheQuery()
+  //   .lean()
+  //   .cacheQuery()
   //
   //   const references = arrayDto.map((d) => {
   //     let populatedRef: Relation | Relation[] | undefined
@@ -447,6 +455,7 @@ export abstract class ReferenceQueryService<Entity extends Base> {
   ): Promise<Entity> {
     this.checkForReference('AddRelations', relationName, false)
     const refCount = await this.getRefCount(relationName, relationIds, opts?.relationFilter)
+
     if (relationIds.length !== refCount) {
       throw new Error(`Unable to find all ${relationName} to add to ${this.Model.modelName}`)
     }
@@ -595,14 +604,17 @@ export abstract class ReferenceQueryService<Entity extends Base> {
     return refModel
   }
 
-  private getRefCount<Relation extends Document>(
+  private async getRefCount<Relation extends Document>(
     relationName: string,
     relationIds: (string | number)[],
     filter?: Filter<Relation>
   ): Promise<number> {
     const referenceModel = this.getReferenceModel<Relation>(relationName)
     const referenceQueryBuilder = this.getReferenceQueryBuilder(relationName)
-    return referenceModel.countDocuments(referenceQueryBuilder.buildIdFilterQuery(relationIds, filter)).lean()
+    return ((await referenceModel
+      .countDocuments(referenceQueryBuilder.buildIdFilterQuery(relationIds, filter))
+      .lean()
+      .cacheQuery()) ?? 0) as number
   }
 
   private getReferenceQueryBuilder<Ref>(refName: string): FilterQueryBuilder<Ref> {

@@ -14,11 +14,11 @@ let ReferenceCacheService = class ReferenceCacheService {
     enableCache(model) {
         const RelationClass = model.typegooseClass ?? model;
         this.cacheModels.add(RelationClass);
-        if (typeof model.cache === 'object' &&
-            model.cache.loadAll) {
+        if (typeof model.cacheRelations === 'object' &&
+            model.cacheRelations.loadAll) {
             this.relationModels.set(RelationClass, (0, typegoose_1.getModelForClass)(RelationClass));
         }
-        Reflect.defineMetadata('cacheProvider', this, model);
+        Reflect.defineMetadata('relationCacheProvider', this, model);
     }
     isCachedRelation(RelationClass) {
         return this.cacheModels.has(RelationClass);

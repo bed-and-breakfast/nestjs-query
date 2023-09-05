@@ -1,6 +1,6 @@
 /* eslint-disable no-underscore-dangle,@typescript-eslint/no-unsafe-return */
 import { InjectModel, TypegooseModule } from '@m8a/nestjs-typegoose'
-import { Optional } from '@nestjs/common'
+import { ConsoleLogger, Optional } from '@nestjs/common'
 import { Test, TestingModule } from '@nestjs/testing'
 import { FindRelationOptions, SortDirection } from '@ptc-org/nestjs-query-core'
 import { DocumentType, getModelForClass, mongoose } from '@typegoose/typegoose'
@@ -49,20 +49,40 @@ describe('TypegooseQueryService-With Descriminates', () => {
 
   beforeAll(async () => {
     await mongo.init()
-    moduleRef = await Test.createTestingModule({
+
+    const testingModuleBuilder = Test.createTestingModule({
       imports: [
-        TypegooseModule.forRoot(mongo.getConnectionUri()),
         NestjsQueryTypegooseCacheModule,
+        TypegooseModule.forRoot(mongo.getConnectionUri()),
         NestjsQueryTypegooseModule.forFeature([
           {
             typegooseClass: TestEntity,
+            cacheRelations: true,
             discriminators: [TestDiscriminatedEntity]
           },
           TestReference
         ])
+        // NestjsQueryTypegooseModule.forFeature([
+        //   {
+        //     typegooseClass: TestEntity,
+        //     discriminators: [TestDiscriminatedEntity]
+        //   },
+        //   TestReference
+        // ])
       ],
       providers: [TestDiscriminatedEntityService, TestReferenceService]
-    }).compile()
+    })
+
+    testingModuleBuilder.setLogger(new ConsoleLogger('TEST'))
+
+    moduleRef = await testingModuleBuilder.compile()
+
+    const app = moduleRef.createNestApplication()
+    await app.init()
+  })
+
+  afterAll(() => {
+    // console.log(queries)
   })
 
   function convertDocument<Doc>(doc: DocumentType<Doc>): Doc {

@@ -8,6 +8,7 @@ import mongooseLeanDefaults from 'mongoose-lean-defaults'
 import mongooseLeanGetters from 'mongoose-lean-getters'
 import mongooseLeanId from 'mongoose-lean-id'
 import mongooseLeanVirtuals from 'mongoose-lean-virtuals'
+import { SpeedGooseCacheAutoCleaner } from 'speedgoose'
 
 import { TypegooseQueryService } from './services'
 import { ReferenceCacheService } from './services/reference-cache.service'
@@ -24,7 +25,7 @@ const isTypegooseClassWithOptions = (item: ClassOrDiscriminator): item is Typego
 
 AssemblerSerializer((obj: mongoose.Document) => obj.toObject({ virtuals: true }))(mongoose.Document)
 
-function ensureProperInput(item: TypegooseInput): ClassOrDiscriminator | undefined {
+export function ensureProperInput(item: TypegooseInput): ClassOrDiscriminator | undefined {
   if (isTypegooseClass(item)) {
     return { typegooseClass: item }
   }
@@ -44,6 +45,16 @@ function createTypegooseQueryServiceProvider<Entity extends Base>(
   plugin(mongooseLeanGetters)(inputModel.typegooseClass)
   plugin(mongooseLeanDefaults)(inputModel.typegooseClass)
 
+  // if ((model as TypegooseClassWithOptions).cache) {
+  Reflect.defineMetadata('queryCache', true, model)
+
+  plugin(SpeedGooseCacheAutoCleaner, {
+    // wasRecordDeletedCallback: (...args) => {
+    //   console.log('wasRecordDeletedCallback', args)
+    // }
+  })(inputModel.typegooseClass)
+  // }
+
   if (!inputModel) {
     // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
     throw new Error(`Model definitions ${model} is incorrect.`)
@@ -53,7 +64,7 @@ function createTypegooseQueryServiceProvider<Entity extends Base>(
   return {
     provide: getQueryServiceToken({ name: modelName }),
     useFactory(ModelClass: ReturnModelType<new () => Entity>, referenceCacheService?: ReferenceCacheService) {
-      if ((model as TypegooseClassWithOptions).cache) {
+      if ((model as TypegooseClassWithOptions).cacheRelations) {
         referenceCacheService.enableCache(model)
       }
 

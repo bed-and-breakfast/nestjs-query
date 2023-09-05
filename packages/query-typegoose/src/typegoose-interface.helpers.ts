@@ -13,7 +13,8 @@ export interface TypegooseClassWrapper {
 export interface TypegooseClassWithOptions extends TypegooseClassWrapper {
   schemaOptions?: mongoose.SchemaOptions
   discriminators?: (TypegooseClass | TypegooseDiscriminator)[]
-  cache?:
+  cache?: true
+  cacheRelations?:
     | true
     | {
         loadAll?: boolean

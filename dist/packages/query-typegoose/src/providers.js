@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createTypegooseQueryServiceProviders = void 0;
+exports.createTypegooseQueryServiceProviders = exports.ensureProperInput = void 0;
 const tslib_1 = require("tslib");
 const nestjs_typegoose_1 = require("@m8a/nestjs-typegoose");
 const nestjs_query_core_1 = require("@ptc-org/nestjs-query-core");
@@ -10,6 +10,7 @@ const mongoose_lean_defaults_1 = tslib_1.__importDefault(require("mongoose-lean-
 const mongoose_lean_getters_1 = tslib_1.__importDefault(require("mongoose-lean-getters"));
 const mongoose_lean_id_1 = tslib_1.__importDefault(require("mongoose-lean-id"));
 const mongoose_lean_virtuals_1 = tslib_1.__importDefault(require("mongoose-lean-virtuals"));
+const speedgoose_1 = require("speedgoose");
 const services_1 = require("./services");
 const reference_cache_service_1 = require("./services/reference-cache.service");
 const isTypegooseClass = (item) => (0, is_class_1.isClass)(item);
@@ -24,12 +25,21 @@ function ensureProperInput(item) {
     }
     return undefined;
 }
+exports.ensureProperInput = ensureProperInput;
 function createTypegooseQueryServiceProvider(model) {
     const inputModel = ensureProperInput(model);
     (0, typegoose_1.plugin)(mongoose_lean_id_1.default)(inputModel.typegooseClass);
     (0, typegoose_1.plugin)(mongoose_lean_virtuals_1.default)(inputModel.typegooseClass);
     (0, typegoose_1.plugin)(mongoose_lean_getters_1.default)(inputModel.typegooseClass);
     (0, typegoose_1.plugin)(mongoose_lean_defaults_1.default)(inputModel.typegooseClass);
+    // if ((model as TypegooseClassWithOptions).cache) {
+    Reflect.defineMetadata('queryCache', true, model);
+    (0, typegoose_1.plugin)(speedgoose_1.SpeedGooseCacheAutoCleaner, {
+    // wasRecordDeletedCallback: (...args) => {
+    //   console.log('wasRecordDeletedCallback', args)
+    // }
+    })(inputModel.typegooseClass);
+    // }
     if (!inputModel) {
         // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
         throw new Error(`Model definitions ${model} is incorrect.`);
@@ -38,7 +48,7 @@ function createTypegooseQueryServiceProvider(model) {
     return {
         provide: (0, nestjs_query_core_1.getQueryServiceToken)({ name: modelName }),
         useFactory(ModelClass, referenceCacheService) {
-            if (model.cache) {
+            if (model.cacheRelations) {
                 referenceCacheService.enableCache(model);
             }
             // initialize default serializer for documents, this is the type that mongoose returns from queries

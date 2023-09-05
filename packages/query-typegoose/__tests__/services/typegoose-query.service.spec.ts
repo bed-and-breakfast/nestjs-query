@@ -63,19 +63,15 @@ describe('TypegooseQueryService', () => {
   beforeAll(async () => {
     await mongo.init()
 
-    // await applySpeedGooseCacheLayer(mongoose as unknown as Parameters<typeof applySpeedGooseCacheLayer>[0], {
-    //   sharedCacheStrategy: SharedCacheStrategies.IN_MEMORY,
-    //   debugConfig: {
-    //     enabled: true
-    //   },
-    //   enabled: false
-    // })
-
     const testingModuleBuilder = Test.createTestingModule({
       imports: [
         NestjsQueryTypegooseCacheModule,
         TypegooseModule.forRoot(mongo.getConnectionUri()),
-        NestjsQueryTypegooseModule.forFeature([TestEntity, TestReference])
+        NestjsQueryTypegooseModule.forFeature([
+          { typegooseClass: TestEntity, cacheRelations: true },
+          { typegooseClass: TestReference, cacheRelations: true }
+        ])
+        // NestjsQueryTypegooseModule.forFeature([TestEntity, TestReference])
       ],
       providers: [TestReferenceService, TestEntityService]
     })
@@ -89,7 +85,7 @@ describe('TypegooseQueryService', () => {
   })
 
   afterAll(() => {
-    console.log(queries)
+    // console.log(queries)
   })
 
   function convertDocument<Doc>(doc: DocumentType<Doc>): Doc {

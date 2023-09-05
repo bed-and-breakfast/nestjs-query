@@ -8,7 +8,7 @@ const RelationCache = () => {
         // plugin(mongooseLeanGetters)(DTOClass)
         // plugin(mongooseLeanDefaults)(DTOClass)
         const invalidateCache = (dto) => {
-            const t = Reflect.getOwnMetadata('cacheProvider', DTOClass);
+            const t = Reflect.getOwnMetadata('relationCacheProvider', DTOClass);
             t.invalidate(DTOClass, dto._id);
         };
         // post<DTO>(
@@ -68,7 +68,7 @@ const RelationCache = () => {
         //   'findOneAndUpdate',
         //   function (dto) {
         //     const schema = this.model.schema
-        //     const referenceCacheService: ReferenceCacheService = Reflect.getOwnMetadata('cacheProvider', DTOClass)
+        //     const referenceCacheService: ReferenceCacheService = Reflect.getOwnMetadata('relationCacheProvider', DTOClass)
         //
         //     console.log(
         //       'findOneAndUpdate',

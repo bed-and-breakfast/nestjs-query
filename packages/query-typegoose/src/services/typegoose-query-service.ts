@@ -54,7 +54,7 @@ export class TypegooseQueryService<Entity extends Base> extends ReferenceQuerySe
    */
   async query(query: Query<Entity>): Promise<Entity[]> {
     const { filterQuery, options } = this.filterQueryBuilder.buildQuery(query)
-    const entities = await this.Model.find(filterQuery, {}, options).lean()
+    const entities = await this.Model.find(filterQuery, {}, options).lean().cacheQuery()
 
     return entities.map((entity) => plainToClass(this.Entity, entity) as typeof entity)
   }
@@ -65,13 +65,15 @@ export class TypegooseQueryService<Entity extends Base> extends ReferenceQuerySe
     if (options.sort) {
       aggPipeline.push({ $sort: options.sort ?? {} })
     }
-    const aggResult = await this.Model.aggregate<Record<string, unknown>>(aggPipeline).exec()
+    // @ts-ignore
+    const aggResult = await this.Model.aggregate<Record<string, unknown>>(aggPipeline).cachePipeline()
     return AggregateBuilder.convertToAggregateResponse(aggResult)
   }
 
-  count(filter: Filter<Entity>): Promise<number> {
+  async count(filter: Filter<Entity>): Promise<number> {
     const filterQuery = this.filterQueryBuilder.buildFilterQuery(filter)
-    return this.Model.countDocuments(filterQuery).exec()
+
+    return (await this.Model.countDocuments(filterQuery).cacheQuery()) ?? (0 as number)
   }
 
   /**
@@ -86,7 +88,7 @@ export class TypegooseQueryService<Entity extends Base> extends ReferenceQuerySe
    */
   async findById(id: string | number, opts?: FindByIdOptions<Entity>): Promise<Entity | undefined> {
     const filterQuery = this.filterQueryBuilder.buildIdFilterQuery(id, opts?.filter)
-    const doc = await this.Model.findOne(filterQuery).lean()
+    const doc = await this.Model.findOne(filterQuery).lean().cacheQuery()
     if (!doc) {
       return undefined
     }
@@ -206,10 +208,14 @@ export class TypegooseQueryService<Entity extends Base> extends ReferenceQuerySe
    */
   async deleteOne(id: string, opts?: DeleteOneOptions<Entity>): Promise<DocumentType<Entity>> {
     const filterQuery = this.filterQueryBuilder.buildIdFilterQuery(id, opts?.filter)
+
+    await this.referenceCacheService.invalidate(this.Entity, id)
+
     const doc = await this.Model.findOneAndDelete(filterQuery)
     if (!doc) {
       throw new NotFoundException(`Unable to find ${this.Model.modelName} with id: ${id}`)
     }
+
     return doc
   }
 
@@ -228,7 +234,21 @@ export class TypegooseQueryService<Entity extends Base> extends ReferenceQuerySe
    */
   async deleteMany(filter: Filter<Entity>): Promise<DeleteManyResponse> {
     const filterQuery = this.filterQueryBuilder.buildFilterQuery(filter)
-    const res = await this.Model.deleteMany(filterQuery).exec()
+
+    if (this.referenceCacheService.isCachedRelation(this.Entity)) {
+      const toBeDeleted = await this.Model.find(filterQuery).select('_id').cacheQuery()
+
+      const deletePromises: Promise<unknown>[] = []
+      toBeDeleted.forEach((id) => {
+        console.log('DID', id)
+
+        deletePromises.push(this.referenceCacheService.invalidate(this.Entity, id))
+      })
+
+      await Promise.all(deletePromises)
+    }
+
+    const res = await this.Model.deleteMany(filterQuery)
     return { deletedCount: res.deletedCount || 0 }
   }
 
