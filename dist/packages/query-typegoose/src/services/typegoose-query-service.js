@@ -98,7 +98,7 @@ let TypegooseQueryService = class TypegooseQueryService extends reference_query_
      * @param record - The entity to create.
      */
     async createOne(record) {
-        this.ensureIdIsNotPresent(record);
+        // this.ensureIdIsNotPresent(record)
         const doc = await this.Model.create(record);
         return doc;
     }
@@ -115,7 +115,7 @@ let TypegooseQueryService = class TypegooseQueryService extends reference_query_
      * @param records - The entities to create.
      */
     async createMany(records) {
-        records.forEach((r) => this.ensureIdIsNotPresent(r));
+        // records.forEach((r) => this.ensureIdIsNotPresent(r))
         const entities = await this.Model.create(records);
         return entities;
     }
