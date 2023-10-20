@@ -14,6 +14,7 @@ import {
 } from '@ptc-org/nestjs-query-core'
 import { DocumentType, getClass, getModelForClass, getModelWithString, mongoose } from '@typegoose/typegoose'
 import { Base } from '@typegoose/typegoose/lib/defaultClasses'
+import { plainToClass } from 'class-transformer'
 import omit from 'lodash.omit'
 import { PipelineStage, RefType } from 'mongoose'
 
@@ -191,8 +192,11 @@ export abstract class ReferenceQueryService<Entity extends Base> {
             populatedRef = foundEntity[relationName]
           }
 
+          console.log('PR', populatedRef, typeof populatedRef, plainToClass(RelationClass, populatedRef))
+
           if (populatedRef) {
             if (populatedRef._id) {
+              // @TODO Test if all cache entries are class instances!
               await this.referenceCacheService.set(RelationClass, populatedRef._id, populatedRef)
             }
           }
@@ -221,7 +225,8 @@ export abstract class ReferenceQueryService<Entity extends Base> {
           .lean()
         for (const ref of unresolvedReferenceResults) {
           if (ref._id) {
-            await this.referenceCacheService.set(RelationClass, ref._id, ref as unknown as Relation)
+            // @TODO Test if all cache entries are class instances!
+            await this.referenceCacheService.set(RelationClass, ref._id, plainToClass(RelationClass, ref))
           }
         }
       }
@@ -320,8 +325,11 @@ export abstract class ReferenceQueryService<Entity extends Base> {
             populatedRef = foundEntity.get(relationName)
 
             for (const p of populatedRef) {
+              console.log('PR', p, typeof p, plainToClass(RelationClass, p))
+
               if (p) {
                 if (p._id) {
+                  // @TODO Test if all cache entries are class instances!
                   await this.referenceCacheService.set(RelationClass, p._id, p)
                 }
               }
@@ -354,7 +362,8 @@ export abstract class ReferenceQueryService<Entity extends Base> {
           .lean()
         for (const ref of unresolvedReferenceResults) {
           if (ref._id) {
-            await this.referenceCacheService.set(RelationClass, ref._id, ref as unknown as Relation)
+            // @TODO Test if all cache entries are class instances!
+            await this.referenceCacheService.set(RelationClass, ref._id, plainToClass(RelationClass, ref))
           }
         }
       }
@@ -428,7 +437,7 @@ export abstract class ReferenceQueryService<Entity extends Base> {
   //     for (const ref of populatedRef) {
   //       if (ref) {
   //         if (ref._id) {
-  //           await this.referenceCacheService.set(RelationClass, ref._id, ref)
+  //           await this.referenceCacheService.set(RelationClass, ref._id, plainToClass(RelationClass, ref))
   //         }
   //       }
   //     })

@@ -6,6 +6,7 @@ const tslib_1 = require("tslib");
 const common_1 = require("@nestjs/common");
 const nestjs_query_core_1 = require("@ptc-org/nestjs-query-core");
 const typegoose_1 = require("@typegoose/typegoose");
+const class_transformer_1 = require("class-transformer");
 const lodash_omit_1 = tslib_1.__importDefault(require("lodash.omit"));
 const query_1 = require("../query");
 const typegoose_types_helper_1 = require("../typegoose-types.helper");
@@ -89,8 +90,10 @@ let ReferenceQueryService = class ReferenceQueryService {
                 if (typeof foundEntity !== 'undefined') {
                     populatedRef = foundEntity[relationName];
                 }
+                console.log('PR', populatedRef, typeof populatedRef, (0, class_transformer_1.plainToClass)(RelationClass, populatedRef));
                 if (populatedRef) {
                     if (populatedRef._id) {
+                        // @TODO Test if all cache entries are class instances!
                         await this.referenceCacheService.set(RelationClass, populatedRef._id, populatedRef);
                     }
                 }
@@ -115,7 +118,8 @@ let ReferenceQueryService = class ReferenceQueryService {
                     .lean();
                 for (const ref of unresolvedReferenceResults) {
                     if (ref._id) {
-                        await this.referenceCacheService.set(RelationClass, ref._id, ref);
+                        // @TODO Test if all cache entries are class instances!
+                        await this.referenceCacheService.set(RelationClass, ref._id, (0, class_transformer_1.plainToClass)(RelationClass, ref));
                     }
                 }
             }
@@ -174,8 +178,10 @@ let ReferenceQueryService = class ReferenceQueryService {
                 if (typeof foundEntity !== 'undefined') {
                     populatedRef = foundEntity.get(relationName);
                     for (const p of populatedRef) {
+                        console.log('PR', p, typeof p, (0, class_transformer_1.plainToClass)(RelationClass, p));
                         if (p) {
                             if (p._id) {
+                                // @TODO Test if all cache entries are class instances!
                                 await this.referenceCacheService.set(RelationClass, p._id, p);
                             }
                         }
@@ -204,7 +210,8 @@ let ReferenceQueryService = class ReferenceQueryService {
                     .lean();
                 for (const ref of unresolvedReferenceResults) {
                     if (ref._id) {
-                        await this.referenceCacheService.set(RelationClass, ref._id, ref);
+                        // @TODO Test if all cache entries are class instances!
+                        await this.referenceCacheService.set(RelationClass, ref._id, (0, class_transformer_1.plainToClass)(RelationClass, ref));
                     }
                 }
             }
@@ -268,7 +275,7 @@ let ReferenceQueryService = class ReferenceQueryService {
     //     for (const ref of populatedRef) {
     //       if (ref) {
     //         if (ref._id) {
-    //           await this.referenceCacheService.set(RelationClass, ref._id, ref)
+    //           await this.referenceCacheService.set(RelationClass, ref._id, plainToClass(RelationClass, ref))
     //         }
     //       }
     //     })
