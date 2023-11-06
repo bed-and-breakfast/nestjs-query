@@ -56,7 +56,7 @@ export class TypegooseQueryService<Entity extends Base> extends ReferenceQuerySe
     const { filterQuery, options } = this.filterQueryBuilder.buildQuery(query)
     const entities = await this.Model.find(filterQuery, {}, options).lean()
 
-    return entities.map((entity) => plainToClass(this.Entity, entity) as typeof entity)
+    return entities.map((entity) => plainToClass(this.Entity, entity) as Entity)
   }
 
   async aggregate(filter: Filter<Entity>, aggregateQuery: AggregateQuery<Entity>): Promise<AggregateResponse<Entity>[]> {
@@ -91,7 +91,7 @@ export class TypegooseQueryService<Entity extends Base> extends ReferenceQuerySe
       return undefined
     }
 
-    return plainToClass(this.Entity, doc) as typeof doc
+    return plainToClass(this.Entity, doc) as Entity
   }
 
   /**

@@ -12,11 +12,11 @@ NestjsQueryTypegooseCacheModule = tslib_1.__decorate([
     (0, common_1.Module)({
         imports: [
             cache_manager_1.CacheModule.register({
-                ttl: 0,
+                ttl: 0
                 // max: 10 * 1000 * 1000 /* 10 MB */,
                 // maxSize: 10 * 1000 * 1000, // 10 MB
-                maxSize: 2 * 1073741824,
-                sizeCalculation: (obj) => JSON.stringify(obj).length * 2
+                // maxSize: 2 * 1073741824, // 2 GB
+                // sizeCalculation: (obj: AnyObject) => JSON.stringify(obj).length * 2
             })
         ],
         providers: [reference_cache_service_1.ReferenceCacheService],
