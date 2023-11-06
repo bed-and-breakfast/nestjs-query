@@ -14,7 +14,6 @@
     "@apollo/federation": "0.38.1",
     "@docusaurus/core": "2.2.0",
     "@docusaurus/preset-classic": "2.2.0",
-    "@m8a/nestjs-typegoose": "11.0.0",
     "@nestjs/cache-manager": "^2.0.1",
     "@nestjs/common": "9.3.12",
     "@nestjs/jwt": "10.0.3",
