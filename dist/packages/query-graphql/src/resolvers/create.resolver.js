@@ -90,7 +90,8 @@ const Creatable = (DTOClass, opts) => (BaseClass) => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const subscriptionFilter = (0, helpers_1.createSubscriptionFilter)(SI, createdEvent);
     let CreateResolverBase = class CreateResolverBase extends BaseClass {
-        async createOne(input, authorizeFilter) {
+        async createOne(input, // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        authorizeFilter) {
             // Ignore `authorizeFilter` for now but give users the ability to throw an UnauthorizedException
             const created = await this.service.createOne(input.input.input);
             if (enableOneSubscriptions) {
@@ -98,7 +99,8 @@ const Creatable = (DTOClass, opts) => (BaseClass) => {
             }
             return created;
         }
-        async createMany(input, authorizeFilter) {
+        async createMany(input, // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        authorizeFilter) {
             // Ignore `authorizeFilter` for now but give users the ability to throw an UnauthorizedException
             const created = await this.service.createMany(input.input.input);
             if (enableManySubscriptions) {
@@ -121,7 +123,7 @@ const Creatable = (DTOClass, opts) => (BaseClass) => {
         }
     };
     tslib_1.__decorate([
-        (0, decorators_1.ResolverMutation)(() => DTOClass, { name: createOneMutationName, description: opts?.one?.description }, commonResolverOpts, {
+        (0, decorators_1.ResolverMutation)(() => DTOClass, { name: createOneMutationName, description: opts?.one?.description, complexity: opts?.one?.complexity }, commonResolverOpts, {
             interceptors: [(0, interceptors_1.HookInterceptor)(hooks_1.HookTypes.BEFORE_CREATE_ONE, CreateDTOClass, DTOClass), (0, interceptors_1.AuthorizerInterceptor)(DTOClass)]
         }, opts.one ?? {}),
         tslib_1.__param(0, (0, decorators_1.MutationHookArgs)()),
@@ -134,7 +136,7 @@ const Creatable = (DTOClass, opts) => (BaseClass) => {
         tslib_1.__metadata("design:returntype", Promise)
     ], CreateResolverBase.prototype, "createOne", null);
     tslib_1.__decorate([
-        (0, decorators_1.ResolverMutation)(() => [DTOClass], { name: createManyMutationName, description: opts?.many?.description }, { ...commonResolverOpts }, {
+        (0, decorators_1.ResolverMutation)(() => [DTOClass], { name: createManyMutationName, description: opts?.many?.description, complexity: opts?.many?.complexity }, { ...commonResolverOpts }, {
             interceptors: [(0, interceptors_1.HookInterceptor)(hooks_1.HookTypes.BEFORE_CREATE_MANY, CreateDTOClass, DTOClass), (0, interceptors_1.AuthorizerInterceptor)(DTOClass)]
         }, opts.many ?? {}),
         tslib_1.__param(0, (0, decorators_1.MutationHookArgs)()),

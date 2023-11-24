@@ -7,6 +7,7 @@ const nestjs_query_core_1 = require("@ptc-org/nestjs-query-core");
 const auth_1 = require("../../auth");
 const common_1 = require("../../common");
 const decorators_1 = require("../../decorators");
+const inject_dataloader_config_decorator_1 = require("../../decorators/inject-dataloader-config.decorator");
 const interceptors_1 = require("../../interceptors");
 const loader_1 = require("../../loader");
 const types_1 = require("../../types");
@@ -34,9 +35,9 @@ const AggregateRelationMixin = (DTOClass, relation) => (Base) => {
     ], RelationQA);
     const [AR] = (0, types_1.AggregateResponseType)(relationDTO, { prefix: `${dtoName}${pluralBaseName}` });
     let AggregateMixin = class AggregateMixin extends Base {
-        async [_a = `aggregate${pluralBaseName}`](dto, q, aggregateQuery, context, relationFilter) {
+        async [_a = `aggregate${pluralBaseName}`](dto, q, aggregateQuery, context, relationFilter, dataLoaderConfig) {
             const qa = await (0, helpers_1.transformAndValidate)(RelationQA, q);
-            const loader = loader_1.DataLoaderFactory.getOrCreateLoader(context, aggregateRelationLoaderName, aggregateLoader.createLoader(this.service));
+            const loader = loader_1.DataLoaderFactory.getOrCreateLoader(context, aggregateRelationLoaderName, () => aggregateLoader.createLoader(this.service), dataLoaderConfig);
             return loader.load({
                 dto,
                 filter: (0, nestjs_query_core_1.mergeFilter)(qa.filter ?? {}, relationFilter ?? {}),
@@ -58,8 +59,9 @@ const AggregateRelationMixin = (DTOClass, relation) => (Base) => {
             operationGroup: auth_1.OperationGroup.AGGREGATE,
             many: true
         })),
+        tslib_1.__param(5, (0, inject_dataloader_config_decorator_1.InjectDataLoaderConfig)()),
         tslib_1.__metadata("design:type", Function),
-        tslib_1.__metadata("design:paramtypes", [Object, RelationQA, Object, Object, Object]),
+        tslib_1.__metadata("design:paramtypes", [Object, RelationQA, Object, Object, Object, Object]),
         tslib_1.__metadata("design:returntype", Promise)
     ], AggregateMixin.prototype, _a, null);
     AggregateMixin = tslib_1.__decorate([

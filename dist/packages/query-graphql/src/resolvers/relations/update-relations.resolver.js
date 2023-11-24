@@ -7,6 +7,7 @@ const graphql_1 = require("@nestjs/graphql");
 const auth_1 = require("../../auth");
 const common_1 = require("../../common");
 const decorators_1 = require("../../decorators");
+const resolver_relation_mutation_decorator_1 = require("../../decorators/resolver-relation-mutation.decorator");
 const interceptors_1 = require("../../interceptors");
 const types_1 = require("../../types");
 const helpers_1 = require("../helpers");
@@ -14,11 +15,10 @@ const resolver_interface_1 = require("../resolver.interface");
 const helpers_2 = require("./helpers");
 const UpdateOneRelationMixin = (DTOClass, relation) => (Base) => {
     var _a;
-    // TODO:: Next major version change this to be opt-in
-    if (relation.disableUpdate || relation.update?.disabled) {
+    if (!relation.update?.enabled) {
         return Base;
     }
-    const commonResolverOpts = relation.update || (0, helpers_2.removeRelationOpts)(relation);
+    const commonResolverOpts = (0, helpers_2.removeRelationOpts)(relation);
     const relationDTO = relation.DTO;
     const dtoNames = (0, common_1.getDTONames)(DTOClass);
     const { baseNameLower, baseName } = (0, common_1.getDTONames)(relationDTO, { dtoName: relation.dtoName });
@@ -40,9 +40,10 @@ const UpdateOneRelationMixin = (DTOClass, relation) => (Base) => {
         }
     };
     tslib_1.__decorate([
-        (0, decorators_1.ResolverMutation)(() => DTOClass, {
-            description: relation.update?.description
-        }, commonResolverOpts, {
+        (0, resolver_relation_mutation_decorator_1.ResolverRelationMutation)(() => DTOClass, {
+            description: relation.update?.description,
+            complexity: relation.update?.complexity
+        }, (0, common_1.mergeBaseResolverOpts)(relation.update, commonResolverOpts), {
             interceptors: [(0, interceptors_1.AuthorizerInterceptor)(DTOClass)]
         }),
         tslib_1.__param(0, (0, graphql_1.Args)()),
@@ -61,11 +62,10 @@ const UpdateOneRelationMixin = (DTOClass, relation) => (Base) => {
 };
 const UpdateManyRelationMixin = (DTOClass, relation) => (Base) => {
     var _a, _b;
-    // TODO:: Next major version change this to be opt-in
-    if (relation.disableUpdate || relation.update?.disabled) {
+    if (!relation.update?.enabled) {
         return Base;
     }
-    const commonResolverOpts = relation.update || (0, helpers_2.removeRelationOpts)(relation);
+    const commonResolverOpts = (0, helpers_2.removeRelationOpts)(relation);
     const relationDTO = relation.DTO;
     const dtoNames = (0, common_1.getDTONames)(DTOClass);
     const { pluralBaseNameLower, pluralBaseName } = (0, common_1.getDTONames)(relationDTO, { dtoName: relation.dtoName });
@@ -101,9 +101,10 @@ const UpdateManyRelationMixin = (DTOClass, relation) => (Base) => {
         }
     };
     tslib_1.__decorate([
-        (0, decorators_1.ResolverMutation)(() => DTOClass, {
-            description: relation.update?.description
-        }, commonResolverOpts, {
+        (0, resolver_relation_mutation_decorator_1.ResolverRelationMutation)(() => DTOClass, {
+            description: relation.update?.description,
+            complexity: relation.update?.complexity
+        }, (0, common_1.mergeBaseResolverOpts)(relation.update, commonResolverOpts), {
             interceptors: [(0, interceptors_1.AuthorizerInterceptor)(DTOClass)]
         }),
         tslib_1.__param(0, (0, graphql_1.Args)()),
@@ -116,7 +117,9 @@ const UpdateManyRelationMixin = (DTOClass, relation) => (Base) => {
         tslib_1.__metadata("design:returntype", Promise)
     ], UpdateManyMixin.prototype, _a, null);
     tslib_1.__decorate([
-        (0, decorators_1.ResolverMutation)(() => DTOClass, {}, commonResolverOpts, {
+        (0, resolver_relation_mutation_decorator_1.ResolverRelationMutation)(() => DTOClass, {
+            complexity: relation.update?.complexity
+        }, (0, common_1.mergeBaseResolverOpts)(relation.update, commonResolverOpts), {
             interceptors: [(0, interceptors_1.AuthorizerInterceptor)(DTOClass)]
         }),
         tslib_1.__param(0, (0, graphql_1.Args)()),

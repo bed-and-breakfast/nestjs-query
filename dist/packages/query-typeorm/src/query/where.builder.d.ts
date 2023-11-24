@@ -1,6 +1,6 @@
 import { Filter } from '@ptc-org/nestjs-query-core';
 import type { WhereExpressionBuilder } from 'typeorm';
-import { NestedRecord } from './filter-query.builder';
+import { NestedRelationsAliased } from './filter-query.builder';
 import { SQLComparisonBuilder } from './sql-comparison.builder';
 /**
  * @internal
@@ -16,7 +16,7 @@ export declare class WhereBuilder<Entity> {
      * @param relationNames - the relations tree.
      * @param alias - optional alias to use to qualify an identifier
      */
-    build<Where extends WhereExpressionBuilder>(where: Where, filter: Filter<Entity>, relationNames: NestedRecord, alias?: string): Where;
+    build<Where extends WhereExpressionBuilder>(where: Where, filter: Filter<Entity>, relationNames: NestedRelationsAliased, alias?: string): Where;
     /**
      * ANDs multiple filters together. This will properly group every clause to ensure proper precedence.
      *

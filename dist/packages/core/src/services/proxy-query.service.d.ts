@@ -49,7 +49,7 @@ export declare class ProxyQueryService<DTO, C = DeepPartial<DTO>, U = DeepPartia
     deleteOne(id: number | string, opts?: DeleteOneOptions<DTO>): Promise<DTO>;
     findById(id: string | number, opts?: FindByIdOptions<DTO>): Promise<DTO | undefined>;
     getById(id: string | number, opts?: GetByIdOptions<DTO>): Promise<DTO>;
-    query(query: Query<DTO>, opts?: QueryOptions): Promise<DTO[]>;
+    query(query: Query<DTO>, opts?: QueryOptions<DTO>): Promise<DTO[]>;
     aggregate(filter: Filter<DTO>, query: AggregateQuery<DTO>, opts?: AggregateOptions): Promise<AggregateResponse<DTO>[]>;
     count(filter: Filter<DTO>, opts?: CountOptions): Promise<number>;
     updateMany(update: U, filter: Filter<DTO>): Promise<UpdateManyResponse>;

@@ -14,8 +14,8 @@ let CannotUseWith = class CannotUseWith {
         return `Cannot be used with \`${args.constraints.join('` , `')}\`.`;
     }
 };
-CannotUseWith = tslib_1.__decorate([
+exports.CannotUseWith = CannotUseWith;
+exports.CannotUseWith = CannotUseWith = tslib_1.__decorate([
     (0, class_validator_1.ValidatorConstraint)({ async: false })
 ], CannotUseWith);
-exports.CannotUseWith = CannotUseWith;
 //# sourceMappingURL=cannot-use-with.validator.js.map

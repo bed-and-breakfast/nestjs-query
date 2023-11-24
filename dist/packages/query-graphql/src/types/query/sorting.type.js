@@ -25,7 +25,7 @@ function getOrCreateSortType(TClass) {
             throw new Error(`No fields found to create SortType for ${TClass.name}. Ensure fields are annotated with @FilterableField`);
         }
         const fieldNames = fields.map((field) => field.propertyName);
-        const fieldNameMap = fieldNames.reduce((acc, field) => ({ ...acc, [field]: field }), {});
+        const fieldNameMap = fields.reduce((acc, field) => ({ ...acc, [field.schemaName]: field.propertyName }), {});
         (0, graphql_1.registerEnumType)(fieldNameMap, { name: `${prefix}SortFields` });
         let Sort = class Sort {
         };

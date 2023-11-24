@@ -45,19 +45,26 @@ function getOrCreateOffsetConnectionType(TItemClass, opts) {
             }
         };
         tslib_1.__decorate([
-            (0, graphql_1.Field)(() => PIT, { description: 'Paging information' }),
+            (0, graphql_1.Field)(() => PIT, {
+                description: 'Paging information'
+            }),
             tslib_1.__metadata("design:type", Object)
         ], AbstractConnection.prototype, "pageInfo", void 0);
         tslib_1.__decorate([
-            (0, graphql_1.Field)(() => [TItemClass], { description: 'Array of nodes.' }),
+            (0, graphql_1.Field)(() => [TItemClass], {
+                description: 'Array of nodes.'
+            }),
             tslib_1.__metadata("design:type", Array)
         ], AbstractConnection.prototype, "nodes", void 0);
         tslib_1.__decorate([
-            (0, decorators_1.SkipIf)(() => !opts.enableTotalCount, (0, graphql_1.Field)(() => graphql_1.Int, { description: 'Fetch total count of records' })),
+            (0, decorators_1.SkipIf)(() => !opts.enableTotalCount, (0, graphql_1.Field)(() => graphql_1.Int, {
+                description: 'Fetch total count of records'
+            })),
             tslib_1.__metadata("design:type", Promise),
             tslib_1.__metadata("design:paramtypes", [])
         ], AbstractConnection.prototype, "totalCount", null);
         AbstractConnection = AbstractConnection_1 = tslib_1.__decorate([
+            (0, graphql_1.Directive)('@shareable'),
             (0, graphql_1.ObjectType)(connectionName),
             tslib_1.__metadata("design:paramtypes", [Object, Array, Function])
         ], AbstractConnection);

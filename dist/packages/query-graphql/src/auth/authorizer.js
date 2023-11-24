@@ -8,5 +8,5 @@ var OperationGroup;
     OperationGroup["CREATE"] = "create";
     OperationGroup["UPDATE"] = "update";
     OperationGroup["DELETE"] = "delete";
-})(OperationGroup = exports.OperationGroup || (exports.OperationGroup = {}));
+})(OperationGroup || (exports.OperationGroup = OperationGroup = {}));
 //# sourceMappingURL=authorizer.js.map

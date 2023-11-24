@@ -1,4 +1,5 @@
-import { Class, Filter, QueryService, SelectRelation } from '@ptc-org/nestjs-query-core';
+import { Class, Filter, QueryService } from '@ptc-org/nestjs-query-core';
+import { GraphQLResolveInfoResult } from '../decorators';
 import { ConnectionOptions, FindOneArgsType, InferConnectionTypeFromStrategy, PagingStrategies, QueryArgsTypeOpts } from '../types';
 import { CursorQueryArgsTypeOpts, QueryType, StaticQueryType } from '../types/query';
 import { ExtractPagingStrategy, ResolverClass, ResolverOpts, ServiceResolver } from './resolver.interface';
@@ -7,8 +8,8 @@ export type ReadResolverOpts<DTO> = {
     QueryArgs?: StaticQueryType<DTO, PagingStrategies>;
 } & ResolverOpts & QueryArgsTypeOpts<DTO> & Pick<ConnectionOptions, 'enableTotalCount'>;
 export interface ReadResolver<DTO, PS extends PagingStrategies, QS extends QueryService<DTO, unknown, unknown>> extends ServiceResolver<DTO, QS> {
-    queryMany(query: QueryType<DTO, PagingStrategies>, authorizeFilter?: Filter<DTO>, selectRelations?: SelectRelation<DTO>[]): Promise<InferConnectionTypeFromStrategy<DTO, PS>>;
-    findById(id: FindOneArgsType, authorizeFilter?: Filter<DTO>, selectRelations?: SelectRelation<DTO>[]): Promise<DTO | undefined>;
+    queryMany(query: QueryType<DTO, PagingStrategies>, authorizeFilter?: Filter<DTO>, resolveInfo?: GraphQLResolveInfoResult<DTO, DTO>): Promise<InferConnectionTypeFromStrategy<DTO, PS>>;
+    findById(id: FindOneArgsType, authorizeFilter?: Filter<DTO>, resolveInfo?: GraphQLResolveInfoResult<DTO>): Promise<DTO | undefined>;
 }
 /**
  * @internal

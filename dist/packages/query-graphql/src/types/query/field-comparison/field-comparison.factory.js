@@ -54,8 +54,11 @@ const getTypeName = (SomeType) => {
     }
     throw new Error(`Unable to create filter comparison for ${JSON.stringify(SomeType)}.`);
 };
-const isCustomFieldComparison = (options) => !!options.allowedComparisons;
+const isCustomFieldComparison = (options) => !!options.allowedComparisons || !!options.decorators;
 const getComparisonTypeName = (fieldType, options) => {
+    if (options.overrideTypeNamePrefix) {
+        return `${options.overrideTypeNamePrefix}FilterComparison`;
+    }
     if (isCustomFieldComparison(options)) {
         return `${(0, upper_case_first_1.upperCaseFirst)(options.fieldName)}FilterComparison`;
     }
@@ -63,10 +66,11 @@ const getComparisonTypeName = (fieldType, options) => {
 };
 /** @internal */
 function createFilterComparisonType(options) {
-    const { FieldType, returnTypeFunc } = options;
+    const { FieldType, returnTypeFunc, decorators = [] } = options;
     const fieldType = returnTypeFunc ? returnTypeFunc() : FieldType;
     const inputName = getComparisonTypeName(fieldType, options);
     const generator = filterComparisonMap.get(inputName);
+    const CustomDecorator = () => (0, decorators_1.composeDecorators)(...decorators);
     if (generator) {
         return generator();
     }
@@ -110,72 +114,84 @@ function createFilterComparisonType(options) {
         (0, decorators_1.SkipIf)(isNotAllowed('eq'), (0, graphql_1.Field)(() => fieldType, { nullable: true })),
         (0, validators_1.IsUndefined)(),
         (0, class_transformer_1.Type)(() => FieldType),
+        CustomDecorator(),
         tslib_1.__metadata("design:type", Object)
     ], Fc.prototype, "eq", void 0);
     tslib_1.__decorate([
         (0, decorators_1.SkipIf)(isNotAllowed('neq'), (0, graphql_1.Field)(() => fieldType, { nullable: true })),
         (0, validators_1.IsUndefined)(),
         (0, class_transformer_1.Type)(() => FieldType),
+        CustomDecorator(),
         tslib_1.__metadata("design:type", Object)
     ], Fc.prototype, "neq", void 0);
     tslib_1.__decorate([
         (0, decorators_1.SkipIf)(isNotAllowed('gt'), (0, graphql_1.Field)(() => fieldType, { nullable: true })),
         (0, validators_1.IsUndefined)(),
         (0, class_transformer_1.Type)(() => FieldType),
+        CustomDecorator(),
         tslib_1.__metadata("design:type", Object)
     ], Fc.prototype, "gt", void 0);
     tslib_1.__decorate([
         (0, decorators_1.SkipIf)(isNotAllowed('gte'), (0, graphql_1.Field)(() => fieldType, { nullable: true })),
         (0, validators_1.IsUndefined)(),
         (0, class_transformer_1.Type)(() => FieldType),
+        CustomDecorator(),
         tslib_1.__metadata("design:type", Object)
     ], Fc.prototype, "gte", void 0);
     tslib_1.__decorate([
         (0, decorators_1.SkipIf)(isNotAllowed('lt'), (0, graphql_1.Field)(() => fieldType, { nullable: true })),
         (0, validators_1.IsUndefined)(),
         (0, class_transformer_1.Type)(() => FieldType),
+        CustomDecorator(),
         tslib_1.__metadata("design:type", Object)
     ], Fc.prototype, "lt", void 0);
     tslib_1.__decorate([
         (0, decorators_1.SkipIf)(isNotAllowed('lte'), (0, graphql_1.Field)(() => fieldType, { nullable: true })),
         (0, validators_1.IsUndefined)(),
         (0, class_transformer_1.Type)(() => FieldType),
+        CustomDecorator(),
         tslib_1.__metadata("design:type", Object)
     ], Fc.prototype, "lte", void 0);
     tslib_1.__decorate([
         (0, decorators_1.SkipIf)(isNotAllowed('like'), (0, graphql_1.Field)(() => fieldType, { nullable: true })),
         (0, validators_1.IsUndefined)(),
         (0, class_transformer_1.Type)(() => FieldType),
+        CustomDecorator(),
         tslib_1.__metadata("design:type", Object)
     ], Fc.prototype, "like", void 0);
     tslib_1.__decorate([
         (0, decorators_1.SkipIf)(isNotAllowed('notLike'), (0, graphql_1.Field)(() => fieldType, { nullable: true })),
         (0, validators_1.IsUndefined)(),
         (0, class_transformer_1.Type)(() => FieldType),
+        CustomDecorator(),
         tslib_1.__metadata("design:type", Object)
     ], Fc.prototype, "notLike", void 0);
     tslib_1.__decorate([
         (0, decorators_1.SkipIf)(isNotAllowed('iLike'), (0, graphql_1.Field)(() => fieldType, { nullable: true })),
         (0, validators_1.IsUndefined)(),
         (0, class_transformer_1.Type)(() => FieldType),
+        CustomDecorator(),
         tslib_1.__metadata("design:type", Object)
     ], Fc.prototype, "iLike", void 0);
     tslib_1.__decorate([
         (0, decorators_1.SkipIf)(isNotAllowed('notILike'), (0, graphql_1.Field)(() => fieldType, { nullable: true })),
         (0, validators_1.IsUndefined)(),
         (0, class_transformer_1.Type)(() => FieldType),
+        CustomDecorator(),
         tslib_1.__metadata("design:type", Object)
     ], Fc.prototype, "notILike", void 0);
     tslib_1.__decorate([
         (0, decorators_1.SkipIf)(isNotAllowed('in'), (0, graphql_1.Field)(() => [fieldType], { nullable: true })),
         (0, validators_1.IsUndefined)(),
         (0, class_transformer_1.Type)(() => FieldType),
+        CustomDecorator(),
         tslib_1.__metadata("design:type", Array)
     ], Fc.prototype, "in", void 0);
     tslib_1.__decorate([
         (0, decorators_1.SkipIf)(isNotAllowed('notIn'), (0, graphql_1.Field)(() => [fieldType], { nullable: true })),
         (0, validators_1.IsUndefined)(),
         (0, class_transformer_1.Type)(() => FieldType),
+        CustomDecorator(),
         tslib_1.__metadata("design:type", Array)
     ], Fc.prototype, "notIn", void 0);
     tslib_1.__decorate([

@@ -34,39 +34,49 @@ const Readable = (DTOClass, opts) => (BaseClass) => {
         (0, graphql_1.ArgsType)()
     ], FO);
     let ReadResolverBase = class ReadResolverBase extends BaseClass {
-        async findById(input, authorizeFilter, relations) {
+        async findById(input, authorizeFilter, resolveInfo) {
             return this.service.getById(input.id, {
                 filter: authorizeFilter,
                 withDeleted: opts?.one?.withDeleted,
-                relations
+                relations: resolveInfo?.relations,
+                resolveInfo: resolveInfo?.info
             });
         }
-        async queryMany(query, authorizeFilter, relations) {
-            return ConnectionType.createFromPromise((q) => this.service.query(q), (0, nestjs_query_core_1.mergeQuery)(query, { filter: authorizeFilter, relations }), (filter) => this.service.count(filter));
+        async queryMany(query, authorizeFilter, resolveInfo) {
+            return ConnectionType.createFromPromise((q) => this.service.query(q, {
+                withDeleted: opts?.many?.withDeleted,
+                resolveInfo: resolveInfo?.info
+            }), (0, nestjs_query_core_1.mergeQuery)(query, { filter: authorizeFilter, relations: resolveInfo?.relations }), (filter) => this.service.count(filter, {
+                withDeleted: opts?.many?.withDeleted
+            }));
         }
     };
     tslib_1.__decorate([
-        (0, decorators_1.ResolverQuery)(() => DTOClass, { name: readOneQueryName, description: opts?.one?.description }, commonResolverOpts, { interceptors: [(0, interceptors_1.HookInterceptor)(hooks_1.HookTypes.BEFORE_FIND_ONE, DTOClass), (0, interceptors_1.AuthorizerInterceptor)(DTOClass)] }, opts.one ?? {}),
+        (0, decorators_1.ResolverQuery)(() => DTOClass, {
+            name: readOneQueryName,
+            description: opts?.one?.description,
+            complexity: opts?.one?.complexity
+        }, commonResolverOpts, { interceptors: [(0, interceptors_1.HookInterceptor)(hooks_1.HookTypes.BEFORE_FIND_ONE, DTOClass), (0, interceptors_1.AuthorizerInterceptor)(DTOClass)] }, opts.one ?? {}),
         tslib_1.__param(0, (0, decorators_1.HookArgs)()),
         tslib_1.__param(1, (0, decorators_1.AuthorizerFilter)({
             operationGroup: auth_1.OperationGroup.READ,
             many: false
         })),
-        tslib_1.__param(2, (0, decorators_1.GraphQLLookAheadRelations)(DTOClass)),
+        tslib_1.__param(2, (0, decorators_1.GraphQLResultInfo)(DTOClass)),
         tslib_1.__metadata("design:type", Function),
-        tslib_1.__metadata("design:paramtypes", [FO, Object, Array]),
+        tslib_1.__metadata("design:paramtypes", [FO, Object, Object]),
         tslib_1.__metadata("design:returntype", Promise)
     ], ReadResolverBase.prototype, "findById", null);
     tslib_1.__decorate([
-        (0, decorators_1.ResolverQuery)(() => QueryArgs.ConnectionType.resolveType, { name: readManyQueryName, description: opts?.many?.description }, commonResolverOpts, { interceptors: [(0, interceptors_1.HookInterceptor)(hooks_1.HookTypes.BEFORE_QUERY_MANY, DTOClass), (0, interceptors_1.AuthorizerInterceptor)(DTOClass)] }, opts.many ?? {}),
+        (0, decorators_1.ResolverQuery)(() => QueryArgs.ConnectionType.resolveType, { name: readManyQueryName, description: opts?.many?.description, complexity: opts?.many?.complexity }, commonResolverOpts, { interceptors: [(0, interceptors_1.HookInterceptor)(hooks_1.HookTypes.BEFORE_QUERY_MANY, DTOClass), (0, interceptors_1.AuthorizerInterceptor)(DTOClass)] }, opts.many ?? {}),
         tslib_1.__param(0, (0, decorators_1.HookArgs)()),
         tslib_1.__param(1, (0, decorators_1.AuthorizerFilter)({
             operationGroup: auth_1.OperationGroup.READ,
             many: true
         })),
-        tslib_1.__param(2, (0, decorators_1.GraphQLLookAheadRelations)(DTOClass)),
+        tslib_1.__param(2, (0, decorators_1.GraphQLResultInfo)(DTOClass)),
         tslib_1.__metadata("design:type", Function),
-        tslib_1.__metadata("design:paramtypes", [QA, Object, Array]),
+        tslib_1.__metadata("design:paramtypes", [QA, Object, Object]),
         tslib_1.__metadata("design:returntype", Promise)
     ], ReadResolverBase.prototype, "queryMany", null);
     ReadResolverBase = tslib_1.__decorate([

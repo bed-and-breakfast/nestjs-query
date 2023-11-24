@@ -15,6 +15,18 @@ export declare class WhereBuilder<Entity extends Document> {
      */
     build(filter: Filter<Entity>): FilterQuery<Entity>;
     /**
+     * Normalizes a filter to a dot notation filter for objects with sub objects.
+     * @param filter - the filter to normalize.
+     * @private
+     */
+    private getNormalizedFilter;
+    /**
+     * Checks if a filter is a GraphQLFilter.
+     * @param filter - the filter to check.
+     * @private
+     */
+    private isGraphQLFilter;
+    /**
      * Creates field comparisons from a filter. This method will ignore and/or properties.
      * @param filter - the filter with fields to create comparisons for.
      */

@@ -3,8 +3,8 @@ import { RelationsOpts, ResolverRelation } from '../resolvers/relations';
 import { ResolverManyRelation, ResolverOneRelation } from '../resolvers/relations/relations.interface';
 import { BaseResolverOptions } from './resolver-method.decorator';
 export declare const reflector: ArrayReflector;
-export type RelationOneDecoratorOpts<Relation> = Omit<ResolverOneRelation<Relation>, 'DTO' | 'allowFiltering'>;
-export type RelationManyDecoratorOpts<Relation> = Omit<ResolverManyRelation<Relation>, 'DTO' | 'allowFiltering'>;
+export type RelationOneDecoratorOpts<Relation> = Omit<ResolverOneRelation<Relation>, 'DTO' | 'allowFiltering' | 'filterDepth'>;
+export type RelationManyDecoratorOpts<Relation> = Omit<ResolverManyRelation<Relation>, 'DTO' | 'allowFiltering' | 'filterDepth'>;
 export type RelationTypeFunc<Relation> = () => Class<Relation>;
 export type RelationClassDecorator<DTO> = <Cls extends Class<DTO>>(DTOClass: Cls) => Cls | void;
 export interface RelationDescriptor<Relation> {

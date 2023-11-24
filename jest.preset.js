@@ -1,8 +1,7 @@
-const nxPreset = require('@nrwl/jest/preset').default
+const nxPreset = require('@nx/jest/preset').default
 
 module.exports = {
   ...nxPreset,
-
   collectCoverage: true,
   coverageReporters: ['html', 'clover'],
   collectCoverageFrom: [
@@ -24,6 +23,5 @@ module.exports = {
   },
   testEnvironment: 'node',
   setupFilesAfterEnv: ['jest-extended'],
-  snapshotSerializers: ['jest-snapshot-serializer-raw/always'],
   testTimeout: 10000
 }

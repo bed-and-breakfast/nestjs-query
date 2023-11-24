@@ -9,7 +9,7 @@ export type QueryServiceRelation<DTO, Relation> = {
 export declare class RelationQueryService<DTO, C = DeepPartial<DTO>, U = DeepPartial<DTO>> extends ProxyQueryService<DTO, C, U> {
     readonly relations: Record<string, QueryServiceRelation<DTO, unknown>>;
     constructor(queryService: QueryService<DTO, C, U>, relations: Record<string, QueryServiceRelation<DTO, unknown>>);
-    constructor(relations: Record<string, QueryServiceRelation<DTO, unknown>>);
+    constructor(relations: Record<string, QueryServiceRelation<DTO, any>>);
     /**
      * Query for relations for an array of DTOs. This method will return a map with the DTO as the key and the relations as the value.
      * @param RelationClass - The class of the relation.

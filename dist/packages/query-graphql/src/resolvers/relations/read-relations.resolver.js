@@ -9,6 +9,7 @@ const auth_1 = require("../../auth");
 const common_2 = require("../../common");
 const decorators_1 = require("../../decorators");
 const graphql_resolve_info_utils_1 = require("../../decorators/graphql-resolve-info.utils");
+const inject_dataloader_config_decorator_1 = require("../../decorators/inject-dataloader-config.decorator");
 const interceptors_1 = require("../../interceptors");
 const loader_1 = require("../../loader");
 const types_1 = require("../../types");
@@ -33,17 +34,18 @@ const ReadOneRelationMixin = (DTOClass, relation) => (Base) => {
     const loaderName = `load${baseName}For${DTOClass.name}`;
     const findLoader = new loader_1.FindRelationsLoader(relationDTO, relationName);
     let ReadOneMixin = class ReadOneMixin extends Base {
-        async [_a = `find${baseName}`](dto, context, authFilter, relations, info) {
+        async [_a = `find${baseName}`](dto, context, authFilter, resolveInfo, dataLoaderConfig, info) {
             if (info?.fields && Object.values(info.fields).length === 1 && info.fields.id) {
                 return { id: dto[relationName] };
             }
-            const results = await loader_1.DataLoaderFactory.getOrCreateLoader(context, loaderName, findLoader.createLoader(this.service, {
+            const results = await loader_1.DataLoaderFactory.getOrCreateLoader(context, loaderName, () => findLoader.createLoader(this.service, {
+                resolveInfo: resolveInfo?.info,
                 withDeleted: relation.withDeleted,
                 lookedAhead: relation.enableLookAhead
-            })).load({
+            }), dataLoaderConfig).load({
                 dto,
                 filter: authFilter,
-                relations
+                relations: resolveInfo?.relations
             });
             return results;
         }
@@ -56,10 +58,11 @@ const ReadOneRelationMixin = (DTOClass, relation) => (Base) => {
             operationGroup: auth_1.OperationGroup.READ,
             many: false
         })),
-        tslib_1.__param(3, (0, decorators_1.GraphQLLookAheadRelations)(DTOClass)),
-        tslib_1.__param(4, GraphQLInfo()),
+        tslib_1.__param(3, (0, decorators_1.GraphQLResultInfo)(DTOClass)),
+        tslib_1.__param(4, (0, inject_dataloader_config_decorator_1.InjectDataLoaderConfig)()),
+        tslib_1.__param(5, GraphQLInfo()),
         tslib_1.__metadata("design:type", Function),
-        tslib_1.__metadata("design:paramtypes", [Object, Object, Object, Array, Object]),
+        tslib_1.__metadata("design:paramtypes", [Object, Object, Object, Object, Object, Object]),
         tslib_1.__metadata("design:returntype", Promise)
     ], ReadOneMixin.prototype, _a, null);
     ReadOneMixin = tslib_1.__decorate([
@@ -94,7 +97,7 @@ const ReadManyRelationMixin = (DTOClass, relation) => (Base) => {
     // disable keyset pagination for relations otherwise recursive paging will not work
     const { ConnectionType: CT } = RelationQA;
     let ReadManyMixin = class ReadManyMixin extends Base {
-        async [_a = `query${pluralBaseName}`](dto, q, context, relationFilter, relations, info) {
+        async [_a = `query${pluralBaseName}`](dto, q, context, relationFilter, resolveInfo, dataLoaderConfig, relations, info) {
             const relationQuery = await (0, helpers_1.transformAndValidate)(RelationQA, q);
             // @TODO Test loading only ids, also with virtuals
             if (info?.fields && Object.values(info.fields).length === 1 && info.fields.id) {
@@ -109,9 +112,9 @@ const ReadManyRelationMixin = (DTOClass, relation) => (Base) => {
                     async () => dto[relationName].length);
                 }
             }
-            const relationLoader = loader_1.DataLoaderFactory.getOrCreateLoader(context, relationLoaderName, queryLoader.createLoader(this.service));
-            const relationCountLoader = loader_1.DataLoaderFactory.getOrCreateLoader(context, countRelationLoaderName, countLoader.createLoader(this.service));
-            return CT.createFromPromise((query) => relationLoader.load({ dto, query }), (0, nestjs_query_core_1.mergeQuery)(relationQuery, { filter: relationFilter, relations }), (filter) => relationCountLoader.load({ dto, filter }));
+            const relationLoader = loader_1.DataLoaderFactory.getOrCreateLoader(context, relationLoaderName, () => queryLoader.createLoader(this.service), dataLoaderConfig);
+            const relationCountLoader = loader_1.DataLoaderFactory.getOrCreateLoader(context, countRelationLoaderName, () => countLoader.createLoader(this.service), dataLoaderConfig);
+            return CT.createFromPromise((query) => relationLoader.load({ dto, query }), (0, nestjs_query_core_1.mergeQuery)(relationQuery, { filter: relationFilter, relations: resolveInfo?.relations }), (filter) => relationCountLoader.load({ dto, filter }));
         }
     };
     tslib_1.__decorate([
@@ -123,10 +126,12 @@ const ReadManyRelationMixin = (DTOClass, relation) => (Base) => {
             operationGroup: auth_1.OperationGroup.READ,
             many: true
         })),
-        tslib_1.__param(4, (0, decorators_1.GraphQLLookAheadRelations)(relationDTO)),
-        tslib_1.__param(5, GraphQLInfo()),
+        tslib_1.__param(4, (0, decorators_1.GraphQLResultInfo)(DTOClass)),
+        tslib_1.__param(5, (0, inject_dataloader_config_decorator_1.InjectDataLoaderConfig)()),
+        tslib_1.__param(6, (0, decorators_1.GraphQLLookAheadRelations)(DTOClass)),
+        tslib_1.__param(7, GraphQLInfo()),
         tslib_1.__metadata("design:type", Function),
-        tslib_1.__metadata("design:paramtypes", [Object, RelationQA, Object, Object, Array, Object]),
+        tslib_1.__metadata("design:paramtypes", [Object, RelationQA, Object, Object, Object, Object, Array, Object]),
         tslib_1.__metadata("design:returntype", Promise)
     ], ReadManyMixin.prototype, _a, null);
     ReadManyMixin = tslib_1.__decorate([

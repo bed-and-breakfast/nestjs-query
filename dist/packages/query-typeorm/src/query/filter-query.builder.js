@@ -24,7 +24,7 @@ class FilterQueryBuilder {
      */
     select(query) {
         let qb = this.createQueryBuilder();
-        qb = this.applyRelationJoinsRecursive(qb, this.getReferencedRelationsRecursive(this.repo.metadata, query.filter, query.relations), query.relations);
+        qb = this.applyRelationJoinsRecursive(qb, this.getReferencedRelationsWithAliasRecursive(this.repo.metadata, query.filter, query.relations), query.relations);
         qb = this.applyFilter(qb, query.filter, qb.alias);
         qb = this.applySorting(qb, query.sorting, qb.alias);
         qb = this.applyPaging(qb, query.paging, this.shouldUseSkipTake(query.filter));
@@ -37,7 +37,7 @@ class FilterQueryBuilder {
         const hasFilterRelations = this.filterHasRelations(query.filter);
         let qb = this.createQueryBuilder();
         qb = hasFilterRelations
-            ? this.applyRelationJoinsRecursive(qb, this.getReferencedRelationsRecursive(this.repo.metadata, query.filter))
+            ? this.applyRelationJoinsRecursive(qb, this.getReferencedRelationsWithAliasRecursive(this.repo.metadata, query.filter))
             : qb;
         qb = this.applyAggregate(qb, aggregate, qb.alias);
         qb = this.applyFilter(qb, query.filter, qb.alias);
@@ -106,7 +106,7 @@ class FilterQueryBuilder {
         if (!filter) {
             return qb;
         }
-        return this.whereBuilder.build(qb, filter, this.getReferencedRelationsRecursive(this.repo.metadata, filter), alias);
+        return this.whereBuilder.build(qb, filter, this.getReferencedRelationsWithAliasRecursive(this.repo.metadata, filter), alias);
     }
     /**
      * Applies the ORDER BY clause to a `typeorm` QueryBuilder.
@@ -123,7 +123,9 @@ class FilterQueryBuilder {
             return prevQb.addOrderBy(col, direction, nulls);
         }, qb);
     }
-    applyAggregateGroupBy(qb, aggregatedGroupBy, alias) {
+    applyAggregateGroupBy(qb, aggregatedGroupBy, 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    alias) {
         if (!aggregatedGroupBy) {
             return qb;
         }
@@ -131,7 +133,9 @@ class FilterQueryBuilder {
             return prevQb.addGroupBy(prevQb.escape(aggregate_builder_1.AggregateBuilder.getGroupByAlias(aggregatedField.field)));
         }, qb);
     }
-    applyAggregateSorting(qb, aggregatedGroupBy, alias) {
+    applyAggregateSorting(qb, aggregatedGroupBy, 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    alias) {
         if (!aggregatedGroupBy) {
             return qb;
         }
@@ -159,15 +163,18 @@ class FilterQueryBuilder {
         if (!relationsMap) {
             return qb;
         }
-        const referencedRelations = Object.keys(relationsMap);
+        const referencedRelations = Object.entries(relationsMap);
         // TODO:: If relation is not nullable use inner join?
-        return referencedRelations.reduce((rqb, relation) => {
+        return referencedRelations.reduce((rqb, [relationKey, relation]) => {
+            const relationAlias = relation.alias;
+            const relationChildren = relation.relations;
             // TODO:: Change to find and also apply the query for the relation
-            const selectRelation = selectRelations && selectRelations.find(({ name }) => name === relation);
+            const selectRelation = selectRelations && selectRelations.find(({ name }) => name === relationKey);
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             if (selectRelation) {
-                return this.applyRelationJoinsRecursive(rqb.leftJoinAndSelect(`${alias ?? rqb.alias}.${relation}`, relation), relationsMap[relation], selectRelation.query.relations, relation);
+                return this.applyRelationJoinsRecursive(rqb.leftJoinAndSelect(`${alias ?? rqb.alias}.${relationKey}`, relationAlias), relationChildren, selectRelation.query.relations, relationAlias);
             }
-            return this.applyRelationJoinsRecursive(rqb.leftJoin(`${alias ?? rqb.alias}.${relation}`, relation), relationsMap[relation], [], relation);
+            return this.applyRelationJoinsRecursive(rqb.leftJoin(`${alias ?? rqb.alias}.${relationKey}`, relationAlias), relationChildren, [], relationAlias);
         }, qb);
     }
     /**
@@ -205,7 +212,25 @@ class FilterQueryBuilder {
             }
         }).length > 0);
     }
-    getReferencedRelationsRecursive(metadata, filter = {}, selectRelations = []) {
+    getReferencedRelationsWithAliasRecursive(metadata, filter = {}, selectRelations = []) {
+        const referencedRelations = this.getReferencedRelationsRecursive(metadata, filter, selectRelations);
+        return this.injectRelationsAliasRecursive(referencedRelations);
+    }
+    injectRelationsAliasRecursive(relations, counter = new Map()) {
+        return Object.entries(relations).reduce((prev, [name, children]) => {
+            const count = (counter.get(name) ?? -1) + 1;
+            const alias = count === 0 ? name : `${name}_${count}`;
+            counter.set(name, count);
+            return {
+                ...prev,
+                [name]: {
+                    alias,
+                    relations: this.injectRelationsAliasRecursive(children, counter)
+                }
+            };
+        }, {});
+    }
+    getReferencedRelationsRecursive(metadata, filter, selectRelations = []) {
         const referencedFields = Array.from(new Set(Object.keys(filter)));
         const referencedRelations = selectRelations.reduce((relations, selectRelation) => {
             const referencedRelation = metadata.relations.find((r) => r.propertyName === selectRelation.name);
@@ -214,6 +239,7 @@ class FilterQueryBuilder {
             }
             relations[selectRelation.name] = {};
             if (selectRelation.query.relations) {
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
                 relations[selectRelation.name] = this.getReferencedRelationsRecursive(referencedRelation.inverseEntityMetadata, {}, selectRelation.query.relations);
             }
             return relations;
@@ -222,7 +248,7 @@ class FilterQueryBuilder {
             const currFilterValue = filter[curr];
             if ((curr === 'and' || curr === 'or') && currFilterValue) {
                 for (const subFilter of currFilterValue) {
-                    prev = (0, lodash_merge_1.default)(prev, this.getReferencedRelationsRecursive(metadata, subFilter));
+                    prev = (0, lodash_merge_1.default)(prev, this.getReferencedRelationsRecursive(metadata, subFilter, []));
                 }
             }
             const referencedRelation = metadata.relations.find((r) => r.propertyName === curr);
@@ -231,7 +257,7 @@ class FilterQueryBuilder {
             }
             return {
                 ...prev,
-                [curr]: (0, lodash_merge_1.default)(prev[curr], this.getReferencedRelationsRecursive(referencedRelation.inverseEntityMetadata, currFilterValue))
+                [curr]: (0, lodash_merge_1.default)(prev[curr], this.getReferencedRelationsRecursive(referencedRelation.inverseEntityMetadata, currFilterValue, []))
             };
         }, referencedRelations);
     }

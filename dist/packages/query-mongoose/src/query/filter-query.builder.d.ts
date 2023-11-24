@@ -26,8 +26,8 @@ export declare class FilterQueryBuilder<Entity extends Document> {
     constructor(Model: MongooseModel<Entity>, whereBuilder?: WhereBuilder<Entity>, aggregateBuilder?: AggregateBuilder<Entity>);
     buildQuery({ filter, paging, sorting }: Query<Entity>): MongooseQuery<Entity>;
     buildAggregateQuery(aggregate: AggregateQuery<Entity>, filter?: Filter<Entity>): MongooseAggregateQuery<Entity>;
-    buildIdAggregateQuery(id: unknown | unknown[], filter: Filter<Entity>, aggregate: AggregateQuery<Entity>): MongooseAggregateQuery<Entity>;
-    buildIdFilterQuery(id: unknown | unknown[], filter?: Filter<Entity>): FilterQuery<Entity>;
+    buildIdAggregateQuery(id: unknown, filter: Filter<Entity>, aggregate: AggregateQuery<Entity>): MongooseAggregateQuery<Entity>;
+    buildIdFilterQuery(id: unknown, filter?: Filter<Entity>): FilterQuery<Entity>;
     /**
      * Applies the filter from a Query to a `typeorm` QueryBuilder.
      *

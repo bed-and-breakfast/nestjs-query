@@ -25,17 +25,23 @@ function createArgsDecorator(fn) {
     return (0, decorator_utils_1.composeDecorators)((0, graphql_1.Args)(), dec);
 }
 const HookArgs = () => createArgsDecorator(async (data, context) => {
-    if (context.hook) {
-        const hookedArgs = await context.hook.run(data, context);
+    if (context.hooks && context.hooks.length > 0) {
+        let hookedArgs = data;
+        for (const hook of context.hooks) {
+            hookedArgs = (await hook.run(hookedArgs, context));
+        }
         return hookedArgs;
     }
     return data;
 });
 exports.HookArgs = HookArgs;
 const MutationHookArgs = () => createArgsDecorator(async (data, context) => {
-    if (context.hook) {
-        const { input } = data;
-        return { input: await context.hook.run(input, context) };
+    if (context.hooks && context.hooks.length > 0) {
+        let hookedArgs = data.input;
+        for (const hook of context.hooks) {
+            hookedArgs = (await hook.run(hookedArgs, context));
+        }
+        return { input: hookedArgs };
     }
     return data;
 });

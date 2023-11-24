@@ -1,4 +1,4 @@
-import { FieldOptions, ReturnTypeFunc } from '@nestjs/graphql';
+import { FieldOptions, ReturnTypeFunc, ReturnTypeFuncValue } from '@nestjs/graphql';
 import { Class, MetaValue } from '@ptc-org/nestjs-query-core';
 import { FilterableFieldOptions } from './filterable-field.decorator';
 type NoFilterIDFieldOptions = {
@@ -7,7 +7,7 @@ type NoFilterIDFieldOptions = {
 export type IDFieldOptions = FilterableFieldOptions | NoFilterIDFieldOptions;
 export interface IDFieldDescriptor {
     propertyName: string;
-    returnTypeFunc: ReturnTypeFunc;
+    returnTypeFunc: ReturnTypeFunc<ReturnTypeFuncValue>;
 }
 /**
  * Decorator for Fields that should be filterable through a [[FilterType]]

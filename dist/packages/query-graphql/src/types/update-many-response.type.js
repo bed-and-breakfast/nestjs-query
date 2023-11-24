@@ -16,6 +16,7 @@ const UpdateManyResponseType = () => {
         tslib_1.__metadata("design:type", Number)
     ], UpdateManyResponseTypeImpl.prototype, "updatedCount", void 0);
     UpdateManyResponseTypeImpl = tslib_1.__decorate([
+        (0, graphql_1.Directive)('@shareable'),
         (0, graphql_1.ObjectType)('UpdateManyResponse')
     ], UpdateManyResponseTypeImpl);
     updateManyResponseType = UpdateManyResponseTypeImpl;

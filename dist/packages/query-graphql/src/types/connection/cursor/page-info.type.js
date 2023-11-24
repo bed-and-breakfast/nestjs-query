@@ -39,6 +39,7 @@ const getOrCreatePageInfoType = () => {
         tslib_1.__metadata("design:type", String)
     ], PageInfoTypeImpl.prototype, "endCursor", void 0);
     PageInfoTypeImpl = tslib_1.__decorate([
+        (0, graphql_1.Directive)('@shareable'),
         (0, graphql_1.ObjectType)('PageInfo'),
         tslib_1.__metadata("design:paramtypes", [Boolean, Boolean, String, String])
     ], PageInfoTypeImpl);

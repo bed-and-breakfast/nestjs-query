@@ -55,7 +55,10 @@ export class TypeOrmQueryService<Entity>
 
   readonly useSoftDelete: boolean
 
-  constructor(readonly repo: Repository<Entity>, opts?: TypeOrmQueryServiceOpts<Entity>) {
+  constructor(
+    readonly repo: Repository<Entity>,
+    opts?: TypeOrmQueryServiceOpts<Entity>
+  ) {
     super()
 
     this.filterQueryBuilder = opts?.filterQueryBuilder ?? new FilterQueryBuilder<Entity>(this.repo)
@@ -80,7 +83,7 @@ export class TypeOrmQueryService<Entity>
    * ```
    * @param query - The Query used to filter, page, and sort rows.
    */
-  public async query(query: Query<Entity>, opts?: QueryOptions): Promise<Entity[]> {
+  public async query(query: Query<Entity>, opts?: QueryOptions<Entity>): Promise<Entity[]> {
     const qb = this.filterQueryBuilder.select(query)
 
     if (opts?.withDeleted) {

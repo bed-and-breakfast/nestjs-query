@@ -37,7 +37,7 @@ const Aggregateable = (DTOClass, opts) => (BaseClass) => {
         }
     };
     tslib_1.__decorate([
-        (0, decorators_1.ResolverQuery)(() => [AR], { name: queryName, description: opts?.description }, commonResolverOpts, { interceptors: [(0, interceptors_1.AuthorizerInterceptor)(DTOClass)] }, opts ?? {}),
+        (0, decorators_1.ResolverQuery)(() => [AR], { name: queryName, description: opts?.description, complexity: opts?.complexity }, commonResolverOpts, { interceptors: [(0, interceptors_1.AuthorizerInterceptor)(DTOClass)] }, opts ?? {}),
         tslib_1.__param(0, (0, graphql_1.Args)()),
         tslib_1.__param(1, (0, decorators_1.AggregateQueryParam)()),
         tslib_1.__param(2, (0, decorators_1.AuthorizerFilter)({

@@ -23,8 +23,8 @@ let PropertyMax = class PropertyMax {
         return `Field ${args.property}.${args.constraints[0]} max allowed value is \`${args.constraints[1]}\`.`;
     }
 };
-PropertyMax = tslib_1.__decorate([
+exports.PropertyMax = PropertyMax;
+exports.PropertyMax = PropertyMax = tslib_1.__decorate([
     (0, class_validator_1.ValidatorConstraint)({ async: false })
 ], PropertyMax);
-exports.PropertyMax = PropertyMax;
 //# sourceMappingURL=property-max.validator.js.map

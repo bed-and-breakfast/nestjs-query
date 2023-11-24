@@ -15,8 +15,8 @@ let CannotUseWithout = class CannotUseWithout {
         return `Cannot be used without \`${args.constraints[0]}\`.`;
     }
 };
-CannotUseWithout = tslib_1.__decorate([
+exports.CannotUseWithout = CannotUseWithout;
+exports.CannotUseWithout = CannotUseWithout = tslib_1.__decorate([
     (0, class_validator_1.ValidatorConstraint)({ async: false })
 ], CannotUseWithout);
-exports.CannotUseWithout = CannotUseWithout;
 //# sourceMappingURL=cannot-use-without.validator.js.map

@@ -24,7 +24,7 @@ class RelationQueryBuilder {
         const hasRelations = this.filterQueryBuilder.filterHasRelations(query.filter);
         let relationBuilder = this.createRelationQueryBuilder(entity);
         relationBuilder = hasRelations
-            ? this.filterQueryBuilder.applyRelationJoinsRecursive(relationBuilder, this.filterQueryBuilder.getReferencedRelationsRecursive(this.relationRepo.metadata, query.filter))
+            ? this.filterQueryBuilder.applyRelationJoinsRecursive(relationBuilder, this.filterQueryBuilder.getReferencedRelationsWithAliasRecursive(this.relationRepo.metadata, query.filter))
             : relationBuilder;
         relationBuilder = this.filterQueryBuilder.applyFilter(relationBuilder, query.filter, relationBuilder.alias);
         relationBuilder = this.filterQueryBuilder.applyPaging(relationBuilder, query.paging);
@@ -33,7 +33,7 @@ class RelationQueryBuilder {
     batchSelect(entities, query, withDeleted) {
         let qb = this.relationRepo.createQueryBuilder(this.relationMeta.fromAlias);
         qb.withDeleted();
-        qb = this.filterQueryBuilder.applyRelationJoinsRecursive(qb, this.filterQueryBuilder.getReferencedRelationsRecursive(this.relationRepo.metadata, query.filter, query.relations), query.relations);
+        qb = this.filterQueryBuilder.applyRelationJoinsRecursive(qb, this.filterQueryBuilder.getReferencedRelationsWithAliasRecursive(this.relationRepo.metadata, query.filter, query.relations), query.relations);
         qb = this.filterQueryBuilder.applyFilter(qb, query.filter, qb.alias);
         qb = this.filterQueryBuilder.applySorting(qb, query.sorting, qb.alias);
         qb = this.filterQueryBuilder.applyPaging(qb, query.paging);
@@ -201,12 +201,23 @@ class RelationQueryBuilder {
             fromAlias: aliasName,
             fromPrimaryKeys,
             joins: [],
-            mapRelations: (entity, relations) => {
-                const filter = columns.reduce((columnsFilter, column) => ({
+            mapRelations: (entity, relations, rawRelations) => {
+                // create a filter for the raw relation array to filter only for the objects that are related to this entity
+                // do this by building an alias based on the column database name for filtering
+                // e.g. if the entity is a customer, look for a customer id in the raw relation entity object.
+                const rawFilter = columns.reduce((columnsFilter, column) => ({
                     ...columnsFilter,
-                    [column.propertyName]: column.referencedColumn.getEntityValue(entity)
+                    [this.buildAlias(column.databaseName)]: column.referencedColumn.getEntityValue(entity)
                 }), {});
-                return (0, lodash_filter_1.default)(relations, filter);
+                // First filter the raw relations with the PK of the entity, then filter the relations
+                // with the PK of the raw relation
+                return (0, lodash_filter_1.default)(rawRelations, rawFilter).reduce((entityRelations, rawRelation) => {
+                    const filter = this.getRelationPrimaryKeysPropertyNameAndColumnsName().reduce((columnsFilter, column) => ({
+                        ...columnsFilter,
+                        [column.propertyName]: rawRelation[column.columnName]
+                    }), {});
+                    return entityRelations.concat((0, lodash_filter_1.default)(relations, filter));
+                }, []);
             },
             batchSelect: (qb, entities) => {
                 const params = {};
@@ -217,7 +228,8 @@ class RelationQueryBuilder {
                     return `${aliasName}.${column.propertyPath} IN (:...${paramName})`;
                 })
                     .join(' AND ');
-                return qb.andWhere(where, params);
+                // Distinct the query so the joins cannot cause duplicate data
+                return qb.distinct(true).andWhere(where, params);
             },
             whereCondition: (entity) => {
                 const params = {};
@@ -375,7 +387,12 @@ class RelationQueryBuilder {
         }));
     }
     buildAlias(...alias) {
-        return DriverUtils_1.DriverUtils.buildAlias(this.relationRepo.manager.connection.driver, this.relationMeta.fromAlias, ...alias);
+        alias.unshift(this.relationMeta.fromAlias);
+        const buildOptions = {
+            shorten: false,
+            joiner: '_'
+        };
+        return DriverUtils_1.DriverUtils.buildAlias(this.relationRepo.manager.connection.driver, buildOptions, ...alias);
     }
 }
 exports.RelationQueryBuilder = RelationQueryBuilder;

@@ -6,5 +6,5 @@ var PagingStrategies;
     PagingStrategies["CURSOR"] = "cursor";
     PagingStrategies["OFFSET"] = "offset";
     PagingStrategies["NONE"] = "none";
-})(PagingStrategies = exports.PagingStrategies || (exports.PagingStrategies = {}));
+})(PagingStrategies || (exports.PagingStrategies = PagingStrategies = {}));
 //# sourceMappingURL=constants.js.map

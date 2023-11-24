@@ -38,6 +38,7 @@ class ClassTransformerAssembler extends abstract_assembler_1.AbstractAssembler {
         }
         return (0, class_transformer_1.plainToClass)(cls, obj);
     }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     isConstructor(x) {
         const handler = {
             construct() {

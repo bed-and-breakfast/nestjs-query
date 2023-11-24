@@ -24,6 +24,7 @@ function FilterableField(returnTypeFuncOrOptions, maybeOptions) {
         const Ctx = Reflect.getMetadata('design:type', target, propertyName);
         reflector.append(target.constructor, {
             propertyName: propertyName.toString(),
+            schemaName: advancedOptions?.name || propertyName.toString(),
             target: Ctx,
             returnTypeFunc,
             advancedOptions

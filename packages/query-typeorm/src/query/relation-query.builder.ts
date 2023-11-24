@@ -82,7 +82,10 @@ export class RelationQueryBuilder<Entity, Relation> {
    */
   private existingAlias: Alias
 
-  constructor(readonly repo: Repository<Entity>, readonly relation: string) {
+  constructor(
+    readonly repo: Repository<Entity>,
+    readonly relation: string
+  ) {
     this.relationRepo = this.repo.manager.getRepository<Relation>(this.relationMeta.from)
     this.filterQueryBuilder = new FilterQueryBuilder<Relation>(this.relationRepo)
     this.paramCount = 0
@@ -95,7 +98,7 @@ export class RelationQueryBuilder<Entity, Relation> {
     relationBuilder = hasRelations
       ? this.filterQueryBuilder.applyRelationJoinsRecursive(
           relationBuilder,
-          this.filterQueryBuilder.getReferencedRelationsRecursive(this.relationRepo.metadata, query.filter)
+          this.filterQueryBuilder.getReferencedRelationsWithAliasRecursive(this.relationRepo.metadata, query.filter)
         )
       : relationBuilder
 
@@ -111,7 +114,7 @@ export class RelationQueryBuilder<Entity, Relation> {
     qb.withDeleted()
     qb = this.filterQueryBuilder.applyRelationJoinsRecursive(
       qb,
-      this.filterQueryBuilder.getReferencedRelationsRecursive(this.relationRepo.metadata, query.filter, query.relations),
+      this.filterQueryBuilder.getReferencedRelationsWithAliasRecursive(this.relationRepo.metadata, query.filter, query.relations),
       query.relations
     )
     qb = this.filterQueryBuilder.applyFilter(qb, query.filter, qb.alias)
@@ -354,16 +357,31 @@ export class RelationQueryBuilder<Entity, Relation> {
       fromAlias: aliasName,
       fromPrimaryKeys,
       joins: [],
-      mapRelations: (entity: Entity, relations: Relation[]): Relation[] => {
-        const filter = columns.reduce(
+      mapRelations: <RawRelation>(entity: Entity, relations: Relation[], rawRelations: RawRelation[]): Relation[] => {
+        // create a filter for the raw relation array to filter only for the objects that are related to this entity
+        // do this by building an alias based on the column database name for filtering
+        // e.g. if the entity is a customer, look for a customer id in the raw relation entity object.
+        const rawFilter = columns.reduce(
           (columnsFilter, column) => ({
             ...columnsFilter,
-            [column.propertyName]: column.referencedColumn.getEntityValue(entity)
+            [this.buildAlias(column.databaseName)]: column.referencedColumn.getEntityValue(entity)
           }),
           {} as Partial<Entity>
         )
 
-        return lodashFilter(relations, filter) as Relation[]
+        // First filter the raw relations with the PK of the entity, then filter the relations
+        // with the PK of the raw relation
+        return lodashFilter(rawRelations, rawFilter).reduce((entityRelations, rawRelation) => {
+          const filter = this.getRelationPrimaryKeysPropertyNameAndColumnsName().reduce(
+            (columnsFilter, column) => ({
+              ...columnsFilter,
+              [column.propertyName]: rawRelation[column.columnName]
+            }),
+            {} as Partial<Entity>
+          )
+
+          return entityRelations.concat(lodashFilter(relations, filter) as Relation[])
+        }, [] as Relation[])
       },
       batchSelect: (qb: SelectQueryBuilder<Relation>, entities: Entity[]) => {
         const params = {}
@@ -377,7 +395,8 @@ export class RelationQueryBuilder<Entity, Relation> {
           })
           .join(' AND ')
 
-        return qb.andWhere(where, params)
+        // Distinct the query so the joins cannot cause duplicate data
+        return qb.distinct(true).andWhere(where, params)
       },
       whereCondition: (entity: Entity): SQLFragment => {
         const params: ObjectLiteral = {}
@@ -598,6 +617,11 @@ export class RelationQueryBuilder<Entity, Relation> {
   }
 
   private buildAlias(...alias: string[]): string {
-    return DriverUtils.buildAlias(this.relationRepo.manager.connection.driver, this.relationMeta.fromAlias, ...alias)
+    alias.unshift(this.relationMeta.fromAlias)
+    const buildOptions = {
+      shorten: false,
+      joiner: '_'
+    }
+    return DriverUtils.buildAlias(this.relationRepo.manager.connection.driver, buildOptions, ...alias)
   }
 }

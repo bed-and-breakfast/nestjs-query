@@ -10,7 +10,7 @@ var EventType;
     EventType["UPDATED_MANY"] = "updatedMany";
     EventType["DELETED_ONE"] = "deletedOne";
     EventType["DELETED_MANY"] = "deletedMany";
-})(EventType = exports.EventType || (exports.EventType = {}));
+})(EventType || (exports.EventType = EventType = {}));
 const getDTOEventName = (type, DTOClass, opts) => {
     const { baseName, pluralBaseName } = (0, common_1.getDTONames)(DTOClass, opts);
     if (type === EventType.DELETED_MANY || type === EventType.UPDATED_MANY) {

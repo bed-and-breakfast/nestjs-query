@@ -1,6 +1,7 @@
 import { Class, Filter } from '@ptc-org/nestjs-query-core';
 export type FilterTypeOptions = {
     allowedBooleanExpressions?: ('and' | 'or')[];
+    filterDepth?: number;
 };
 export type FilterableRelations = Record<string, Class<unknown>>;
 export interface FilterConstructor<T> {

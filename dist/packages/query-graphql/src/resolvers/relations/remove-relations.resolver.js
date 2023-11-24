@@ -7,6 +7,7 @@ const graphql_1 = require("@nestjs/graphql");
 const auth_1 = require("../../auth");
 const common_1 = require("../../common");
 const decorators_1 = require("../../decorators");
+const resolver_relation_mutation_decorator_1 = require("../../decorators/resolver-relation-mutation.decorator");
 const interceptors_1 = require("../../interceptors");
 const types_1 = require("../../types");
 const helpers_1 = require("../helpers");
@@ -14,11 +15,10 @@ const resolver_interface_1 = require("../resolver.interface");
 const helpers_2 = require("./helpers");
 const RemoveOneRelationMixin = (DTOClass, relation) => (Base) => {
     var _a;
-    // TODO:: Next major version change this to be opt-in
-    if (relation.disableRemove || relation.remove?.disabled) {
+    if (!relation.remove?.enabled) {
         return Base;
     }
-    const commonResolverOpts = relation.remove || (0, helpers_2.removeRelationOpts)(relation);
+    const commonResolverOpts = (0, helpers_2.removeRelationOpts)(relation);
     const relationDTO = relation.DTO;
     const dtoNames = (0, common_1.getDTONames)(DTOClass);
     const { baseNameLower, baseName } = (0, common_1.getDTONames)(relationDTO, { dtoName: relation.dtoName });
@@ -40,9 +40,10 @@ const RemoveOneRelationMixin = (DTOClass, relation) => (Base) => {
         }
     };
     tslib_1.__decorate([
-        (0, decorators_1.ResolverMutation)(() => DTOClass, {
-            description: relation.remove?.description
-        }, commonResolverOpts, {
+        (0, resolver_relation_mutation_decorator_1.ResolverRelationMutation)(() => DTOClass, {
+            description: relation.remove?.description,
+            complexity: relation.remove?.complexity
+        }, (0, common_1.mergeBaseResolverOpts)(relation.remove, commonResolverOpts), {
             interceptors: [(0, interceptors_1.AuthorizerInterceptor)(DTOClass)]
         }),
         tslib_1.__param(0, (0, graphql_1.Args)()),
@@ -61,11 +62,10 @@ const RemoveOneRelationMixin = (DTOClass, relation) => (Base) => {
 };
 const RemoveManyRelationsMixin = (DTOClass, relation) => (Base) => {
     var _a;
-    // TODO:: Next major version change this to be opt-in
-    if (relation.disableRemove || relation.remove?.disabled) {
+    if (!relation.remove?.enabled) {
         return Base;
     }
-    const commonResolverOpts = relation.remove || (0, helpers_2.removeRelationOpts)(relation);
+    const commonResolverOpts = (0, helpers_2.removeRelationOpts)(relation);
     const relationDTO = relation.DTO;
     const dtoNames = (0, common_1.getDTONames)(DTOClass);
     const { pluralBaseNameLower, pluralBaseName } = (0, common_1.getDTONames)(relationDTO, { dtoName: relation.dtoName });
@@ -87,9 +87,10 @@ const RemoveManyRelationsMixin = (DTOClass, relation) => (Base) => {
         }
     };
     tslib_1.__decorate([
-        (0, decorators_1.ResolverMutation)(() => DTOClass, {
-            description: relation.remove?.description
-        }, commonResolverOpts, {
+        (0, resolver_relation_mutation_decorator_1.ResolverRelationMutation)(() => DTOClass, {
+            description: relation.remove?.description,
+            complexity: relation.remove?.complexity
+        }, (0, common_1.mergeBaseResolverOpts)(relation.remove, commonResolverOpts), {
             interceptors: [(0, interceptors_1.AuthorizerInterceptor)(DTOClass)]
         }),
         tslib_1.__param(0, (0, graphql_1.Args)()),

@@ -13,6 +13,7 @@ declare enum AggregateFuncs {
  */
 export declare class AggregateBuilder<Entity> {
     readonly repo: Repository<Entity>;
+    private readonly isPostgres;
     constructor(repo: Repository<Entity>);
     static asyncConvertToAggregateResponse<Entity>(responsePromise: Promise<Record<string, unknown>[]>): Promise<AggregateResponse<Entity>[]>;
     static getAggregateSelects<Entity>(query: AggregateQuery<Entity>): string[];

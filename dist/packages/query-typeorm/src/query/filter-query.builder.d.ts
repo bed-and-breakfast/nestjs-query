@@ -36,6 +36,17 @@ export interface NestedRecord<E = unknown> {
 /**
  * @internal
  *
+ * Nested aliased type
+ */
+export interface NestedRelationsAliased {
+    [keys: string]: {
+        alias: string;
+        relations: NestedRelationsAliased;
+    };
+}
+/**
+ * @internal
+ *
  * Class that will convert a Query into a `typeorm` Query Builder.
  */
 export declare class FilterQueryBuilder<Entity> {
@@ -115,7 +126,7 @@ export declare class FilterQueryBuilder<Entity> {
      *
      * @returns the query builder for chaining
      */
-    applyRelationJoinsRecursive(qb: SelectQueryBuilder<Entity>, relationsMap?: NestedRecord, selectRelations?: SelectRelation<Entity>[], alias?: string): SelectQueryBuilder<Entity>;
+    applyRelationJoinsRecursive(qb: SelectQueryBuilder<Entity>, relationsMap?: NestedRelationsAliased, selectRelations?: SelectRelation<Entity>[], alias?: string): SelectQueryBuilder<Entity>;
     /**
      * Checks if a filter references any relations.
      *
@@ -126,7 +137,9 @@ export declare class FilterQueryBuilder<Entity> {
      * Checks if the query should use skip/take instead of limit/offset
      */
     private shouldUseSkipTake;
-    getReferencedRelationsRecursive(metadata: EntityMetadata, filter?: Filter<unknown>, selectRelations?: SelectRelation<Entity>[]): NestedRecord;
+    getReferencedRelationsWithAliasRecursive(metadata: EntityMetadata, filter?: Filter<unknown>, selectRelations?: SelectRelation<Entity>[]): NestedRelationsAliased;
+    private injectRelationsAliasRecursive;
+    getReferencedRelationsRecursive(metadata: EntityMetadata, filter: Filter<unknown>, selectRelations?: SelectRelation<Entity>[]): NestedRecord;
     private get relationNames();
 }
 export {};

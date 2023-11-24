@@ -7,5 +7,5 @@ var GroupBy;
     GroupBy["WEEK"] = "WEEK";
     GroupBy["MONTH"] = "MONTH";
     GroupBy["YEAR"] = "YEAR";
-})(GroupBy = exports.GroupBy || (exports.GroupBy = {}));
+})(GroupBy || (exports.GroupBy = GroupBy = {}));
 //# sourceMappingURL=aggregate-query.interface.js.map

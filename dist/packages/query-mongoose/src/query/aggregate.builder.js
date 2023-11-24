@@ -72,7 +72,7 @@ class AggregateBuilder {
         return fields.reduce((agg, { field }) => {
             const aggAlias = `${func}_${field}`;
             const fieldAlias = `$${(0, helpers_1.getSchemaKey)(String(field))}`;
-            if (func === 'count') {
+            if (func === AggregateFuncs.COUNT) {
                 return {
                     ...agg,
                     [aggAlias]: {

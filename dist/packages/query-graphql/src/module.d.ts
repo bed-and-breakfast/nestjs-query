@@ -1,5 +1,6 @@
 import { DynamicModule, ForwardReference, Provider } from '@nestjs/common';
 import { Assembler, Class } from '@ptc-org/nestjs-query-core';
+import { DataLoaderOptions } from './pipes/inject-data-loader-config.pipe';
 import { AutoResolverOpts } from './providers';
 import { ReadResolverOpts } from './resolvers';
 import { GraphQLPubSub } from './subscription';
@@ -9,7 +10,10 @@ interface DTOModuleOpts<DTO> {
     CreateDTOClass?: Class<DTO>;
     UpdateDTOClass?: Class<DTO>;
 }
-export interface NestjsQueryGraphqlModuleOpts {
+export interface NestjsQueryGraphqlModuleRootOpts {
+    dataLoader?: DataLoaderOptions;
+}
+export interface NestjsQueryGraphqlModuleFeatureOpts {
     imports?: Array<Class<any> | DynamicModule | Promise<DynamicModule> | ForwardReference>;
     services?: Provider[];
     assemblers?: Class<Assembler<any, any, any, any, any, any>>[];
@@ -17,8 +21,12 @@ export interface NestjsQueryGraphqlModuleOpts {
     dtos?: DTOModuleOpts<unknown>[];
     pubSub?: Provider<GraphQLPubSub>;
 }
+export declare class NestjsQueryGraphQLCoreModule {
+    static forRoot(opts: NestjsQueryGraphqlModuleRootOpts): DynamicModule;
+}
 export declare class NestjsQueryGraphQLModule {
-    static forFeature(opts: NestjsQueryGraphqlModuleOpts): DynamicModule;
+    static forRoot(opts: NestjsQueryGraphqlModuleRootOpts): DynamicModule;
+    static forFeature(opts: NestjsQueryGraphqlModuleFeatureOpts): DynamicModule;
     static defaultPubSubProvider(): Provider<GraphQLPubSub>;
     private static getCoreModule;
     private static getProviders;

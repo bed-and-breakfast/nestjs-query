@@ -41,7 +41,7 @@ export declare class TypeOrmQueryService<Entity> extends RelationQueryService<En
      * ```
      * @param query - The Query used to filter, page, and sort rows.
      */
-    query(query: Query<Entity>, opts?: QueryOptions): Promise<Entity[]>;
+    query(query: Query<Entity>, opts?: QueryOptions<Entity>): Promise<Entity[]>;
     aggregate(filter: Filter<Entity>, aggregate: AggregateQuery<Entity>, opts?: AggregateOptions): Promise<AggregateResponse<Entity>[]>;
     count(filter: Filter<Entity>, opts?: CountOptions): Promise<number>;
     /**

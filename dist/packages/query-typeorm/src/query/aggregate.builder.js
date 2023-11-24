@@ -4,6 +4,7 @@ exports.AggregateBuilder = void 0;
 const common_1 = require("@nestjs/common");
 const nestjs_query_core_1 = require("@ptc-org/nestjs-query-core");
 const camel_case_1 = require("camel-case");
+const DriverUtils_1 = require("typeorm/driver/DriverUtils");
 var AggregateFuncs;
 (function (AggregateFuncs) {
     AggregateFuncs["AVG"] = "AVG";
@@ -20,6 +21,7 @@ const AGG_REGEXP = /(AVG|SUM|COUNT|MAX|MIN|GROUP_BY)_(.*)/;
 class AggregateBuilder {
     constructor(repo) {
         this.repo = repo;
+        this.isPostgres = DriverUtils_1.DriverUtils.isPostgresFamily(repo.manager.connection.driver);
     }
     // eslint-disable-next-line @typescript-eslint/no-shadow
     static async asyncConvertToAggregateResponse(responsePromise) {
@@ -115,14 +117,27 @@ class AggregateBuilder {
             const groupByAlias = AggregateBuilder.getGroupByAlias(aggregatedField.field);
             if (this.isAggregateQueryGroupByField(aggregatedField)) {
                 let query = `DATE(${col})`;
-                if (aggregatedField.args.by === nestjs_query_core_1.GroupBy.YEAR) {
-                    query = `DATE(DATE_FORMAT(${col}, '%Y-01-01'))`;
+                if (this.isPostgres) {
+                    if (aggregatedField.args.by === nestjs_query_core_1.GroupBy.YEAR) {
+                        query = `DATE(TO_CHAR(${col}, 'YYYY-01-01'))`;
+                    }
+                    else if (aggregatedField.args.by === nestjs_query_core_1.GroupBy.MONTH) {
+                        query = `DATE(TO_CHAR(${col}, 'YYYY-mm-01'))`;
+                    }
+                    else if (aggregatedField.args.by === nestjs_query_core_1.GroupBy.WEEK) {
+                        query = `TO_DATE(TO_CHAR(${col}, 'YYYY-WW-01'), 'YYYY-WW-01')`;
+                    }
                 }
-                else if (aggregatedField.args.by === nestjs_query_core_1.GroupBy.MONTH) {
-                    query = `DATE(DATE_FORMAT(${col}, '%Y-%m-01'))`;
-                }
-                else if (aggregatedField.args.by === nestjs_query_core_1.GroupBy.WEEK) {
-                    query = `STR_TO_DATE(DATE_FORMAT(${col}, '%X-%V-01'), '%X-%V-%w')`;
+                else {
+                    if (aggregatedField.args.by === nestjs_query_core_1.GroupBy.YEAR) {
+                        query = `DATE(DATE_FORMAT(${col}, '%Y-01-01'))`;
+                    }
+                    else if (aggregatedField.args.by === nestjs_query_core_1.GroupBy.MONTH) {
+                        query = `DATE(DATE_FORMAT(${col}, '%Y-%m-01'))`;
+                    }
+                    else if (aggregatedField.args.by === nestjs_query_core_1.GroupBy.WEEK) {
+                        query = `STR_TO_DATE(DATE_FORMAT(${col}, '%X-%V-01'), '%X-%V-%w')`;
+                    }
                 }
                 return [query, groupByAlias];
             }

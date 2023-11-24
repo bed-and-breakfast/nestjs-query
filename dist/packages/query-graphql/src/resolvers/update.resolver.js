@@ -134,7 +134,7 @@ const Updateable = (DTOClass, opts) => (BaseClass) => {
         }
     };
     tslib_1.__decorate([
-        (0, decorators_1.ResolverMutation)(() => DTOClass, { name: updateOneMutationName, description: opts?.one?.description }, {
+        (0, decorators_1.ResolverMutation)(() => DTOClass, { name: updateOneMutationName, description: opts?.one?.description, complexity: opts?.one?.complexity }, {
             interceptors: [(0, interceptors_1.HookInterceptor)(hooks_1.HookTypes.BEFORE_UPDATE_ONE, UpdateDTOClass, DTOClass), (0, interceptors_1.AuthorizerInterceptor)(DTOClass)]
         }, commonResolverOpts, opts.one ?? {}),
         tslib_1.__param(0, (0, decorators_1.MutationHookArgs)()),
@@ -147,7 +147,7 @@ const Updateable = (DTOClass, opts) => (BaseClass) => {
         tslib_1.__metadata("design:returntype", Promise)
     ], UpdateResolverBase.prototype, "updateOne", null);
     tslib_1.__decorate([
-        (0, decorators_1.ResolverMutation)(() => UMR, { name: updateManyMutationName, description: opts?.many?.description }, {
+        (0, decorators_1.ResolverMutation)(() => UMR, { name: updateManyMutationName, description: opts?.many?.description, complexity: opts?.many?.complexity }, {
             interceptors: [(0, interceptors_1.HookInterceptor)(hooks_1.HookTypes.BEFORE_UPDATE_MANY, UpdateDTOClass, DTOClass), (0, interceptors_1.AuthorizerInterceptor)(DTOClass)]
         }, commonResolverOpts, opts.many ?? {}),
         tslib_1.__param(0, (0, decorators_1.MutationHookArgs)()),

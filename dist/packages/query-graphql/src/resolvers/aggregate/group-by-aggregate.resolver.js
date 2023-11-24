@@ -23,12 +23,13 @@ const GroupByAggregateMixin = (DTOClass, AR) => (Base) => {
         return fields.reduce((RB, field) => {
             var _a;
             let ReadOneMixin = class ReadOneMixin extends RB {
-                [_a = field.propertyName](dto, by) {
+                [_a = field.schemaName](dto, // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                by) {
                     return dto[field.propertyName];
                 }
             };
             tslib_1.__decorate([
-                (0, decorators_1.ResolverField)(field.propertyName, () => field.target, { nullable: true }),
+                (0, decorators_1.ResolverField)(field.schemaName, () => field.target, { nullable: true }),
                 tslib_1.__param(0, (0, graphql_1.Parent)()),
                 tslib_1.__param(1, (0, graphql_1.Args)('by', {
                     type: () => nestjs_query_core_1.GroupBy,

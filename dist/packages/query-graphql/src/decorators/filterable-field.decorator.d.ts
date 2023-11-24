@@ -1,14 +1,17 @@
-import { FieldOptions, ReturnTypeFunc } from '@nestjs/graphql';
+import { FieldOptions, ReturnTypeFunc, ReturnTypeFuncValue } from '@nestjs/graphql';
 import { Class, FilterComparisonOperators } from '@ptc-org/nestjs-query-core';
 export type FilterableFieldOptions = {
     allowedComparisons?: FilterComparisonOperators<unknown>[];
     filterRequired?: boolean;
     filterOnly?: boolean;
+    filterDecorators?: PropertyDecorator[];
+    overrideFilterTypeNamePrefix?: string;
 } & FieldOptions;
 export interface FilterableFieldDescriptor {
     propertyName: string;
+    schemaName: string;
     target: Class<unknown>;
-    returnTypeFunc?: ReturnTypeFunc;
+    returnTypeFunc?: ReturnTypeFunc<ReturnTypeFuncValue>;
     advancedOptions?: FilterableFieldOptions;
 }
 /**

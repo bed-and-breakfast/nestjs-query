@@ -14,11 +14,13 @@ class DataLoaderFactory {
         }
         return context.nestjsQueryLoaders;
     }
-    static getOrCreateLoader(context, name, handler) {
+    static getOrCreateLoader(context, name, createHandler, options) {
         const nestjsQueryLoaders = this.initializeContext(context);
         if (!nestjsQueryLoaders[name]) {
+            const handler = createHandler();
+            const dataLoaderOptions = { cacheKeyFn, ...options };
             // eslint-disable-next-line no-param-reassign
-            nestjsQueryLoaders[name] = new dataloader_1.default(handler, { cacheKeyFn });
+            nestjsQueryLoaders[name] = new dataloader_1.default(handler, dataLoaderOptions);
         }
         return nestjsQueryLoaders[name];
     }

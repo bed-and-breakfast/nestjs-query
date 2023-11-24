@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ResolverMethod = exports.isDisabled = void 0;
+exports.ResolverMethod = exports.isEnabled = exports.isDisabled = void 0;
 /* eslint-disable @typescript-eslint/no-explicit-any */
 const common_1 = require("@nestjs/common");
 /**
@@ -22,6 +22,15 @@ function isDisabled(opts) {
     return !!opts.find((o) => o.disabled);
 }
 exports.isDisabled = isDisabled;
+/**
+ * @internal
+ * Returns true if any of the [[ResolverRelationMethodOpts]] are disabled.
+ * @param opts - The array of [[ResolverRelationMethodOpts]] to check.
+ */
+function isEnabled(opts) {
+    return opts.some((o) => o.enabled);
+}
+exports.isEnabled = isEnabled;
 /**
  * @internal
  * Decorator for all ResolverMethods

@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.applyFilter = exports.getFilterOmitting = exports.getFilterComparisons = exports.getFilterFields = exports.mergeFilter = exports.transformFilter = exports.getFilterFieldComparison = exports.isComparison = exports.isBooleanComparisonOperators = exports.isRangeComparisonOperators = exports.isBetweenComparisonOperators = exports.isInComparisonOperators = exports.isLikeComparisonOperator = void 0;
+exports.applyFilter = exports.getFilterOmitting = exports.transformFilterComparisons = exports.getFilterComparisons = exports.getFilterFields = exports.mergeFilters = exports.mergeFilter = exports.transformFilter = exports.getFilterFieldComparison = exports.isComparison = exports.isBooleanComparisonOperators = exports.isRangeComparisonOperators = exports.isBetweenComparisonOperators = exports.isInComparisonOperators = exports.isLikeComparisonOperator = void 0;
 const filter_builder_1 = require("./filter.builder");
 const isLikeComparisonOperator = (op) => op === 'like' || op === 'notLike' || op === 'iLike' || op === 'notILike';
 exports.isLikeComparisonOperator = isLikeComparisonOperator;
@@ -54,6 +54,16 @@ const mergeFilter = (base, source) => {
     return { and: [source, base] };
 };
 exports.mergeFilter = mergeFilter;
+const mergeFilters = (...filters) => {
+    const newFilter = { and: [] };
+    for (const filter of filters) {
+        if (Object.keys(filter).length) {
+            newFilter.and.push(filter);
+        }
+    }
+    return newFilter;
+};
+exports.mergeFilters = mergeFilters;
 const getFilterFields = (filter) => {
     const fieldSet = Object.keys(filter).reduce((fields, filterField) => {
         if (filterField === 'and' || filterField === 'or') {
@@ -83,6 +93,15 @@ const getFilterComparisons = (filter, key) => {
     return [...results];
 };
 exports.getFilterComparisons = getFilterComparisons;
+const transformFilterComparisons = (filterComparisons, key) => {
+    return {
+        [key]: filterComparisons.reduce((flatFilter, filter) => ({
+            ...flatFilter,
+            ...filter
+        }), {})
+    };
+};
+exports.transformFilterComparisons = transformFilterComparisons;
 /*
 getFilterComparisons only returns the first layer, this one will return everything, it only returns the same
 item multiple times, that needs to be fixed first

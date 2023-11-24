@@ -11,5 +11,5 @@ var HookTypes;
     HookTypes["BEFORE_DELETE_MANY"] = "BeforeDeleteMany";
     HookTypes["BEFORE_QUERY_MANY"] = "BeforeQueryMany";
     HookTypes["BEFORE_FIND_ONE"] = "BeforeFindOne";
-})(HookTypes = exports.HookTypes || (exports.HookTypes = {}));
+})(HookTypes || (exports.HookTypes = HookTypes = {}));
 //# sourceMappingURL=types.js.map

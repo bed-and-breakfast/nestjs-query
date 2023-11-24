@@ -8,7 +8,7 @@ var SortDirection;
 (function (SortDirection) {
     SortDirection["ASC"] = "ASC";
     SortDirection["DESC"] = "DESC";
-})(SortDirection = exports.SortDirection || (exports.SortDirection = {}));
+})(SortDirection || (exports.SortDirection = SortDirection = {}));
 /**
  * Null sort option.
  */
@@ -22,5 +22,5 @@ var SortNulls;
      * All nulls will be last.
      */
     SortNulls["NULLS_LAST"] = "NULLS LAST";
-})(SortNulls = exports.SortNulls || (exports.SortNulls = {}));
+})(SortNulls || (exports.SortNulls = SortNulls = {}));
 //# sourceMappingURL=sort-field.interface.js.map

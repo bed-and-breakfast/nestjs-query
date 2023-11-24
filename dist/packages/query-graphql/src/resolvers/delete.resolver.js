@@ -134,7 +134,7 @@ const Deletable = (DTOClass, opts) => (BaseClass) => {
         }
     };
     tslib_1.__decorate([
-        (0, decorators_1.ResolverMutation)(() => DeleteOneResponse, { name: deleteOneMutationName, description: opts?.one?.description }, commonResolverOpts, { interceptors: [(0, interceptors_1.HookInterceptor)(hooks_1.HookTypes.BEFORE_DELETE_ONE, DTOClass), (0, interceptors_1.AuthorizerInterceptor)(DTOClass)] }, opts.one ?? {}),
+        (0, decorators_1.ResolverMutation)(() => DeleteOneResponse, { name: deleteOneMutationName, description: opts?.one?.description, complexity: opts?.one?.complexity }, commonResolverOpts, { interceptors: [(0, interceptors_1.HookInterceptor)(hooks_1.HookTypes.BEFORE_DELETE_ONE, DTOClass), (0, interceptors_1.AuthorizerInterceptor)(DTOClass)] }, opts.one ?? {}),
         tslib_1.__param(0, (0, decorators_1.MutationHookArgs)()),
         tslib_1.__param(1, (0, decorators_1.AuthorizerFilter)({
             operationGroup: auth_1.OperationGroup.DELETE,
@@ -145,7 +145,7 @@ const Deletable = (DTOClass, opts) => (BaseClass) => {
         tslib_1.__metadata("design:returntype", Promise)
     ], DeleteResolverBase.prototype, "deleteOne", null);
     tslib_1.__decorate([
-        (0, decorators_1.ResolverMutation)(() => DMR, { name: deleteManyMutationName, description: opts?.many?.description }, commonResolverOpts, { interceptors: [(0, interceptors_1.HookInterceptor)(hooks_1.HookTypes.BEFORE_DELETE_MANY, DTOClass), (0, interceptors_1.AuthorizerInterceptor)(DTOClass)] }, opts.many ?? {}),
+        (0, decorators_1.ResolverMutation)(() => DMR, { name: deleteManyMutationName, description: opts?.many?.description, complexity: opts?.many?.complexity }, commonResolverOpts, { interceptors: [(0, interceptors_1.HookInterceptor)(hooks_1.HookTypes.BEFORE_DELETE_MANY, DTOClass), (0, interceptors_1.AuthorizerInterceptor)(DTOClass)] }, opts.many ?? {}),
         tslib_1.__param(0, (0, decorators_1.MutationHookArgs)()),
         tslib_1.__param(1, (0, decorators_1.AuthorizerFilter)({
             operationGroup: auth_1.OperationGroup.DELETE,

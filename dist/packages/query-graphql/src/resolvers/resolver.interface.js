@@ -5,6 +5,7 @@ exports.BaseServiceResolver = void 0;
  * @internal
  * Base Resolver that takes in a service as a constructor argument.
  */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 class BaseServiceResolver {
     constructor(service) {
         this.service = service;

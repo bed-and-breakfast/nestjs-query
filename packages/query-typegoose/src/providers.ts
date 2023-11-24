@@ -45,7 +45,7 @@ function createTypegooseQueryServiceProvider<Entity extends Base>(
   plugin(mongooseLeanDefaults)(inputModel.typegooseClass)
 
   if (!inputModel) {
-    // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+    // eslint-disable-next-line @typescript-eslint/restrict-template-expressions,@typescript-eslint/no-base-to-string
     throw new Error(`Model definitions ${model} is incorrect.`)
   }
   const modelName = inputModel.typegooseClass?.name

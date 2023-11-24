@@ -12,26 +12,26 @@ class DefaultHookInterceptor {
     }
 }
 function HookInterceptor(type, ...DTOClasses) {
-    const HookedClass = DTOClasses.find((Cls) => (0, decorators_1.getHookForType)(type, Cls));
-    if (!HookedClass) {
+    const HookedClasses = DTOClasses.find((Cls) => (0, decorators_1.getHooksForType)(type, Cls));
+    if (!HookedClasses) {
         return DefaultHookInterceptor;
     }
-    const hookToken = (0, hooks_1.getHookToken)(type, HookedClass);
+    const hookToken = (0, hooks_1.getHookToken)(type, HookedClasses);
     let Interceptor = class Interceptor {
-        constructor(hook) {
-            this.hook = hook;
+        constructor(hooks) {
+            this.hooks = hooks;
         }
         intercept(context, next) {
             const gqlContext = graphql_1.GqlExecutionContext.create(context);
             const ctx = gqlContext.getContext();
-            ctx.hook = this.hook;
+            ctx.hooks = this.hooks;
             return next.handle();
         }
     };
     Interceptor = tslib_1.__decorate([
         (0, common_1.Injectable)(),
         tslib_1.__param(0, (0, common_1.Inject)(hookToken)),
-        tslib_1.__metadata("design:paramtypes", [Object])
+        tslib_1.__metadata("design:paramtypes", [Array])
     ], Interceptor);
     Object.defineProperty(Interceptor, 'name', {
         writable: false,

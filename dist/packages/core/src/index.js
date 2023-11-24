@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.RelationQueryService = exports.QueryService = exports.ProxyQueryService = exports.NoOpQueryService = exports.AssemblerQueryService = exports.NestjsQueryCoreModule = exports.transformSort = exports.transformQuery = exports.transformFilter = exports.transformAggregateResponse = exports.transformAggregateQuery = exports.mergeQuery = exports.mergeFilter = exports.invertSort = exports.getFilterOmitting = exports.getFilterFields = exports.getFilterComparisons = exports.applySort = exports.applyQuery = exports.applyPaging = exports.applyFilter = exports.InjectQueryService = exports.InjectAssemblerQueryService = exports.getQueryServiceToken = exports.DefaultAssembler = exports.ClassTransformerAssembler = exports.AssemblerSerializer = exports.AssemblerFactory = exports.AssemblerDeserializer = exports.Assembler = exports.AbstractAssembler = void 0;
+exports.RelationQueryService = exports.QueryService = exports.ProxyQueryService = exports.NoOpQueryService = exports.AssemblerQueryService = exports.NestjsQueryCoreModule = exports.transformSort = exports.transformQuery = exports.transformFilterComparisons = exports.transformFilter = exports.transformAggregateResponse = exports.transformAggregateQuery = exports.mergeQuery = exports.mergeFilters = exports.mergeFilter = exports.invertSort = exports.getFilterOmitting = exports.getFilterFields = exports.getFilterComparisons = exports.applySort = exports.applyQuery = exports.applyPaging = exports.applyFilter = exports.InjectQueryService = exports.InjectAssemblerQueryService = exports.getQueryServiceToken = exports.DefaultAssembler = exports.ClassTransformerAssembler = exports.AssemblerSerializer = exports.AssemblerFactory = exports.AssemblerDeserializer = exports.Assembler = exports.AbstractAssembler = void 0;
 const tslib_1 = require("tslib");
 /* eslint-disable import/export */
 var assemblers_1 = require("./assemblers");
@@ -26,10 +26,12 @@ Object.defineProperty(exports, "getFilterFields", { enumerable: true, get: funct
 Object.defineProperty(exports, "getFilterOmitting", { enumerable: true, get: function () { return helpers_1.getFilterOmitting; } });
 Object.defineProperty(exports, "invertSort", { enumerable: true, get: function () { return helpers_1.invertSort; } });
 Object.defineProperty(exports, "mergeFilter", { enumerable: true, get: function () { return helpers_1.mergeFilter; } });
+Object.defineProperty(exports, "mergeFilters", { enumerable: true, get: function () { return helpers_1.mergeFilters; } });
 Object.defineProperty(exports, "mergeQuery", { enumerable: true, get: function () { return helpers_1.mergeQuery; } });
 Object.defineProperty(exports, "transformAggregateQuery", { enumerable: true, get: function () { return helpers_1.transformAggregateQuery; } });
 Object.defineProperty(exports, "transformAggregateResponse", { enumerable: true, get: function () { return helpers_1.transformAggregateResponse; } });
 Object.defineProperty(exports, "transformFilter", { enumerable: true, get: function () { return helpers_1.transformFilter; } });
+Object.defineProperty(exports, "transformFilterComparisons", { enumerable: true, get: function () { return helpers_1.transformFilterComparisons; } });
 Object.defineProperty(exports, "transformQuery", { enumerable: true, get: function () { return helpers_1.transformQuery; } });
 Object.defineProperty(exports, "transformSort", { enumerable: true, get: function () { return helpers_1.transformSort; } });
 tslib_1.__exportStar(require("./interfaces"), exports);

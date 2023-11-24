@@ -1,8 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.simplifyResolveInfo = void 0;
+exports.createLookAheadInfo = exports.removePagingFromSimplifiedInfo = exports.simplifyResolveInfo = void 0;
 const graphql_1 = require("graphql");
-const values_1 = require("graphql/execution/values");
+/**
+ * Parts based of https://github.com/graphile/graphile-engine/blob/master/packages/graphql-parse-resolve-info/src/index.ts
+ */
 function getFieldFromAST(fieldNode, parentType) {
     if (fieldNode.kind === graphql_1.Kind.FIELD) {
         if (!(parentType instanceof graphql_1.GraphQLUnionType)) {
@@ -42,7 +44,17 @@ function getDirectiveResults(fieldNode, info) {
 function parseFieldNodes(inASTs, resolveInfo, initTree, parentType) {
     const asts = Array.isArray(inASTs) ? inASTs : [inASTs];
     return asts.reduce((tree, fieldNode) => {
-        const alias = fieldNode?.alias?.value ?? fieldNode.name.value;
+        let name;
+        let alias;
+        if (fieldNode.kind === graphql_1.Kind.INLINE_FRAGMENT) {
+            name = fieldNode?.typeCondition?.name.value;
+        }
+        else {
+            name = fieldNode.name.value;
+        }
+        if (fieldNode.kind === graphql_1.Kind.FIELD) {
+            alias = fieldNode?.alias?.value ?? name;
+        }
         const field = getFieldFromAST(fieldNode, parentType);
         if (field == null) {
             return tree;
@@ -60,10 +72,10 @@ function parseFieldNodes(inASTs, resolveInfo, initTree, parentType) {
             }
         }
         const parsedField = {
-            name: fieldNode.name.value,
+            name,
             alias,
-            args: (0, values_1.getArgumentValues)(field, fieldNode, resolveInfo.variableValues),
-            fields: fieldNode.selectionSet && (0, graphql_1.isCompositeType)(fieldGqlTypeOrUndefined)
+            args: fieldNode.kind === graphql_1.Kind.FIELD ? (0, graphql_1.getArgumentValues)(field, fieldNode, resolveInfo.variableValues) : {},
+            fields: fieldNode.kind !== graphql_1.Kind.FRAGMENT_SPREAD && fieldNode.selectionSet && (0, graphql_1.isCompositeType)(fieldGqlTypeOrUndefined)
                 ? parseFieldNodes(fieldNode.selectionSet.selections, resolveInfo, {}, fieldGqlTypeOrUndefined)
                 : {}
         };
@@ -83,7 +95,10 @@ function isCursorPaging(info) {
     return typeof info.fields.edges !== 'undefined';
 }
 function simplifyResolveInfo(resolveInfo) {
-    const simpleInfo = parseFieldNodes(resolveInfo.fieldNodes, resolveInfo, null, resolveInfo.parentType);
+    return parseFieldNodes(resolveInfo.fieldNodes, resolveInfo, null, resolveInfo.parentType);
+}
+exports.simplifyResolveInfo = simplifyResolveInfo;
+function removePagingFromSimplifiedInfo(simpleInfo) {
     if (isOffsetPaging(simpleInfo)) {
         return simpleInfo.fields.nodes;
     }
@@ -92,5 +107,20 @@ function simplifyResolveInfo(resolveInfo) {
     }
     return simpleInfo;
 }
-exports.simplifyResolveInfo = simplifyResolveInfo;
+exports.removePagingFromSimplifiedInfo = removePagingFromSimplifiedInfo;
+function createLookAheadInfo(relations, simpleResolveInfo) {
+    const simplifiedInfoWithoutPaging = removePagingFromSimplifiedInfo(simpleResolveInfo);
+    return relations
+        .map((relation) => {
+        if (relation.name in simplifiedInfoWithoutPaging.fields) {
+            return {
+                name: relation.name,
+                query: simplifiedInfoWithoutPaging.fields[relation.name].args || {}
+            };
+        }
+        return false;
+    })
+        .filter(Boolean);
+}
+exports.createLookAheadInfo = createLookAheadInfo;
 //# sourceMappingURL=graphql-resolve-info.utils.js.map

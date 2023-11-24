@@ -8,14 +8,13 @@ const common_1 = require("../../common");
 const decorators_1 = require("../../decorators");
 const reflector = new nestjs_query_core_1.MapReflector('nestjs-query:aggregate-response-type');
 function NumberAggregatedType(name, fields, NumberType) {
-    const fieldNames = fields.map((f) => f.propertyName);
     let Aggregated = class Aggregated {
     };
     Aggregated = tslib_1.__decorate([
         (0, graphql_1.ObjectType)(name)
     ], Aggregated);
-    fieldNames.forEach((propertyName) => {
-        (0, graphql_1.Field)(() => NumberType, { nullable: true })(Aggregated.prototype, propertyName);
+    fields.forEach(({ propertyName, schemaName }) => {
+        (0, graphql_1.Field)(() => NumberType, { name: schemaName, nullable: true })(Aggregated.prototype, propertyName);
     });
     return Aggregated;
 }
@@ -25,9 +24,9 @@ function AggregateGroupByType(name, fields) {
     Aggregated = tslib_1.__decorate([
         (0, graphql_1.ObjectType)(name)
     ], Aggregated);
-    fields.forEach(({ propertyName, target, returnTypeFunc }) => {
+    fields.forEach(({ propertyName, schemaName, target, returnTypeFunc }) => {
         const rt = returnTypeFunc ? returnTypeFunc() : target;
-        (0, graphql_1.Field)(() => rt, { nullable: true })(Aggregated.prototype, propertyName);
+        (0, graphql_1.Field)(() => rt, { name: schemaName, nullable: true })(Aggregated.prototype, propertyName);
     });
     return Aggregated;
 }
@@ -37,9 +36,9 @@ function AggregatedType(name, fields) {
     Aggregated = tslib_1.__decorate([
         (0, graphql_1.ObjectType)(name)
     ], Aggregated);
-    fields.forEach(({ propertyName, target, returnTypeFunc }) => {
+    fields.forEach(({ propertyName, schemaName, target, returnTypeFunc }) => {
         const rt = returnTypeFunc ? returnTypeFunc() : target;
-        (0, graphql_1.Field)(() => rt, { nullable: true })(Aggregated.prototype, propertyName);
+        (0, graphql_1.Field)(() => rt, { name: schemaName, nullable: true })(Aggregated.prototype, propertyName);
     });
     return Aggregated;
 }

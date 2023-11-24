@@ -1,3 +1,4 @@
 import { WithDeleted } from './with-deleted.interface';
-export interface QueryOptions extends WithDeleted {
+import { WithResolveInfo } from './with-resolve-info.interface';
+export interface QueryOptions<DTO> extends WithDeleted, WithResolveInfo<DTO> {
 }

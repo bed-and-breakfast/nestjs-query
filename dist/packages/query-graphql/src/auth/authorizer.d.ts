@@ -22,5 +22,5 @@ export interface CustomAuthorizer<DTO> {
 }
 export interface Authorizer<DTO> extends CustomAuthorizer<DTO> {
     authorize(context: any, authorizerContext: AuthorizationContext): Promise<Filter<DTO>>;
-    authorizeRelation(relationName: string, context: any, authorizerContext: AuthorizationContext): Promise<Filter<unknown | undefined>>;
+    authorizeRelation(relationName: string, context: any, authorizerContext: AuthorizationContext): Promise<Filter<unknown> | undefined>;
 }

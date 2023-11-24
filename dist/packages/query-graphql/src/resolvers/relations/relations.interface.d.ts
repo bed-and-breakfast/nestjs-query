@@ -3,6 +3,7 @@ import { Class } from '@ptc-org/nestjs-query-core';
 import { AuthorizerOptions } from '../../auth';
 import { DTONamesOpts } from '../../common';
 import { ResolverMethodOpts } from '../../decorators';
+import { ResolverRelationMethodOpts } from '../../decorators/resolver-method.decorator';
 import { ConnectionOptions, QueryArgsTypeOpts } from '../../types';
 export type ReferencesKeys<DTO, Reference> = {
     [F in keyof Reference]?: keyof DTO;
@@ -40,25 +41,6 @@ export type ResolverRelation<Relation> = {
      */
     disableRead?: boolean;
     /**
-     * Disable update relation graphql endpoints
-     * @deprecated use .update.disabled instead
-     */
-    disableUpdate?: boolean;
-    update?: Pick<ResolverRelation<Relation>, 'description'> & ResolverMethodOpts;
-    /**
-     * Disable remove relation graphql endpoints
-     * @deprecated use .remove.disabled instead
-     */
-    disableRemove?: boolean;
-    remove?: Pick<ResolverRelation<Relation>, 'description'> & ResolverMethodOpts;
-    /**
-     * Enable aggregation queries.
-     */
-    enableAggregate?: boolean;
-    aggregate?: Pick<ResolverRelation<Relation>, 'description'> & Omit<ResolverMethodOpts, 'disabled'> & {
-        enabled?: boolean;
-    };
-    /**
      * Enable look ahead mode, will join and select the relation when queried.
      */
     enableLookAhead?: boolean;
@@ -77,10 +59,17 @@ export type ResolverRelation<Relation> = {
      */
     description?: string;
     complexity?: Complexity;
+    update?: Pick<ResolverRelation<Relation>, 'description'> & ResolverRelationMethodOpts;
+    remove?: Pick<ResolverRelation<Relation>, 'description'> & ResolverRelationMethodOpts;
+    /**
+     * Enable aggregation queries.
+     */
+    enableAggregate?: boolean;
+    aggregate?: Pick<ResolverRelation<Relation>, 'description'> & ResolverRelationMethodOpts;
     auth?: AuthorizerOptions<Relation>;
 } & DTONamesOpts & ResolverMethodOpts & QueryArgsTypeOpts<Relation> & Pick<ConnectionOptions, 'enableTotalCount'>;
 export type RelationTypeMap<RT> = Record<string, RT>;
-export type ResolverOneRelation<Relation> = Omit<ResolverRelation<Relation>, 'disableFilter' | 'disableSort'>;
+export type ResolverOneRelation<Relation> = Omit<ResolverRelation<Relation>, 'disableFilter' | 'disableSort' | 'enableAggregate' | 'aggregate'>;
 export type ResolverManyRelation<Relation> = Omit<ResolverRelation<Relation>, 'enableLookAhead'>;
 export type RelationsOpts<Relation = unknown> = {
     /**

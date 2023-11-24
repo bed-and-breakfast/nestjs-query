@@ -83,7 +83,7 @@ class WhereBuilder {
     }
     withFilterComparison(where, field, cmp, relationNames, alias) {
         if (relationNames[field]) {
-            return this.withRelationFilter(where, field, cmp, relationNames[field]);
+            return this.withRelationFilter(where, field, cmp, relationNames);
         }
         return where.andWhere(new typeorm_1.Brackets((qb) => {
             const opts = Object.keys(cmp);
@@ -94,7 +94,10 @@ class WhereBuilder {
     withRelationFilter(where, field, cmp, relationNames) {
         return where.andWhere(new typeorm_1.Brackets((qb) => {
             const relationWhere = new WhereBuilder();
-            return relationWhere.build(qb, cmp, relationNames, field);
+            const nestedRelationAliased = relationNames[field];
+            const nestedRelationAliasedAlias = nestedRelationAliased.alias;
+            const nestedRelationAliasedRelationNames = nestedRelationAliased.relations;
+            return relationWhere.build(qb, cmp, nestedRelationAliasedRelationNames, nestedRelationAliasedAlias);
         }));
     }
 }

@@ -25,6 +25,7 @@ const getOrCreateOffsetPageInfoType = () => {
         tslib_1.__metadata("design:type", Boolean)
     ], PageInfoTypeImpl.prototype, "hasPreviousPage", void 0);
     PageInfoTypeImpl = tslib_1.__decorate([
+        (0, graphql_1.Directive)('@shareable'),
         (0, graphql_1.ObjectType)('OffsetPageInfo'),
         tslib_1.__metadata("design:paramtypes", [Boolean, Boolean])
     ], PageInfoTypeImpl);

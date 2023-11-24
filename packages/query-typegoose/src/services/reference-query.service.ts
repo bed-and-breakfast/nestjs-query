@@ -634,6 +634,6 @@ export abstract class ReferenceQueryService<Entity extends Base> {
       throw new NotFoundException(`Unable to find ${this.Model.modelName} with id: ${id}`)
     }
 
-    return entity
+    return entity as Entity
   }
 }

@@ -84,8 +84,6 @@ tsconfig.tsbuildinfo
 .idea
 .history
 
-schema.gql
-
 documentation/.docusaurus
 /**/package-lock.json
 
@@ -95,3 +93,5 @@ documentation/.docusaurus
 
 # VSCode workspace files
 .vscode
+
+.nx/cache

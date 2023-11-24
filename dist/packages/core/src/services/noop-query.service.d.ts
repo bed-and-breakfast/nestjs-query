@@ -14,7 +14,7 @@ export declare class NoOpQueryService<DTO, C = DeepPartial<DTO>, U = DeepPartial
     findRelation<Relation>(RelationClass: Class<Relation>, relationName: string, dto: DTO, opts?: FindRelationOptions<Relation>): Promise<Relation | undefined>;
     findRelation<Relation>(RelationClass: Class<Relation>, relationName: string, dtos: DTO[], opts?: FindRelationOptions<Relation>): Promise<Map<DTO, Relation | undefined>>;
     getById(id: string | number, opts?: GetByIdOptions<DTO>): Promise<DTO>;
-    query(query: Query<DTO>, opts?: QueryOptions): Promise<DTO[]>;
+    query(query: Query<DTO>, opts?: QueryOptions<DTO>): Promise<DTO[]>;
     aggregate(filter: Filter<DTO>, aggregate: AggregateQuery<DTO>, opts?: AggregateOptions): Promise<AggregateResponse<DTO>[]>;
     count(filter: Filter<DTO>, opts?: CountOptions): Promise<number>;
     queryRelations<Relation>(RelationClass: Class<Relation>, relationName: string, dto: DTO, query: Query<Relation>): Promise<Relation[]>;
