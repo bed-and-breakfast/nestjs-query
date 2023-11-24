@@ -1,4 +1,4 @@
-import { NotFoundException, Optional } from '@nestjs/common'
+import {NotFoundException, Optional} from '@nestjs/common'
 import {
   AggregateQuery,
   AggregateResponse,
@@ -13,16 +13,16 @@ import {
   UpdateManyResponse,
   UpdateOneOptions
 } from '@ptc-org/nestjs-query-core'
-import { DocumentType, mongoose } from '@typegoose/typegoose'
-import { Base } from '@typegoose/typegoose/lib/defaultClasses'
-import { plainToClass } from 'class-transformer'
-import { PipelineStage } from 'mongoose'
+import {DocumentType, mongoose} from '@typegoose/typegoose'
+import {Base} from '@typegoose/typegoose/lib/defaultClasses'
+import {plainToClass} from 'class-transformer'
+import {PipelineStage} from 'mongoose'
 
-import { AggregateBuilder, FilterQueryBuilder } from '../query'
-import { TypegooseClass } from '../typegoose-interface.helpers'
-import { ReturnModelType, UpdateArrayQuery } from '../typegoose-types.helper'
-import { ReferenceCacheService } from './reference-cache.service'
-import { ReferenceQueryService } from './reference-query.service'
+import {AggregateBuilder, FilterQueryBuilder} from '../query'
+import {TypegooseClass} from '../typegoose-interface.helpers'
+import {ReturnModelType, UpdateArrayQuery} from '../typegoose-types.helper'
+import {ReferenceCacheService} from './reference-cache.service'
+import {ReferenceQueryService} from './reference-query.service'
 
 export interface TypegooseQueryServiceOpts {
   toObjectOptions?: mongoose.ToObjectOptions
@@ -56,7 +56,7 @@ export class TypegooseQueryService<Entity extends Base> extends ReferenceQuerySe
     const { filterQuery, options } = this.filterQueryBuilder.buildQuery(query)
     const entities = await this.Model.find(filterQuery, {}, options).lean()
 
-    return entities.map((entity) => plainToClass(this.Entity, entity) as typeof entity) as Entity[]
+    return entities.map((entity) => plainToClass(this.Entity, entity))
   }
 
   async aggregate(filter: Filter<Entity>, aggregateQuery: AggregateQuery<Entity>): Promise<AggregateResponse<Entity>[]> {
@@ -91,7 +91,7 @@ export class TypegooseQueryService<Entity extends Base> extends ReferenceQuerySe
       return undefined
     }
 
-    return plainToClass(this.Entity, doc) as Entity
+    return plainToClass(this.Entity, doc)
   }
 
   /**
