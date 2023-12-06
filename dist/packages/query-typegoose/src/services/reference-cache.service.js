@@ -38,7 +38,7 @@ let ReferenceCacheService = class ReferenceCacheService {
     async set(RelationClass, id, value) {
         if (this.isCachedRelation(RelationClass)) {
             await this.cacheManager.set(RelationClass.name + ':' + id.toString(), value);
-            console.log('set', RelationClass.name, id.toString());
+            // console.log('set', RelationClass.name, id.toString())
         }
     }
     async setAll(RelationClass) {

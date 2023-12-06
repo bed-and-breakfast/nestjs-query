@@ -53,7 +53,7 @@ export class ReferenceCacheService implements OnApplicationBootstrap {
     if (this.isCachedRelation(RelationClass)) {
       await this.cacheManager.set(RelationClass.name + ':' + id.toString(), value)
 
-      console.log('set', RelationClass.name, id.toString())
+      // console.log('set', RelationClass.name, id.toString())
     }
   }
 

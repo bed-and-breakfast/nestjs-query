@@ -73,7 +73,7 @@ let ReferenceQueryService = class ReferenceQueryService {
             this.getReferenceModel(relationName).schema?.virtuals?.[relationName]
         // !(relationName in arrayDto[0]) /* @TODO Replace with: arrayDto[0].schema.virtuals[relationName] (after updating tests) */
         ) {
-            console.log('no cache', RelationClass, opts?.filter);
+            // console.log('no cache', RelationClass, opts?.filter)
             // references = await this.queryRelation(RelationClass, relationName, arrayDto, { filter: opts?.filter })
             // eslint-disable-next-line no-underscore-dangle
             const foundEntities = await this.Model.find({ _id: { $in: arrayDto.map((d) => d._id ?? d.id) } })
@@ -108,7 +108,7 @@ let ReferenceQueryService = class ReferenceQueryService {
                 }
             }
             if (unresolvedReferences.length > 0) {
-                console.log('unresolvedReferences', unresolvedReferences);
+                // console.log('unresolvedReferences', unresolvedReferences)
                 // Fetch and cache unresolved references
                 const unresolvedReferenceResults = await relationModel
                     .find({ _id: { $in: unresolvedReferences.map((ref) => ref) } })
@@ -158,7 +158,7 @@ let ReferenceQueryService = class ReferenceQueryService {
             this.getReferenceModel(relationName).schema?.virtuals?.[relationName]
         // !(relationName in arrayDto[0]) /* @TODO Replace with: arrayDto[0].schema.virtuals[relationName] (after updating tests) */
         ) {
-            console.log('no cache', RelationClass, query);
+            // console.log('no cache', RelationClass, query)
             // references = await this.queryRelation(RelationClass, relationName, arrayDto, query, true)
             // eslint-disable-next-line no-underscore-dangle
             const foundEntities = await this.Model.find({ _id: { $in: arrayDto.map((d) => d._id ?? d.id) } }).populate({
@@ -197,7 +197,7 @@ let ReferenceQueryService = class ReferenceQueryService {
                 }
             }
             if (unresolvedReferences.length > 0) {
-                console.log('unresolvedReferences', unresolvedReferences);
+                // console.log('unresolvedReferences', unresolvedReferences)
                 // Fetch and cache unresolved references
                 const unresolvedReferenceResults = await relationModel
                     .find({ _id: { $in: unresolvedReferences.map((ref) => ref) } })

@@ -167,7 +167,7 @@ export abstract class ReferenceQueryService<Entity extends Base> {
       this.getReferenceModel(relationName).schema?.virtuals?.[relationName]
       // !(relationName in arrayDto[0]) /* @TODO Replace with: arrayDto[0].schema.virtuals[relationName] (after updating tests) */
     ) {
-      console.log('no cache', RelationClass, opts?.filter)
+      // console.log('no cache', RelationClass, opts?.filter)
 
       // references = await this.queryRelation(RelationClass, relationName, arrayDto, { filter: opts?.filter })
 
@@ -213,7 +213,7 @@ export abstract class ReferenceQueryService<Entity extends Base> {
       }
 
       if (unresolvedReferences.length > 0) {
-        console.log('unresolvedReferences', unresolvedReferences)
+        // console.log('unresolvedReferences', unresolvedReferences)
 
         // Fetch and cache unresolved references
         const unresolvedReferenceResults = await relationModel
@@ -296,7 +296,7 @@ export abstract class ReferenceQueryService<Entity extends Base> {
       this.getReferenceModel(relationName).schema?.virtuals?.[relationName]
       // !(relationName in arrayDto[0]) /* @TODO Replace with: arrayDto[0].schema.virtuals[relationName] (after updating tests) */
     ) {
-      console.log('no cache', RelationClass, query)
+      // console.log('no cache', RelationClass, query)
 
       // references = await this.queryRelation(RelationClass, relationName, arrayDto, query, true)
 
@@ -346,7 +346,7 @@ export abstract class ReferenceQueryService<Entity extends Base> {
       }
 
       if (unresolvedReferences.length > 0) {
-        console.log('unresolvedReferences', unresolvedReferences)
+        // console.log('unresolvedReferences', unresolvedReferences)
 
         // Fetch and cache unresolved references
         const unresolvedReferenceResults = await relationModel
