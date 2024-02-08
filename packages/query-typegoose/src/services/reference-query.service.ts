@@ -232,7 +232,7 @@ export abstract class ReferenceQueryService<Entity extends Base> {
           if (d[relationName]) {
             const relation = await this.referenceCacheService.get(RelationClass, d[relationName])
 
-            if ((relation as { deleted?: boolean }).deleted !== true) {
+            if ((relation as { deleted?: boolean })?.deleted !== true) {
               return [d, assembler.convertToDTO(relation)]
             }
           }

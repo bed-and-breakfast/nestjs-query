@@ -1,9 +1,11 @@
 /* eslint-disable no-underscore-dangle,@typescript-eslint/no-unsafe-return */
 import { InjectModel, TypegooseModule } from '@m8a/nestjs-typegoose'
+import { CACHE_MANAGER, CacheModule } from '@nestjs/cache-manager'
 import { Optional } from '@nestjs/common'
 import { Test, TestingModule } from '@nestjs/testing'
 import { FindRelationOptions, SortDirection } from '@ptc-org/nestjs-query-core'
 import { DocumentType, getModelForClass, mongoose } from '@typegoose/typegoose'
+import { Cache } from 'cache-manager'
 
 import { NestjsQueryTypegooseCacheModule, NestjsQueryTypegooseModule } from '../../src'
 import { TypegooseQueryService } from '../../src/services'
@@ -51,8 +53,15 @@ describe('TypegooseQueryService-With Descriminates', () => {
     await mongo.init()
     moduleRef = await Test.createTestingModule({
       imports: [
+        NestjsQueryTypegooseCacheModule.registerAsync({
+          imports: [CacheModule.register({ ttl: 0, max: 10 * 1000 * 1000 /* 10 MB */ })],
+          inject: [CACHE_MANAGER],
+          useFactory: (cache: Cache) => ({
+            cacheManager: cache,
+            disablePreloadingLog: true
+          })
+        }),
         TypegooseModule.forRoot(mongo.getConnectionUri()),
-        NestjsQueryTypegooseCacheModule,
         NestjsQueryTypegooseModule.forFeature([
           {
             typegooseClass: TestEntity,

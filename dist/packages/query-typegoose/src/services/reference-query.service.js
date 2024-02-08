@@ -123,7 +123,7 @@ let ReferenceQueryService = class ReferenceQueryService {
             references = await Promise.all(arrayDto.map(async (d) => {
                 if (d[relationName]) {
                     const relation = await this.referenceCacheService.get(RelationClass, d[relationName]);
-                    if (relation.deleted !== true) {
+                    if (relation?.deleted !== true) {
                         return [d, assembler.convertToDTO(relation)];
                     }
                 }
