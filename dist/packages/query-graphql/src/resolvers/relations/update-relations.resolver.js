@@ -68,12 +68,12 @@ const UpdateManyRelationMixin = (DTOClass, relation) => (Base) => {
     const commonResolverOpts = (0, helpers_2.removeRelationOpts)(relation);
     const relationDTO = relation.DTO;
     const dtoNames = (0, common_1.getDTONames)(DTOClass);
-    const { pluralBaseNameLower, pluralBaseName } = (0, common_1.getDTONames)(relationDTO, { dtoName: relation.dtoName });
-    const relationName = relation.relationName ?? pluralBaseNameLower;
+    const { baseNameLower, baseName } = (0, common_1.getDTONames)(relationDTO, { dtoName: relation.dtoName });
+    const relationName = relation.relationName ?? baseNameLower;
     let AddRelationInput = class AddRelationInput extends (0, types_1.RelationsInputType)(DTOClass, relationDTO) {
     };
     AddRelationInput = tslib_1.__decorate([
-        (0, graphql_1.InputType)(`Add${pluralBaseName}To${dtoNames.baseName}Input`)
+        (0, graphql_1.InputType)(`Add${baseName}To${dtoNames.baseName}Input`)
     ], AddRelationInput);
     let AddArgs = class AddArgs extends (0, types_1.MutationArgsType)(AddRelationInput) {
     };
@@ -83,7 +83,7 @@ const UpdateManyRelationMixin = (DTOClass, relation) => (Base) => {
     let SetRelationInput = class SetRelationInput extends (0, types_1.RelationsInputType)(DTOClass, relationDTO) {
     };
     SetRelationInput = tslib_1.__decorate([
-        (0, graphql_1.InputType)(`Set${pluralBaseName}On${dtoNames.baseName}Input`)
+        (0, graphql_1.InputType)(`Set${baseName}On${dtoNames.baseName}Input`)
     ], SetRelationInput);
     let SetArgs = class SetArgs extends (0, types_1.MutationArgsType)(SetRelationInput) {
     };
@@ -91,11 +91,11 @@ const UpdateManyRelationMixin = (DTOClass, relation) => (Base) => {
         (0, graphql_1.ArgsType)()
     ], SetArgs);
     let UpdateManyMixin = class UpdateManyMixin extends Base {
-        async [_a = `add${pluralBaseName}To${dtoNames.baseName}`](addArgs, modifyRelationsFilter) {
+        async [_a = `add${baseName}To${dtoNames.baseName}`](addArgs, modifyRelationsFilter) {
             const { input } = await (0, helpers_1.transformAndValidate)(AddArgs, addArgs);
             return this.service.addRelations(relationName, input.id, input.relationIds, modifyRelationsFilter);
         }
-        async [_b = `set${pluralBaseName}On${dtoNames.baseName}`](addArgs, modifyRelationsFilter) {
+        async [_b = `set${baseName}On${dtoNames.baseName}`](addArgs, modifyRelationsFilter) {
             const { input } = await (0, helpers_1.transformAndValidate)(AddArgs, addArgs);
             return this.service.setRelations(relationName, input.id, input.relationIds, modifyRelationsFilter);
         }
@@ -108,7 +108,7 @@ const UpdateManyRelationMixin = (DTOClass, relation) => (Base) => {
             interceptors: [(0, interceptors_1.AuthorizerInterceptor)(DTOClass)]
         }),
         tslib_1.__param(0, (0, graphql_1.Args)()),
-        tslib_1.__param(1, (0, decorators_1.ModifyRelationAuthorizerFilter)(pluralBaseNameLower, {
+        tslib_1.__param(1, (0, decorators_1.ModifyRelationAuthorizerFilter)(baseNameLower, {
             operationGroup: auth_1.OperationGroup.UPDATE,
             many: true
         })),
@@ -123,7 +123,7 @@ const UpdateManyRelationMixin = (DTOClass, relation) => (Base) => {
             interceptors: [(0, interceptors_1.AuthorizerInterceptor)(DTOClass)]
         }),
         tslib_1.__param(0, (0, graphql_1.Args)()),
-        tslib_1.__param(1, (0, decorators_1.ModifyRelationAuthorizerFilter)(pluralBaseNameLower, {
+        tslib_1.__param(1, (0, decorators_1.ModifyRelationAuthorizerFilter)(baseNameLower, {
             operationGroup: auth_1.OperationGroup.UPDATE,
             many: true
         })),

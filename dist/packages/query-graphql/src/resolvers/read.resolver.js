@@ -20,7 +20,8 @@ const Readable = (DTOClass, opts) => (BaseClass) => {
     const { baseNameLower, pluralBaseNameLower, baseName } = (0, common_1.getDTONames)(DTOClass, opts);
     const readOneQueryName = opts.one?.name ?? baseNameLower;
     const readManyQueryName = opts.many?.name ?? pluralBaseNameLower;
-    const { QueryArgs = (0, types_1.QueryArgsType)(DTOClass, { ...opts, connectionName: `${baseName}Connection` }) } = opts;
+    // TODO:: Remove "connectionName" here in next major version
+    const { QueryArgs = (0, types_1.QueryArgsType)(DTOClass, { connectionName: `${baseName}Connection`, ...opts }) } = opts;
     const { ConnectionType } = QueryArgs;
     const commonResolverOpts = (0, lodash_omit_1.default)(opts, 'dtoName', 'one', 'many', 'QueryArgs', 'Connection', 'withDeleted');
     let QA = class QA extends QueryArgs {

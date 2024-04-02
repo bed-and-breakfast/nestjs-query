@@ -1,6 +1,6 @@
 {
   "name": "@bed-and-breakfast/nestjs-query-typegoose",
-  "version": "4.3.1",
+  "version": "5.0.1",
   "description": "Typegoose adapter for @ptc-org/nestjs-query-core",
   "author": "john mcinall<johnmcinall@gmail.com>",
   "homepage": "https://github.com/tripss/nestjs-query#readme",
@@ -31,8 +31,8 @@
     "mongoose-lean-virtuals": "^0.9.1",
     "speedgoose": "^1.2.24",
     "tslib": "^2.6.2",
-    "@ptc-org/nestjs-query-core": "4.3.1",
-    "reflect-metadata": "0.1.13"
+    "@ptc-org/nestjs-query-core": "5.0.1",
+    "reflect-metadata": "0.2.2"
   },
   "devDependencies": {
     "@types/mongoose-lean-virtuals": "^0.5.6"
@@ -41,7 +41,7 @@
     "@m8a/nestjs-typegoose": "^9.0.0 || ^10.0.0 || ^11.0.0",
     "@nestjs/common": "^9.0.0 || ^10.0.0",
     "@typegoose/typegoose": "^9.0.0 || ^10.0.0 || ^11.0.0",
-    "mongoose": "^6.5.0 || ^7.0.3"
+    "mongoose": "^6.5.0 || ^7.0.3 || ^8.0.0"
   },
   "repository": {
     "type": "git",

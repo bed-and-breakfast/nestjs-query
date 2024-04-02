@@ -16,7 +16,7 @@ class RelationQueryService {
         }
         const assembler = nestjs_query_core_1.AssemblerFactory.getAssembler(RelationClass, this.getRelationEntity(relationName));
         const relationQueryBuilder = this.getRelationQueryBuilder(relationName);
-        return assembler.convertAsyncToDTOs(relationQueryBuilder.select(dto, assembler.convertQuery(query)).getMany());
+        return assembler.convertToDTOs(await relationQueryBuilder.select(dto, assembler.convertQuery(query)).getMany());
     }
     async aggregateRelations(RelationClass, relationName, dto, filter, aggregate) {
         if (Array.isArray(dto)) {
@@ -164,10 +164,12 @@ class RelationQueryService {
         const convertedQuery = assembler.convertQuery(query);
         const relationQueryBuilder = this.getRelationQueryBuilder(relationName);
         const entityRelations = await relationQueryBuilder.batchSelect(entities, convertedQuery, withDeleted).getRawAndEntities();
-        return entities.reduce((results, entity) => {
+        const results = new Map();
+        for (const entity of entities) {
             const relations = relationQueryBuilder.relationMeta.mapRelations(entity, entityRelations.entities, entityRelations.raw);
-            return results.set(entity, assembler.convertToDTOs(relations));
-        }, new Map());
+            results.set(entity, await assembler.convertToDTOs(relations));
+        }
+        return results;
     }
     /**
      * Query for an array of relations for multiple dtos.
@@ -229,9 +231,11 @@ class RelationQueryService {
             if ((isNullable && dtos.some((entity) => entity[relationName])) ||
                 (!isNullable && dtos.some((entity) => entity[relationName]))) {
                 const assembler = nestjs_query_core_1.AssemblerFactory.getAssembler(RelationClass, this.getRelationEntity(relationName));
-                return dtos.reduce((results, entity) => {
-                    return results.set(entity, entity[relationName] ? assembler.convertToDTO(entity[relationName]) : undefined);
-                }, new Map());
+                const results = new Map();
+                for (const entity of dtos) {
+                    results.set(entity, entity[relationName] ? await assembler.convertToDTO(entity[relationName]) : undefined);
+                }
+                return results;
             }
         }
         const batchResults = await this.batchQueryRelations(RelationClass, relationName, dtos, {

@@ -11,9 +11,9 @@ const reference_query_service_1 = require("./reference-query.service");
 let TypegooseQueryService = class TypegooseQueryService extends reference_query_service_1.ReferenceQueryService {
     constructor(
     // @TODO Casting should probably be handled by assembler
-    Entity, Model, referenceCacheService, filterQueryBuilder = new query_1.FilterQueryBuilder(Model)) {
+    entityClass, Model, referenceCacheService, filterQueryBuilder = new query_1.FilterQueryBuilder(Model)) {
         super(Model, referenceCacheService);
-        this.Entity = Entity;
+        this.entityClass = entityClass;
         this.Model = Model;
         this.referenceCacheService = referenceCacheService;
         this.filterQueryBuilder = filterQueryBuilder;
@@ -34,7 +34,7 @@ let TypegooseQueryService = class TypegooseQueryService extends reference_query_
     async query(query) {
         const { filterQuery, options } = this.filterQueryBuilder.buildQuery(query);
         const entities = await this.Model.find(filterQuery, {}, options).lean();
-        return entities.map((entity) => (0, class_transformer_1.plainToClass)(this.Entity, entity));
+        return entities.map((entity) => (0, class_transformer_1.plainToClass)(this.entityClass, entity));
     }
     async aggregate(filter, aggregateQuery) {
         const { aggregate, filterQuery, options } = this.filterQueryBuilder.buildAggregateQuery(aggregateQuery, filter);
@@ -65,7 +65,7 @@ let TypegooseQueryService = class TypegooseQueryService extends reference_query_
         if (!doc) {
             return undefined;
         }
-        return (0, class_transformer_1.plainToClass)(this.Entity, doc);
+        return (0, class_transformer_1.plainToClass)(this.entityClass, doc);
     }
     /**
      * Gets an entity by it's `id`. If the entity is not found a rejected promise is returned.

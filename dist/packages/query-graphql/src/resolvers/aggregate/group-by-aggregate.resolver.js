@@ -8,7 +8,7 @@ const common_1 = require("../../common");
 const decorators_1 = require("../../decorators");
 const reflector = new nestjs_query_core_1.MapReflector('nestjs-query:aggregate-response-type');
 (0, graphql_1.registerEnumType)(nestjs_query_core_1.GroupBy, {
-    name: 'GroupBy',
+    name: 'GroupBy', // this one is mandatory
     description: 'Group by' // this one is optional
 });
 const GroupByAggregateMixin = (DTOClass, AR) => (Base) => {

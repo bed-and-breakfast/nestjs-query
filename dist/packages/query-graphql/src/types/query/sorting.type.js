@@ -9,11 +9,11 @@ const common_1 = require("../../common");
 const decorators_1 = require("../../decorators");
 const validators_1 = require("../validators");
 (0, graphql_1.registerEnumType)(nestjs_query_core_1.SortDirection, {
-    name: 'SortDirection',
+    name: 'SortDirection', // this one is mandatory
     description: 'Sort Directions' // this one is optional
 });
 (0, graphql_1.registerEnumType)(nestjs_query_core_1.SortNulls, {
-    name: 'SortNulls',
+    name: 'SortNulls', // this one is mandatory
     description: 'Sort Nulls Options' // this one is optional
 });
 const reflector = new nestjs_query_core_1.ValueReflector('nestjs-query:sort-type');

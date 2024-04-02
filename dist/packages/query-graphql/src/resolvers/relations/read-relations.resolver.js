@@ -78,13 +78,13 @@ const ReadManyRelationMixin = (DTOClass, relation) => (Base) => {
     const commonResolverOpts = (0, helpers_2.removeRelationOpts)(relation);
     const relationDTO = relation.DTO;
     const dtoName = (0, common_2.getDTONames)(DTOClass).baseName;
-    const { pluralBaseNameLower, pluralBaseName } = (0, common_2.getDTONames)(relationDTO, { dtoName: relation.dtoName });
-    const relationName = relation.relationName ?? pluralBaseNameLower;
-    const relationLoaderName = `load${pluralBaseName}For${DTOClass.name}`;
-    const countRelationLoaderName = `count${pluralBaseName}For${DTOClass.name}`;
+    const { baseNameLower, baseName } = (0, common_2.getDTONames)(relationDTO, { dtoName: relation.dtoName });
+    const relationName = relation.relationName ?? baseNameLower;
+    const relationLoaderName = `load${baseName}For${DTOClass.name}`;
+    const countRelationLoaderName = `count${baseName}For${DTOClass.name}`;
     const queryLoader = new loader_1.QueryRelationsLoader(relationDTO, relationName);
     const countLoader = new loader_1.CountRelationsLoader(relationDTO, relationName);
-    const connectionName = `${dtoName}${pluralBaseName}Connection`;
+    const connectionName = `${dtoName}${baseName}Connection`;
     let RelationQA = class RelationQA extends (0, types_1.QueryArgsType)(relationDTO, {
         ...relation,
         connectionName,
@@ -97,7 +97,7 @@ const ReadManyRelationMixin = (DTOClass, relation) => (Base) => {
     // disable keyset pagination for relations otherwise recursive paging will not work
     const { ConnectionType: CT } = RelationQA;
     let ReadManyMixin = class ReadManyMixin extends Base {
-        async [_a = `query${pluralBaseName}`](dto, q, context, relationFilter, resolveInfo, dataLoaderConfig, relations, info) {
+        async [_a = `query${baseName}`](dto, q, context, relationFilter, resolveInfo, dataLoaderConfig, relations, info) {
             const relationQuery = await (0, helpers_1.transformAndValidate)(RelationQA, q);
             // @TODO Test loading only ids, also with virtuals
             if (info?.fields && Object.values(info.fields).length === 1 && info.fields.id) {
@@ -118,11 +118,11 @@ const ReadManyRelationMixin = (DTOClass, relation) => (Base) => {
         }
     };
     tslib_1.__decorate([
-        (0, decorators_1.ResolverField)(pluralBaseNameLower, () => CT.resolveType, { nullable: relation.nullable, complexity: relation.complexity, description: relation?.description }, commonResolverOpts, { interceptors: [(0, interceptors_1.AuthorizerInterceptor)(DTOClass)] }),
+        (0, decorators_1.ResolverField)(baseNameLower, () => CT.resolveType, { nullable: relation.nullable, complexity: relation.complexity, description: relation?.description }, commonResolverOpts, { interceptors: [(0, interceptors_1.AuthorizerInterceptor)(DTOClass)] }),
         tslib_1.__param(0, (0, graphql_1.Parent)()),
         tslib_1.__param(1, (0, graphql_1.Args)()),
         tslib_1.__param(2, (0, graphql_1.Context)()),
-        tslib_1.__param(3, (0, decorators_1.RelationAuthorizerFilter)(pluralBaseNameLower, {
+        tslib_1.__param(3, (0, decorators_1.RelationAuthorizerFilter)(baseNameLower, {
             operationGroup: auth_1.OperationGroup.READ,
             many: true
         })),

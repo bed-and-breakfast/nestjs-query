@@ -197,7 +197,7 @@ export abstract class ReferenceQueryService<Entity extends Base> {
             }
           }
 
-          return [d, populatedRef ? assembler.convertToDTO(populatedRef) : undefined]
+          return [d, populatedRef ? await assembler.convertToDTO(populatedRef) : undefined]
         })
       )
     } else {
@@ -233,7 +233,7 @@ export abstract class ReferenceQueryService<Entity extends Base> {
             const relation = await this.referenceCacheService.get(RelationClass, d[relationName])
 
             if ((relation as { deleted?: boolean })?.deleted !== true) {
-              return [d, assembler.convertToDTO(relation)]
+              return [d, await assembler.convertToDTO(relation)]
             }
           }
 
@@ -328,7 +328,7 @@ export abstract class ReferenceQueryService<Entity extends Base> {
             }
           }
 
-          return [d, populatedRef ? assembler.convertToDTOs(populatedRef) : []]
+          return [d, populatedRef ? await assembler.convertToDTOs(populatedRef) : []]
         })
       )
     } else {
@@ -365,13 +365,13 @@ export abstract class ReferenceQueryService<Entity extends Base> {
           if (d[relationName]) {
             return [
               d,
-              assembler
-                .convertToDTOs(
+              (
+                await assembler.convertToDTOs(
                   await Promise.all(
                     d[relationName].map(async (reference) => this.referenceCacheService.get(RelationClass, reference))
                   )
                 )
-                .filter((item) => item !== undefined && (item as { deleted?: boolean }).deleted !== true)
+              ).filter((item) => item !== undefined && (item as { deleted?: boolean }).deleted !== true)
             ]
           }
 

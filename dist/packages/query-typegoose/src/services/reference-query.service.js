@@ -94,7 +94,7 @@ let ReferenceQueryService = class ReferenceQueryService {
                         await this.referenceCacheService.set(RelationClass, populatedRef._id, populatedRef);
                     }
                 }
-                return [d, populatedRef ? assembler.convertToDTO(populatedRef) : undefined];
+                return [d, populatedRef ? await assembler.convertToDTO(populatedRef) : undefined];
             }));
         }
         else {
@@ -124,7 +124,7 @@ let ReferenceQueryService = class ReferenceQueryService {
                 if (d[relationName]) {
                     const relation = await this.referenceCacheService.get(RelationClass, d[relationName]);
                     if (relation?.deleted !== true) {
-                        return [d, assembler.convertToDTO(relation)];
+                        return [d, await assembler.convertToDTO(relation)];
                     }
                 }
                 return [d, undefined];
@@ -181,7 +181,7 @@ let ReferenceQueryService = class ReferenceQueryService {
                         }
                     }
                 }
-                return [d, populatedRef ? assembler.convertToDTOs(populatedRef) : []];
+                return [d, populatedRef ? await assembler.convertToDTOs(populatedRef) : []];
             }));
         }
         else {
@@ -213,9 +213,7 @@ let ReferenceQueryService = class ReferenceQueryService {
                 if (d[relationName]) {
                     return [
                         d,
-                        assembler
-                            .convertToDTOs(await Promise.all(d[relationName].map(async (reference) => this.referenceCacheService.get(RelationClass, reference))))
-                            .filter((item) => item !== undefined && item.deleted !== true)
+                        (await assembler.convertToDTOs(await Promise.all(d[relationName].map(async (reference) => this.referenceCacheService.get(RelationClass, reference))))).filter((item) => item !== undefined && item.deleted !== true)
                     ];
                 }
                 return [d, []];

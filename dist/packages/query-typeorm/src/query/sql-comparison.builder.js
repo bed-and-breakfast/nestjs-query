@@ -7,8 +7,9 @@ const common_1 = require("../common");
  * Builder to create SQL Comparisons. (=, !=, \>, etc...)
  */
 class SQLComparisonBuilder {
-    constructor(comparisonMap = SQLComparisonBuilder.DEFAULT_COMPARISON_MAP) {
+    constructor(comparisonMap = SQLComparisonBuilder.DEFAULT_COMPARISON_MAP, repo) {
         this.comparisonMap = comparisonMap;
+        this.repo = repo;
     }
     get paramName() {
         return `param${(0, common_1.randomString)()}`;
@@ -22,7 +23,7 @@ class SQLComparisonBuilder {
      * @param alias - alias for the field.
      */
     build(field, cmp, val, alias) {
-        const col = alias ? `${alias}.${field}` : `${field}`;
+        const col = this.getCol(field, alias);
         const normalizedCmp = cmp.toLowerCase();
         if (this.comparisonMap[normalizedCmp]) {
             // comparison operator (e.b. =, !=, >, <)
@@ -137,6 +138,15 @@ class SQLComparisonBuilder {
     }
     isBetweenVal(val) {
         return val !== null && typeof val === 'object' && 'lower' in val && 'upper' in val;
+    }
+    getCol(field, alias) {
+        if (this.repo) {
+            const column = this.repo.metadata.columns.find(({ databasePath }) => databasePath === field);
+            if (column && column.isVirtualProperty) {
+                return `(${column.query(alias)})`;
+            }
+        }
+        return alias ? `${alias}.${field}` : `${field}`;
     }
 }
 exports.SQLComparisonBuilder = SQLComparisonBuilder;

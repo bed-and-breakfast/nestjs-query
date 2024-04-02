@@ -1,6 +1,6 @@
 {
   "name": "@ptc-org/nestjs-query-mongoose",
-  "version": "4.3.1",
+  "version": "5.0.1",
   "description": "Mongoose adapter for @ptc-org/nestjs-query-core",
   "author": "doug-martin <doug@dougamartin.com>",
   "homepage": "https://github.com/tripss/nestjs-query#readme",
@@ -22,13 +22,13 @@
     "lodash.escaperegexp": "^4.1.2",
     "lodash.merge": "^4.6.2",
     "tslib": "^2.6.2",
-    "@ptc-org/nestjs-query-core": "4.3.1",
-    "reflect-metadata": "0.1.13"
+    "@ptc-org/nestjs-query-core": "5.0.1",
+    "reflect-metadata": "0.2.2"
   },
   "peerDependencies": {
     "@nestjs/common": "^9.0.0 || ^10.0.0",
     "@nestjs/mongoose": "^9.0.0 || ^10.0.0",
-    "mongoose": "^6.5.0"
+    "mongoose": "^6.5.0 || ^7.0.0 || ^8.0.0"
   },
   "repository": {
     "type": "git",

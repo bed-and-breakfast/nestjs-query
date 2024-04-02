@@ -55,7 +55,7 @@ class MongooseQueryService extends reference_query_service_1.ReferenceQueryServi
     }
     count(filter) {
         const filterQuery = this.filterQueryBuilder.buildFilterQuery(filter);
-        return this.Model.count(filterQuery).exec();
+        return this.Model.countDocuments(filterQuery).exec();
     }
     /**
      * Find an entity by it's `id`.

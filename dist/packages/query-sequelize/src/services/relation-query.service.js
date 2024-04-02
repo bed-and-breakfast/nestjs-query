@@ -162,7 +162,7 @@ class RelationQueryService {
         return entities.reduce(async (mapPromise, e) => {
             const map = await mapPromise;
             const relations = await this.ensureIsEntity(e).$get(relationName, findOptions);
-            map.set(e, assembler.convertToDTOs(relations));
+            map.set(e, await assembler.convertToDTOs(relations));
             return map;
         }, Promise.resolve(new Map()));
     }
@@ -199,7 +199,7 @@ class RelationQueryService {
             const map = await mapPromise;
             const relation = await this.ensureIsEntity(e).$get(relationName, relationQueryBuilder.findOptions(opts ?? {}));
             if (relation) {
-                map.set(e, assembler.convertToDTO(relation));
+                map.set(e, await assembler.convertToDTO(relation));
             }
             return map;
         }, Promise.resolve(new Map()));

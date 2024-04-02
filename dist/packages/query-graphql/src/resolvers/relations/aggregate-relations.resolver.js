@@ -22,20 +22,20 @@ const AggregateRelationMixin = (DTOClass, relation) => (Base) => {
     const commonResolverOpts = relation.aggregate || (0, helpers_2.removeRelationOpts)(relation);
     const relationDTO = relation.DTO;
     const dtoName = (0, common_1.getDTONames)(DTOClass).baseName;
-    const { baseNameLower, pluralBaseNameLower, pluralBaseName } = (0, common_1.getDTONames)(relationDTO, {
+    const { baseName, baseNameLower } = (0, common_1.getDTONames)(relationDTO, {
         dtoName: relation.dtoName
     });
-    const relationName = relation.relationName ?? pluralBaseNameLower;
-    const aggregateRelationLoaderName = `aggregate${pluralBaseName}For${dtoName}`;
+    const relationName = relation.relationName ?? baseNameLower;
+    const aggregateRelationLoaderName = `aggregate${baseName}For${dtoName}`;
     const aggregateLoader = new loader_1.AggregateRelationsLoader(relationDTO, relationName);
     let RelationQA = class RelationQA extends (0, types_1.AggregateArgsType)(relationDTO) {
     };
     RelationQA = tslib_1.__decorate([
         (0, graphql_1.ArgsType)()
     ], RelationQA);
-    const [AR] = (0, types_1.AggregateResponseType)(relationDTO, { prefix: `${dtoName}${pluralBaseName}` });
+    const [AR] = (0, types_1.AggregateResponseType)(relationDTO, { prefix: `${dtoName}${baseName}` });
     let AggregateMixin = class AggregateMixin extends Base {
-        async [_a = `aggregate${pluralBaseName}`](dto, q, aggregateQuery, context, relationFilter, dataLoaderConfig) {
+        async [_a = `aggregate${baseName}`](dto, q, aggregateQuery, context, relationFilter, dataLoaderConfig) {
             const qa = await (0, helpers_1.transformAndValidate)(RelationQA, q);
             const loader = loader_1.DataLoaderFactory.getOrCreateLoader(context, aggregateRelationLoaderName, () => aggregateLoader.createLoader(this.service), dataLoaderConfig);
             return loader.load({
@@ -46,7 +46,7 @@ const AggregateRelationMixin = (DTOClass, relation) => (Base) => {
         }
     };
     tslib_1.__decorate([
-        (0, decorators_1.ResolverField)(`${pluralBaseNameLower}Aggregate`, () => [AR], {
+        (0, decorators_1.ResolverField)(`${baseNameLower}Aggregate`, () => [AR], {
             description: relation.aggregate?.description
         }, commonResolverOpts, {
             interceptors: [(0, interceptors_1.AuthorizerInterceptor)(DTOClass)]

@@ -5,6 +5,7 @@ const tslib_1 = require("tslib");
 const nestjs_query_core_1 = require("@ptc-org/nestjs-query-core");
 const lodash_merge_1 = tslib_1.__importDefault(require("lodash.merge"));
 const aggregate_builder_1 = require("./aggregate.builder");
+const sql_comparison_builder_1 = require("./sql-comparison.builder");
 const where_builder_1 = require("./where.builder");
 /**
  * @internal
@@ -12,10 +13,14 @@ const where_builder_1 = require("./where.builder");
  * Class that will convert a Query into a `typeorm` Query Builder.
  */
 class FilterQueryBuilder {
-    constructor(repo, whereBuilder = new where_builder_1.WhereBuilder(), aggregateBuilder = new aggregate_builder_1.AggregateBuilder(repo)) {
+    constructor(repo, whereBuilder = new where_builder_1.WhereBuilder(new sql_comparison_builder_1.SQLComparisonBuilder(sql_comparison_builder_1.SQLComparisonBuilder.DEFAULT_COMPARISON_MAP, repo)), aggregateBuilder = new aggregate_builder_1.AggregateBuilder(repo)) {
         this.repo = repo;
         this.whereBuilder = whereBuilder;
         this.aggregateBuilder = aggregateBuilder;
+        this.virtualColumns = [];
+        this.virtualColumns = repo.metadata.columns
+            .filter(({ isVirtualProperty }) => isVirtualProperty)
+            .map(({ propertyName }) => propertyName);
     }
     /**
      * Create a `typeorm` SelectQueryBuilder with `WHERE`, `ORDER BY` and `LIMIT/OFFSET` clauses.
@@ -119,7 +124,10 @@ class FilterQueryBuilder {
             return qb;
         }
         return sorts.reduce((prevQb, { field, direction, nulls }) => {
-            const col = alias ? `${alias}.${field}` : `${field}`;
+            let col = alias ? `${alias}.${field}` : `${field}`;
+            if (this.virtualColumns.includes(field)) {
+                col = prevQb.escape(alias ? `${alias}_${field}` : `${field}`);
+            }
             return prevQb.addOrderBy(col, direction, nulls);
         }, qb);
     }
@@ -168,11 +176,13 @@ class FilterQueryBuilder {
         return referencedRelations.reduce((rqb, [relationKey, relation]) => {
             const relationAlias = relation.alias;
             const relationChildren = relation.relations;
-            // TODO:: Change to find and also apply the query for the relation
             const selectRelation = selectRelations && selectRelations.find(({ name }) => name === relationKey);
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             if (selectRelation) {
-                return this.applyRelationJoinsRecursive(rqb.leftJoinAndSelect(`${alias ?? rqb.alias}.${relationKey}`, relationAlias), relationChildren, selectRelation.query.relations, relationAlias);
+                rqb = rqb.leftJoinAndSelect(`${alias ?? rqb.alias}.${relationKey}`, relationAlias);
+                // Apply filter for the current relation
+                rqb = this.applyFilter(rqb, selectRelation.query.filter, relationAlias);
+                return this.applyRelationJoinsRecursive(rqb, relationChildren, selectRelation.query.relations, relationAlias);
             }
             return this.applyRelationJoinsRecursive(rqb.leftJoin(`${alias ?? rqb.alias}.${relationKey}`, relationAlias), relationChildren, [], relationAlias);
         }, qb);

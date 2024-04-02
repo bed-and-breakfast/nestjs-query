@@ -1,5 +1,5 @@
 import { CommonFieldComparisonBetweenType, FilterComparisonOperators } from '@ptc-org/nestjs-query-core';
-import { ObjectLiteral } from 'typeorm';
+import { ObjectLiteral, Repository } from 'typeorm';
 /**
  * @internal
  */
@@ -17,8 +17,9 @@ export type EntityComparisonField<Entity, F extends keyof Entity> = Entity[F] | 
  */
 export declare class SQLComparisonBuilder<Entity> {
     readonly comparisonMap: Record<string, string>;
+    readonly repo?: Repository<Entity>;
     static DEFAULT_COMPARISON_MAP: Record<string, string>;
-    constructor(comparisonMap?: Record<string, string>);
+    constructor(comparisonMap?: Record<string, string>, repo?: Repository<Entity>);
     private get paramName();
     /**
      * Creates a valid SQL fragment with parameters.
@@ -38,5 +39,6 @@ export declare class SQLComparisonBuilder<Entity> {
     private betweenComparisonSQL;
     private notBetweenComparisonSQL;
     private isBetweenVal;
+    private getCol;
 }
 export {};

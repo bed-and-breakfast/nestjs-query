@@ -47,7 +47,7 @@ class ReferenceQueryService {
         if (!refFilter) {
             return 0;
         }
-        return relationModel.count(referenceQueryBuilder.buildFilterQuery(refFilter)).exec();
+        return relationModel.countDocuments(referenceQueryBuilder.buildFilterQuery(refFilter)).exec();
     }
     async findRelation(RelationClass, relationName, dto, opts) {
         this.checkForReference('FindRelation', relationName);
@@ -226,7 +226,7 @@ class ReferenceQueryService {
     getRefCount(relationName, relationIds, filter) {
         const referenceModel = this.getReferenceModel(relationName);
         const referenceQueryBuilder = this.getReferenceQueryBuilder(relationName);
-        return referenceModel.count(referenceQueryBuilder.buildIdFilterQuery(relationIds, filter)).exec();
+        return referenceModel.countDocuments(referenceQueryBuilder.buildIdFilterQuery(relationIds, filter)).exec();
     }
 }
 exports.ReferenceQueryService = ReferenceQueryService;

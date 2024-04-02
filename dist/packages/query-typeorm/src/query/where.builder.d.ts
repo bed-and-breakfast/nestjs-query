@@ -7,7 +7,7 @@ import { SQLComparisonBuilder } from './sql-comparison.builder';
  * Builds a WHERE clause from a Filter.
  */
 export declare class WhereBuilder<Entity> {
-    readonly sqlComparisonBuilder: SQLComparisonBuilder<Entity>;
+    private readonly sqlComparisonBuilder;
     constructor(sqlComparisonBuilder?: SQLComparisonBuilder<Entity>);
     /**
      * Builds a WHERE clause from a Filter.

@@ -53,6 +53,7 @@ export declare class FilterQueryBuilder<Entity> {
     readonly repo: Repository<Entity>;
     readonly whereBuilder: WhereBuilder<Entity>;
     readonly aggregateBuilder: AggregateBuilder<Entity>;
+    private readonly virtualColumns;
     constructor(repo: Repository<Entity>, whereBuilder?: WhereBuilder<Entity>, aggregateBuilder?: AggregateBuilder<Entity>);
     /**
      * Create a `typeorm` SelectQueryBuilder with `WHERE`, `ORDER BY` and `LIMIT/OFFSET` clauses.
