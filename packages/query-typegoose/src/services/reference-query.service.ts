@@ -371,7 +371,7 @@ export abstract class ReferenceQueryService<Entity extends Base> {
                     d[relationName].map(async (reference) => this.referenceCacheService.get(RelationClass, reference))
                   )
                 )
-              ).filter((item) => item !== undefined && (item as { deleted?: boolean }).deleted !== true)
+              ).filter((item) => item !== undefined && (item as { deleted?: boolean })?.deleted !== true)
             ]
           }
 
