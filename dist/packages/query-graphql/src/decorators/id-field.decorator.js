@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getIDField = exports.IDField = void 0;
+exports.IDField = IDField;
+exports.getIDField = getIDField;
 const graphql_1 = require("@nestjs/graphql");
 const nestjs_query_core_1 = require("@ptc-org/nestjs-query-core");
 const constants_1 = require("./constants");
@@ -40,9 +41,7 @@ function IDField(returnTypeFunc, options) {
         return FieldDecorator(returnTypeFunc, options)(target, propertyName);
     };
 }
-exports.IDField = IDField;
 function getIDField(DTOClass) {
     return reflector.get(DTOClass, true);
 }
-exports.getIDField = getIDField;
 //# sourceMappingURL=id-field.decorator.js.map

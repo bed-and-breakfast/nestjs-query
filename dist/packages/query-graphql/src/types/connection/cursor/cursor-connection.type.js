@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getOrCreateCursorConnectionType = void 0;
+exports.getOrCreateCursorConnectionType = getOrCreateCursorConnectionType;
 const tslib_1 = require("tslib");
 const common_1 = require("@nestjs/common");
 const graphql_1 = require("@nestjs/graphql");
@@ -68,5 +68,4 @@ function getOrCreateCursorConnectionType(TItemClass, maybeOpts) {
         return AbstractConnection;
     });
 }
-exports.getOrCreateCursorConnectionType = getOrCreateCursorConnectionType;
 //# sourceMappingURL=cursor-connection.type.js.map

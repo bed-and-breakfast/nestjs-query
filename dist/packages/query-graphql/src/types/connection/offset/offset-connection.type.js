@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getOrCreateOffsetConnectionType = void 0;
+exports.getOrCreateOffsetConnectionType = getOrCreateOffsetConnectionType;
 const tslib_1 = require("tslib");
 const common_1 = require("@nestjs/common");
 const graphql_1 = require("@nestjs/graphql");
@@ -23,7 +23,7 @@ function getOrCreateOffsetConnectionType(TItemClass, opts) {
     const connectionName = getOrCreateConnectionName(TItemClass, opts);
     return reflector.memoize(TItemClass, connectionName, () => {
         var AbstractConnection_1;
-        const pager = (0, pager_1.createPager)();
+        const pager = (0, pager_1.createPager)(opts.enableFetchAllWithNegative);
         const PIT = (0, offset_page_info_type_1.getOrCreateOffsetPageInfoType)();
         let AbstractConnection = AbstractConnection_1 = class AbstractConnection {
             static get resolveType() {
@@ -71,5 +71,4 @@ function getOrCreateOffsetConnectionType(TItemClass, opts) {
         return AbstractConnection;
     });
 }
-exports.getOrCreateOffsetConnectionType = getOrCreateOffsetConnectionType;
 //# sourceMappingURL=offset-connection.type.js.map

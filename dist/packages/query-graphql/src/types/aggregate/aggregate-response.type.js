@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.AggregateResponseType = void 0;
+exports.AggregateResponseType = AggregateResponseType;
 const tslib_1 = require("tslib");
 const graphql_1 = require("@nestjs/graphql");
 const nestjs_query_core_1 = require("@ptc-org/nestjs-query-core");
@@ -91,5 +91,4 @@ function AggregateResponseType(DTOClass, opts) {
         return [AggResponse, GroupType];
     });
 }
-exports.AggregateResponseType = AggregateResponseType;
 //# sourceMappingURL=aggregate-response.type.js.map

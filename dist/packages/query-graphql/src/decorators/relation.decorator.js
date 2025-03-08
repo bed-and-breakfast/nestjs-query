@@ -1,6 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.FilterableCursorConnection = exports.CursorConnection = exports.FilterableOffsetConnection = exports.OffsetConnection = exports.FilterableUnPagedRelation = exports.UnPagedRelation = exports.FilterableRelation = exports.Relation = exports.getRelations = exports.getRelationsDescriptors = exports.reflector = void 0;
+exports.FilterableCursorConnection = exports.CursorConnection = exports.FilterableOffsetConnection = exports.OffsetConnection = exports.FilterableUnPagedRelation = exports.UnPagedRelation = exports.FilterableRelation = exports.Relation = exports.reflector = void 0;
+exports.getRelationsDescriptors = getRelationsDescriptors;
+exports.getRelations = getRelations;
 const nestjs_query_core_1 = require("@ptc-org/nestjs-query-core");
 const common_1 = require("../common");
 const paging_1 = require("../types/query/paging");
@@ -14,7 +16,6 @@ function getRelationsDescriptors(DTOClass) {
         return [...inheritedRelations, ...relations];
     }, []);
 }
-exports.getRelationsDescriptors = getRelationsDescriptors;
 function convertRelationsToOpts(relations, baseOpts) {
     const relationOpts = {};
     relations.forEach((relation) => {
@@ -33,7 +34,6 @@ function getRelations(DTOClass, opts) {
     const relationDescriptors = getRelationsDescriptors(DTOClass);
     return convertRelationsToOpts(relationDescriptors, opts);
 }
-exports.getRelations = getRelations;
 const relationDecorator = (isMany, allowFiltering, pagingStrategy) => {
     return (name, relationTypeFunc, options) => (DTOClass) => {
         exports.reflector.append(DTOClass, {

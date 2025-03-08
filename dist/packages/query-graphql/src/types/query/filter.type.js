@@ -1,12 +1,15 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.AggregateFilterType = exports.SubscriptionFilterType = exports.UpdateFilterType = exports.DeleteFilterType = exports.FilterType = void 0;
+exports.FilterType = FilterType;
+exports.DeleteFilterType = DeleteFilterType;
+exports.UpdateFilterType = UpdateFilterType;
+exports.SubscriptionFilterType = SubscriptionFilterType;
+exports.AggregateFilterType = AggregateFilterType;
 const tslib_1 = require("tslib");
 const graphql_1 = require("@nestjs/graphql");
 const nestjs_query_core_1 = require("@ptc-org/nestjs-query-core");
 const class_transformer_1 = require("class-transformer");
 const class_validator_1 = require("class-validator");
-const upper_case_first_1 = require("upper-case-first");
 const common_1 = require("../../common");
 const decorators_1 = require("../../decorators");
 const has_required_filter_1 = require("../../decorators/has-required.filter");
@@ -82,7 +85,7 @@ function getOrCreateFilterType(TClass, prefix, suffix, depth) {
                 ? getOrCreateFilterType(target, typeName, suffix, depth)
                 : (0, field_comparison_1.createFilterComparisonType)({
                     FieldType: target,
-                    fieldName: `${baseName}${(0, upper_case_first_1.upperCaseFirst)(schemaName)}`,
+                    fieldName: `${baseName}${(0, nestjs_query_core_1.upperCaseFirst)(schemaName)}`,
                     allowedComparisons: advancedOptions?.allowedComparisons,
                     returnTypeFunc,
                     decorators: advancedOptions?.filterDecorators,
@@ -122,22 +125,17 @@ function FilterType(TClass) {
     const { filterDepth = 1 } = (0, decorators_1.getQueryOptions)(TClass) ?? {};
     return getOrCreateFilterType(TClass, null, null, filterDepth);
 }
-exports.FilterType = FilterType;
 function DeleteFilterType(TClass) {
     return getOrCreateFilterType(TClass, null, 'Delete', 0);
 }
-exports.DeleteFilterType = DeleteFilterType;
 function UpdateFilterType(TClass) {
     return getOrCreateFilterType(TClass, null, 'Update', 0);
 }
-exports.UpdateFilterType = UpdateFilterType;
 function SubscriptionFilterType(TClass) {
     return getOrCreateFilterType(TClass, null, 'Subscription', 0);
 }
-exports.SubscriptionFilterType = SubscriptionFilterType;
 function AggregateFilterType(TClass) {
     const { filterDepth = 1 } = (0, decorators_1.getQueryOptions)(TClass) ?? {};
     return getOrCreateFilterType(TClass, null, 'Aggregate', filterDepth);
 }
-exports.AggregateFilterType = AggregateFilterType;
 //# sourceMappingURL=filter.type.js.map

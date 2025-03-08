@@ -11,8 +11,9 @@ const DEFAULT_PAGING_META = (query) => ({
     query
 });
 class CursorPager {
-    constructor(strategy) {
+    constructor(strategy, enableFetchAllWithNegative) {
         this.strategy = strategy;
+        this.enableFetchAllWithNegative = enableFetchAllWithNegative;
     }
     async page(queryMany, query, count) {
         const pagingMeta = this.getPageMeta(query);
@@ -26,10 +27,16 @@ class CursorPager {
         return this.createPagingResult(results, pagingMeta, () => count(query.filter ?? {}));
     }
     isValidPaging(pagingMeta) {
-        if ('offset' in pagingMeta.opts) {
-            return pagingMeta.opts.offset > 0 || pagingMeta.opts.limit > 0;
+        const minimumLimit = this.enableFetchAllWithNegative ? -1 : 1;
+        const hasLimit = 'limit' in pagingMeta.opts && pagingMeta.opts.limit !== null;
+        const isValidLimit = pagingMeta.opts.limit >= minimumLimit;
+        if (hasLimit && !isValidLimit) {
+            return false;
         }
-        return pagingMeta.opts.limit > 0;
+        if ('offset' in pagingMeta.opts) {
+            return pagingMeta.opts.offset > 0 || hasLimit;
+        }
+        return hasLimit;
     }
     async runQuery(queryMany, query, pagingMeta) {
         const { opts } = pagingMeta;
@@ -56,7 +63,7 @@ class CursorPager {
         const pageInfo = {
             startCursor: edges[0]?.cursor,
             endCursor: edges[edges.length - 1]?.cursor,
-            // if we have are going forward and have an extra node or there was a before cursor
+            // if we re paging forward and have an extra node we have more pages to load. Or there we know that we have a before cursor, thus we have next page
             hasNextPage: isForward ? hasExtraNode : hasBefore,
             // we have a previous page if we are going backwards and have an extra node.
             hasPreviousPage: this.hasPreviousPage(results, pagingMeta)
@@ -68,12 +75,16 @@ class CursorPager {
         const { opts } = pagingMeta;
         return opts.isBackward ? hasExtraNode : !this.strategy.isEmptyCursor(opts);
     }
+    /**
+     * @description
+     * It is an empty page if:
+     *
+     * 1. We don't have an extra node.
+     * 2. There were no nodes returned.
+     * 3. We're paging forward.
+     * 4. And we don't have an offset.
+     */
     isEmptyPage(results, pagingMeta) {
-        // it is an empty page if
-        // 1. we dont have an extra node
-        // 2. there were no nodes returned
-        // 3. we're paging forward
-        // 4. and we dont have an offset
         const { opts } = pagingMeta;
         const isEmpty = !results.hasExtraNode && !results.nodes.length && pagingMeta.opts.isForward;
         return isEmpty && this.strategy.isEmptyCursor(opts);

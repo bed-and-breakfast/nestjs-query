@@ -1,6 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ModifyRelationAuthorizerFilter = exports.RelationAuthorizerFilter = exports.AuthorizerFilter = void 0;
+exports.AuthorizerFilter = AuthorizerFilter;
+exports.RelationAuthorizerFilter = RelationAuthorizerFilter;
+exports.ModifyRelationAuthorizerFilter = ModifyRelationAuthorizerFilter;
 const common_1 = require("@nestjs/common");
 const graphql_1 = require("@nestjs/graphql");
 const auth_1 = require("../auth");
@@ -40,7 +42,6 @@ function AuthorizerFilter(partialAuthContext) {
         return (0, common_1.createParamDecorator)((data, executionContext) => getAuthorizerFilter(getContext(executionContext), authorizationContext))()(target, propertyKey, parameterIndex);
     };
 }
-exports.AuthorizerFilter = AuthorizerFilter;
 function RelationAuthorizerFilter(relationName, partialAuthContext) {
     // eslint-disable-next-line @typescript-eslint/ban-types
     return (target, propertyKey, parameterIndex) => {
@@ -48,7 +49,6 @@ function RelationAuthorizerFilter(relationName, partialAuthContext) {
         return (0, common_1.createParamDecorator)((data, executionContext) => getRelationAuthFilter(getContext(executionContext), relationName, authorizationContext))()(target, propertyKey, parameterIndex);
     };
 }
-exports.RelationAuthorizerFilter = RelationAuthorizerFilter;
 function ModifyRelationAuthorizerFilter(relationName, partialAuthContext) {
     // eslint-disable-next-line @typescript-eslint/ban-types
     return (target, propertyKey, parameterIndex) => {
@@ -62,5 +62,4 @@ function ModifyRelationAuthorizerFilter(relationName, partialAuthContext) {
         })()(target, propertyKey, parameterIndex);
     };
 }
-exports.ModifyRelationAuthorizerFilter = ModifyRelationAuthorizerFilter;
 //# sourceMappingURL=authorize-filter.decorator.js.map

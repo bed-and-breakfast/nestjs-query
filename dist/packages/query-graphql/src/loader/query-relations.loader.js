@@ -6,19 +6,19 @@ class QueryRelationsLoader {
         this.RelationDTO = RelationDTO;
         this.relationName = relationName;
     }
-    createLoader(service) {
+    createLoader(service, opts) {
         return async (queryArgs) => {
             // group
             const queryMap = this.groupQueries(queryArgs);
-            return this.loadResults(service, queryMap);
+            return this.loadResults(service, queryMap, opts);
         };
     }
-    async loadResults(service, queryRelationsMap) {
+    async loadResults(service, queryRelationsMap, opts) {
         const results = [];
         await Promise.all([...queryRelationsMap.values()].map(async (args) => {
             const { query } = args[0];
             const dtos = args.map((a) => a.dto);
-            const relationResults = await service.queryRelations(this.RelationDTO, this.relationName, dtos, query);
+            const relationResults = await service.queryRelations(this.RelationDTO, this.relationName, dtos, query, opts);
             const dtoRelations = dtos.map((dto) => relationResults.get(dto) ?? []);
             dtoRelations.forEach((relations, index) => {
                 results[args[index].index] = relations;

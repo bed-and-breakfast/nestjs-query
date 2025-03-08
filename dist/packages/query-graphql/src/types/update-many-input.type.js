@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.UpdateManyInputType = void 0;
+exports.UpdateManyInputType = UpdateManyInputType;
 const tslib_1 = require("tslib");
 const graphql_1 = require("@nestjs/graphql");
 const class_transformer_1 = require("class-transformer");
@@ -34,5 +34,4 @@ function UpdateManyInputType(DTOClass, UpdateType) {
     ], UpdateManyInput);
     return UpdateManyInput;
 }
-exports.UpdateManyInputType = UpdateManyInputType;
 //# sourceMappingURL=update-many-input.type.js.map

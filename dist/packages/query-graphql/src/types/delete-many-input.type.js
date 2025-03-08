@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.DeleteManyInputType = void 0;
+exports.DeleteManyInputType = DeleteManyInputType;
 const tslib_1 = require("tslib");
 const graphql_1 = require("@nestjs/graphql");
 const class_transformer_1 = require("class-transformer");
@@ -27,5 +27,4 @@ function DeleteManyInputType(DTOClass) {
     ], DeleteManyInput);
     return DeleteManyInput;
 }
-exports.DeleteManyInputType = DeleteManyInputType;
 //# sourceMappingURL=delete-many-input.type.js.map

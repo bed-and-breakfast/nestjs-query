@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Reference = exports.getReferences = void 0;
+exports.getReferences = getReferences;
+exports.Reference = Reference;
 const nestjs_query_core_1 = require("@ptc-org/nestjs-query-core");
 const common_1 = require("../common");
 const constants_1 = require("./constants");
@@ -23,7 +24,6 @@ function getReferences(DTOClass, opts) {
     const referenceDescriptors = getReferenceDescriptors(DTOClass);
     return convertReferencesToOpts(referenceDescriptors, opts);
 }
-exports.getReferences = getReferences;
 function Reference(name, relationTypeFunc, 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 keys, relationOpts) {
@@ -32,5 +32,4 @@ keys, relationOpts) {
         return DTOClass;
     };
 }
-exports.Reference = Reference;
 //# sourceMappingURL=reference.decorator.js.map

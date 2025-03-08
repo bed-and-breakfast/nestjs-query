@@ -1,6 +1,6 @@
 import { InjectableOptions } from '@nestjs/common/decorators/core/injectable.decorator';
 import { Class, DeepPartial } from '../common';
-import { AggregateOptions, AggregateQuery, AggregateResponse, CountOptions, DeleteManyOptions, DeleteManyResponse, DeleteOneOptions, Filter, FindByIdOptions, FindRelationOptions, GetByIdOptions, ModifyRelationOptions, Query, QueryOptions, UpdateManyResponse, UpdateOneOptions } from '../interfaces';
+import { AggregateOptions, AggregateQuery, AggregateResponse, CountOptions, DeleteManyOptions, DeleteManyResponse, DeleteOneOptions, Filter, FindByIdOptions, FindRelationOptions, GetByIdOptions, ModifyRelationOptions, Query, QueryOptions, QueryRelationsOptions, UpdateManyResponse, UpdateOneOptions } from '../interfaces';
 /**
  * Base interface for all QueryServices.
  *
@@ -40,8 +40,8 @@ export interface QueryService<DTO, C = DeepPartial<DTO>, U = DeepPartial<DTO>> {
      * @param relationName - The name of relation to query for.
      * @param query - A query to filter, page or sort relations.
      */
-    queryRelations<Relation>(RelationClass: Class<Relation>, relationName: string, dto: DTO, query: Query<Relation>): Promise<Relation[]>;
-    queryRelations<Relation>(RelationClass: Class<Relation>, relationName: string, dtos: DTO[], query: Query<Relation>): Promise<Map<DTO, Relation[]>>;
+    queryRelations<Relation>(RelationClass: Class<Relation>, relationName: string, dto: DTO, query: Query<Relation>, opts?: QueryRelationsOptions): Promise<Relation[]>;
+    queryRelations<Relation>(RelationClass: Class<Relation>, relationName: string, dtos: DTO[], query: Query<Relation>, opts?: QueryRelationsOptions): Promise<Map<DTO, Relation[]>>;
     /**
      * Aggregate relations for a DTO.
      * * @param RelationClass - The class to serialize the Relations into
@@ -56,8 +56,8 @@ export interface QueryService<DTO, C = DeepPartial<DTO>, U = DeepPartial<DTO>> {
      * Count the number of relations
      * @param filter - Filter to create a where clause.
      */
-    countRelations<Relation>(RelationClass: Class<Relation>, relationName: string, dto: DTO, filter: Filter<Relation>): Promise<number>;
-    countRelations<Relation>(RelationClass: Class<Relation>, relationName: string, dto: DTO[], filter: Filter<Relation>): Promise<Map<DTO, number>>;
+    countRelations<Relation>(RelationClass: Class<Relation>, relationName: string, dto: DTO, filter: Filter<Relation>, opts?: QueryRelationsOptions): Promise<number>;
+    countRelations<Relation>(RelationClass: Class<Relation>, relationName: string, dto: DTO[], filter: Filter<Relation>, opts?: QueryRelationsOptions): Promise<Map<DTO, number>>;
     /**
      * Finds a single relation.
      * @param RelationClass - The class to serialize the Relation into
@@ -176,4 +176,4 @@ export interface QueryService<DTO, C = DeepPartial<DTO>, U = DeepPartial<DTO>> {
  * @param DTOClass - the DTO class that the QueryService is used for.
  * @param options - InjectableOptions
  */
-export declare function QueryService<DTO, C = DeepPartial<DTO>, U = DeepPartial<DTO>>(DTOClass: Class<DTO>, options?: InjectableOptions): <Cls extends Class<QueryService<DTO, C, U>>>(cls: Cls) => void | Cls;
+export declare function QueryService<DTO, C = DeepPartial<DTO>, U = DeepPartial<DTO>>(DTOClass: Class<DTO>, options?: InjectableOptions): <Cls extends Class<QueryService<DTO, C, U>>>(cls: Cls) => Cls | void;

@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.invertSort = exports.applyQuery = exports.applyPaging = exports.applySort = exports.mergeQuery = exports.transformQuery = exports.transformSort = void 0;
+exports.applyQuery = exports.applyPaging = exports.applySort = exports.mergeQuery = exports.transformQuery = exports.transformSort = void 0;
+exports.invertSort = invertSort;
 const tslib_1 = require("tslib");
 const lodash_merge_1 = tslib_1.__importDefault(require("lodash.merge"));
 const interfaces_1 = require("../interfaces");
@@ -56,5 +57,4 @@ function invertSort(sortFields) {
         return { ...sf, direction, nulls };
     });
 }
-exports.invertSort = invertSort;
 //# sourceMappingURL=query.helpers.js.map

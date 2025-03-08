@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CreateOneInputType = void 0;
+exports.CreateOneInputType = CreateOneInputType;
 const tslib_1 = require("tslib");
 const graphql_1 = require("@nestjs/graphql");
 const class_transformer_1 = require("class-transformer");
@@ -38,5 +38,4 @@ function CreateOneInputType(fieldName, InputClass) {
     ], CreateOneInput);
     return CreateOneInput;
 }
-exports.CreateOneInputType = CreateOneInputType;
 //# sourceMappingURL=create-one-input.type.js.map

@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getOrCreateFloatFieldComparison = void 0;
+exports.getOrCreateFloatFieldComparison = getOrCreateFloatFieldComparison;
 const tslib_1 = require("tslib");
 const graphql_1 = require("@nestjs/graphql");
 const class_transformer_1 = require("class-transformer");
@@ -108,5 +108,4 @@ function getOrCreateFloatFieldComparison() {
     floatFieldComparison = FloatFieldComparison;
     return floatFieldComparison;
 }
-exports.getOrCreateFloatFieldComparison = getOrCreateFloatFieldComparison;
 //# sourceMappingURL=float-field-comparison.type.js.map

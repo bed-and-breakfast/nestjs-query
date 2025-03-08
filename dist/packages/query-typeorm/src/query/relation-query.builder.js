@@ -20,7 +20,7 @@ class RelationQueryBuilder {
         this.filterQueryBuilder = new filter_query_builder_1.FilterQueryBuilder(this.relationRepo);
         this.paramCount = 0;
     }
-    select(entity, query) {
+    select(entity, query, withDeleted) {
         const hasRelations = this.filterQueryBuilder.filterHasRelations(query.filter);
         let relationBuilder = this.createRelationQueryBuilder(entity);
         relationBuilder = hasRelations
@@ -28,6 +28,8 @@ class RelationQueryBuilder {
             : relationBuilder;
         relationBuilder = this.filterQueryBuilder.applyFilter(relationBuilder, query.filter, relationBuilder.alias);
         relationBuilder = this.filterQueryBuilder.applyPaging(relationBuilder, query.paging);
+        if (withDeleted)
+            relationBuilder = relationBuilder.withDeleted();
         return this.filterQueryBuilder.applySorting(relationBuilder, query.sorting, relationBuilder.alias);
     }
     batchSelect(entities, query, withDeleted) {
@@ -370,9 +372,6 @@ class RelationQueryBuilder {
     }
     get entityIndexColName() {
         return '__nestjsQuery__entityIndex__';
-    }
-    get escapedEntityIndexColName() {
-        return this.escapeName(this.entityIndexColName);
     }
     get unionAlias() {
         return 'unioned';

@@ -19,5 +19,5 @@ export interface UpdateResolver<DTO, U, QS extends QueryService<DTO, unknown, U>
  * @internal
  * Mixin to add `update` graphql endpoints.
  */
-export declare const Updateable: <DTO, U, QS extends QueryService<DTO, unknown, U>>(DTOClass: Class<DTO>, opts: UpdateResolverOpts<DTO, U>) => <B extends Class<ServiceResolver<DTO, QS>>>(BaseClass: B) => Class<UpdateResolver<DTO, U, QS>> & B;
+export declare const Updatable: <DTO, U, QS extends QueryService<DTO, unknown, U>>(DTOClass: Class<DTO>, opts: UpdateResolverOpts<DTO, U>) => <B extends Class<ServiceResolver<DTO, QS>>>(BaseClass: B) => Class<UpdateResolver<DTO, U, QS>> & B;
 export declare const UpdateResolver: <DTO, U = DeepPartial<DTO>, QS extends QueryService<DTO, unknown, U> = QueryService<DTO, unknown, U>>(DTOClass: Class<DTO>, opts?: UpdateResolverOpts<DTO, U>) => ResolverClass<DTO, QS, UpdateResolver<DTO, U, QS>>;

@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createDefaultAuthorizer = void 0;
+exports.createDefaultAuthorizer = createDefaultAuthorizer;
 const tslib_1 = require("tslib");
 const common_1 = require("@nestjs/common");
 const core_1 = require("@nestjs/core");
@@ -71,5 +71,4 @@ function createDefaultAuthorizer(DTOClass, opts // instance of class or authoriz
     ], DefaultAuthorizer);
     return DefaultAuthorizer;
 }
-exports.createDefaultAuthorizer = createDefaultAuthorizer;
 //# sourceMappingURL=default-crud.authorizer.js.map

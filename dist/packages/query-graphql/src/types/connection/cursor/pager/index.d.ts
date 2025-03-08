@@ -3,5 +3,6 @@ import { Pager } from '../../interfaces';
 import { CursorPagerResult } from './interfaces';
 export type PagerOpts = {
     disableKeySetPagination?: boolean;
+    enableFetchAllWithNegative?: boolean;
 };
 export declare const createPager: <DTO>(DTOClass: Class<DTO>, opts: PagerOpts) => Pager<DTO, CursorPagerResult<DTO>>;

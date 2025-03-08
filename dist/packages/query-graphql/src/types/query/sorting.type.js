@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getOrCreateSortType = void 0;
+exports.getOrCreateSortType = getOrCreateSortType;
 const tslib_1 = require("tslib");
 const graphql_1 = require("@nestjs/graphql");
 const nestjs_query_core_1 = require("@ptc-org/nestjs-query-core");
@@ -51,5 +51,4 @@ function getOrCreateSortType(TClass) {
         return Sort;
     });
 }
-exports.getOrCreateSortType = getOrCreateSortType;
 //# sourceMappingURL=sorting.type.js.map

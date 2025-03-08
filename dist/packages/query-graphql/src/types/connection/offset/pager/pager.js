@@ -11,6 +11,9 @@ const DEFAULT_PAGING_META = (query) => ({
     query
 });
 class OffsetPager {
+    constructor(enableFetchAllWithNegative) {
+        this.enableFetchAllWithNegative = enableFetchAllWithNegative;
+    }
     async page(queryMany, query, count) {
         const pagingMeta = this.getPageMeta(query);
         if (!this.isValidPaging(pagingMeta)) {
@@ -20,7 +23,7 @@ class OffsetPager {
         return this.createPagingResult(results, pagingMeta, () => count(query.filter ?? {}));
     }
     isValidPaging(pagingMeta) {
-        return pagingMeta.opts.limit > 0;
+        return pagingMeta.opts.limit >= (this.enableFetchAllWithNegative ? -1 : 1);
     }
     async runQuery(queryMany, query, pagingMeta) {
         const windowedQuery = this.createQuery(query, pagingMeta);
@@ -47,9 +50,14 @@ class OffsetPager {
     }
     createQuery(query, pagingMeta) {
         const { limit, offset } = pagingMeta.opts;
-        return { ...query, paging: { limit: limit + 1, offset } };
+        const paging = { limit: limit + 1, offset };
+        if (this.enableFetchAllWithNegative && limit === -1)
+            delete paging.limit;
+        return { ...query, paging };
     }
     checkForExtraNode(nodes, opts) {
+        if (this.enableFetchAllWithNegative && opts.limit === -1)
+            return nodes;
         const returnNodes = [...nodes];
         const hasExtraNode = nodes.length > opts.limit;
         if (hasExtraNode) {

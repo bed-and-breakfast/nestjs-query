@@ -8,9 +8,9 @@ const strategies_1 = require("./strategies");
 const createPager = (DTOClass, opts) => {
     const keySet = opts.disableKeySetPagination ? undefined : (0, decorators_1.getKeySet)(DTOClass);
     if (keySet && keySet.length) {
-        return new pager_1.CursorPager(new strategies_1.KeysetPagerStrategy(DTOClass, keySet));
+        return new pager_1.CursorPager(new strategies_1.KeysetPagerStrategy(DTOClass, keySet, opts.enableFetchAllWithNegative), opts.enableFetchAllWithNegative);
     }
-    return new pager_1.CursorPager(new strategies_1.LimitOffsetPagerStrategy());
+    return new pager_1.CursorPager(new strategies_1.LimitOffsetPagerStrategy(opts.enableFetchAllWithNegative), opts.enableFetchAllWithNegative);
 };
 exports.createPager = createPager;
 //# sourceMappingURL=index.js.map

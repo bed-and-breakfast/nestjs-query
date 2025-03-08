@@ -7,7 +7,7 @@ const class_transformer_1 = require("class-transformer");
 const decorator_utils_1 = require("./decorator.utils");
 function transformValue(value, type) {
     if (type && !(value instanceof type)) {
-        return (0, class_transformer_1.plainToClass)(type, value);
+        return (0, class_transformer_1.plainToInstance)(type, value);
     }
     return value;
 }

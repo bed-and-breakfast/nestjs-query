@@ -1,6 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getAssemblerClasses = exports.getAssemblers = exports.Assembler = void 0;
+exports.Assembler = Assembler;
+exports.getAssemblers = getAssemblers;
+exports.getAssemblerClasses = getAssemblerClasses;
 const common_1 = require("../common");
 const constants_1 = require("./constants");
 const assemblerReflector = new common_1.ValueReflector(constants_1.ASSEMBLER_CLASSES_KEY);
@@ -21,13 +23,10 @@ function Assembler(DTOClass, EntityClass) {
         return cls;
     };
 }
-exports.Assembler = Assembler;
 function getAssemblers(DTOClass) {
     return reflector.get(DTOClass);
 }
-exports.getAssemblers = getAssemblers;
 function getAssemblerClasses(AssemblerClass) {
     return assemblerReflector.get(AssemblerClass);
 }
-exports.getAssemblerClasses = getAssemblerClasses;
 //# sourceMappingURL=assembler.js.map

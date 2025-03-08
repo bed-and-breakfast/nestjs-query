@@ -61,6 +61,6 @@ export interface AssemblerClasses<DTO, Entity> {
  * @param DTOClass - the DTO class.
  * @param EntityClass - The entity class.
  */
-export declare function Assembler<DTO, Entity, C = DeepPartial<DTO>, CE = DeepPartial<Entity>, U = DeepPartial<DTO>, UE = DeepPartial<Entity>>(DTOClass: Class<DTO>, EntityClass: Class<Entity>): <Cls extends Class<Assembler<DTO, Entity, C, CE, U, UE>>>(cls: Cls) => void | Cls;
+export declare function Assembler<DTO, Entity, C = DeepPartial<DTO>, CE = DeepPartial<Entity>, U = DeepPartial<DTO>, UE = DeepPartial<Entity>>(DTOClass: Class<DTO>, EntityClass: Class<Entity>): <Cls extends Class<Assembler<DTO, Entity, C, CE, U, UE>>>(cls: Cls) => Cls | void;
 export declare function getAssemblers<DTO>(DTOClass: Class<DTO>): MetaValue<Map<Class<unknown>, Class<Assembler<DTO, unknown, unknown, unknown, unknown, unknown>>>>;
 export declare function getAssemblerClasses<DTO, Entity, C, CE, U, UE>(AssemblerClass: Class<Assembler<DTO, Entity, C, CE, U, UE>>): MetaValue<AssemblerClasses<DTO, Entity>>;

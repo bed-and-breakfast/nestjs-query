@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getPrototypeChain = void 0;
+exports.getPrototypeChain = getPrototypeChain;
 function getPrototypeChain(Cls) {
     const baseClass = Object.getPrototypeOf(Cls);
     if (baseClass) {
@@ -8,5 +8,4 @@ function getPrototypeChain(Cls) {
     }
     return [Cls];
 }
-exports.getPrototypeChain = getPrototypeChain;
 //# sourceMappingURL=class.utils.js.map

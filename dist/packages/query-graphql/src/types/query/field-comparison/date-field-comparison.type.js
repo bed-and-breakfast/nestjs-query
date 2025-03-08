@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getOrCreateDateFieldComparison = void 0;
+exports.getOrCreateDateFieldComparison = getOrCreateDateFieldComparison;
 const tslib_1 = require("tslib");
 const graphql_1 = require("@nestjs/graphql");
 const class_transformer_1 = require("class-transformer");
@@ -108,5 +108,4 @@ function getOrCreateDateFieldComparison() {
     dateFieldComparison = DateFieldComparison;
     return dateFieldComparison;
 }
-exports.getOrCreateDateFieldComparison = getOrCreateDateFieldComparison;
 //# sourceMappingURL=date-field-comparison.type.js.map

@@ -10,13 +10,13 @@ const query_1 = require("../query");
  * @internal
  */
 class RelationQueryService {
-    async queryRelations(RelationClass, relationName, dto, query) {
+    async queryRelations(RelationClass, relationName, dto, query, opts) {
         if (Array.isArray(dto)) {
-            return this.batchQueryRelations(RelationClass, relationName, dto, query);
+            return this.batchQueryRelations(RelationClass, relationName, dto, query, opts?.withDeleted);
         }
         const assembler = nestjs_query_core_1.AssemblerFactory.getAssembler(RelationClass, this.getRelationEntity(relationName));
         const relationQueryBuilder = this.getRelationQueryBuilder(relationName);
-        return assembler.convertToDTOs(await relationQueryBuilder.select(dto, assembler.convertQuery(query)).getMany());
+        return assembler.convertToDTOs(await relationQueryBuilder.select(dto, assembler.convertQuery(query), opts?.withDeleted).getMany());
     }
     async aggregateRelations(RelationClass, relationName, dto, filter, aggregate) {
         if (Array.isArray(dto)) {
@@ -29,13 +29,13 @@ class RelationQueryService {
             .getRawMany());
         return aggResponse.map((agg) => assembler.convertAggregateResponse(agg));
     }
-    async countRelations(RelationClass, relationName, dto, filter) {
+    async countRelations(RelationClass, relationName, dto, filter, opts) {
         if (Array.isArray(dto)) {
-            return this.batchCountRelations(RelationClass, relationName, dto, filter);
+            return this.batchCountRelations(RelationClass, relationName, dto, filter, opts);
         }
         const assembler = nestjs_query_core_1.AssemblerFactory.getAssembler(RelationClass, this.getRelationEntity(relationName));
         const relationQueryBuilder = this.getRelationQueryBuilder(relationName);
-        return relationQueryBuilder.select(dto, assembler.convertQuery({ filter })).getCount();
+        return relationQueryBuilder.select(dto, assembler.convertQuery({ filter }), opts?.withDeleted).getCount();
     }
     async findRelation(RelationClass, relationName, dto, opts) {
         if (Array.isArray(dto)) {
@@ -205,11 +205,11 @@ class RelationQueryService {
      * @param relationName - The name of relation to query for.
      * @param filter - The filter to apply to the relation query.
      */
-    async batchCountRelations(RelationClass, relationName, entities, filter) {
+    async batchCountRelations(RelationClass, relationName, entities, filter, opts) {
         const assembler = nestjs_query_core_1.AssemblerFactory.getAssembler(RelationClass, this.getRelationEntity(relationName));
         const relationQueryBuilder = this.getRelationQueryBuilder(relationName);
         const convertedQuery = assembler.convertQuery({ filter });
-        const entityRelations = await Promise.all(entities.map((e) => relationQueryBuilder.select(e, convertedQuery).getCount()));
+        const entityRelations = await Promise.all(entities.map((e) => relationQueryBuilder.select(e, convertedQuery, opts?.withDeleted).getCount()));
         return entityRelations.reduce((results, relationCount, index) => {
             const e = entities[index];
             results.set(e, relationCount);

@@ -5,4 +5,4 @@ import { BaseResolverOptions } from './resolver-method.decorator';
 export type ReferenceDecoratorOpts<DTO, Relation> = Omit<ResolverRelationReference<DTO, Relation>, 'DTO' | 'keys'>;
 export type ReferenceTypeFunc<Relation> = () => Class<Relation>;
 export declare function getReferences<DTO>(DTOClass: Class<DTO>, opts?: BaseResolverOptions): ReferencesOpts<DTO>;
-export declare function Reference<DTO, Reference>(name: string, relationTypeFunc: ReferenceTypeFunc<Reference>, keys: ReferencesKeys<any, Reference>, relationOpts?: ReferenceDecoratorOpts<DTO, Reference>): <Cls extends Class<DTO>>(DTOClass: Cls) => void | Cls;
+export declare function Reference<DTO, Reference>(name: string, relationTypeFunc: ReferenceTypeFunc<Reference>, keys: ReferencesKeys<any, Reference>, relationOpts?: ReferenceDecoratorOpts<DTO, Reference>): <Cls extends Class<DTO>>(DTOClass: Cls) => Cls | void;

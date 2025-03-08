@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.HookInterceptor = void 0;
+exports.HookInterceptor = HookInterceptor;
 const tslib_1 = require("tslib");
 const common_1 = require("@nestjs/common");
 const graphql_1 = require("@nestjs/graphql");
@@ -40,5 +40,4 @@ function HookInterceptor(type, ...DTOClasses) {
     });
     return Interceptor;
 }
-exports.HookInterceptor = HookInterceptor;
 //# sourceMappingURL=hook.interceptor.js.map

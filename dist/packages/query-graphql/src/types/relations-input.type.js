@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.RelationsInputType = void 0;
+exports.RelationsInputType = RelationsInputType;
 const tslib_1 = require("tslib");
 const graphql_1 = require("@nestjs/graphql");
 const class_validator_1 = require("class-validator");
@@ -27,5 +27,4 @@ function RelationsInputType(DTOClass, RelationClass) {
     ], RelationsInput);
     return RelationsInput;
 }
-exports.RelationsInputType = RelationsInputType;
 //# sourceMappingURL=relations-input.type.js.map

@@ -6,9 +6,10 @@ const nestjs_query_core_1 = require("@ptc-org/nestjs-query-core");
 const class_transformer_1 = require("class-transformer");
 const helpers_1 = require("./helpers");
 class KeysetPagerStrategy {
-    constructor(DTOClass, pageFields) {
+    constructor(DTOClass, pageFields, enableFetchAllWithNegative) {
         this.DTOClass = DTOClass;
         this.pageFields = pageFields;
+        this.enableFetchAllWithNegative = enableFetchAllWithNegative;
     }
     fromCursorArgs(cursor) {
         const { defaultSort } = this;
@@ -36,18 +37,20 @@ class KeysetPagerStrategy {
     }
     createQuery(query, opts, includeExtraNode) {
         const paging = { limit: opts.limit };
-        if (includeExtraNode) {
+        if (includeExtraNode && (!this.enableFetchAllWithNegative || opts.limit !== -1)) {
             // Add 1 to the limit so we will fetch an additional node
             paging.limit += 1;
         }
         const { payload } = opts;
-        // Add 1 to the limit so we will fetch an additional node with the current node
         const sorting = this.getSortFields(query, opts);
         const filter = (0, nestjs_query_core_1.mergeFilter)(query.filter ?? {}, this.createFieldsFilter(sorting, payload));
-        return { ...query, filter, paging, sorting };
+        const createdQuery = { ...query, filter, sorting, paging };
+        if (this.enableFetchAllWithNegative && opts.limit === -1)
+            delete createdQuery.paging;
+        return createdQuery;
     }
     checkForExtraNode(nodes, opts) {
-        const hasExtraNode = nodes.length > opts.limit;
+        const hasExtraNode = nodes.length > opts.limit && !(this.enableFetchAllWithNegative && opts.limit === -1);
         const returnNodes = [...nodes];
         if (hasExtraNode) {
             returnNodes.pop();
@@ -93,11 +96,20 @@ class KeysetPagerStrategy {
             const subFilter = {
                 and: [...equalities, { [keySetField.field]: { [isAsc ? 'gt' : 'lt']: keySetField.value } }]
             };
-            equalities.push({ [keySetField.field]: { eq: keySetField.value } });
+            if (keySetField.value === null) {
+                equalities.push({ [keySetField.field]: { is: null } });
+            }
+            else {
+                equalities.push({ [keySetField.field]: { eq: keySetField.value } });
+            }
             return [...dtoFilters, subFilter];
         }, []);
         return { or: oredFilter };
     }
+    /**
+     * @description
+     * Strip the default sorting criteria if it is set by the client.
+     */
     getSortFields(query, opts) {
         const { sorting = [] } = query;
         const defaultSort = opts.defaultSort.filter((dsf) => !sorting.some((sf) => dsf.field === sf.field));

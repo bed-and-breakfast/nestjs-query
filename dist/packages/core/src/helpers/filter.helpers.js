@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.applyFilter = exports.getFilterOmitting = exports.transformFilterComparisons = exports.getFilterComparisons = exports.getFilterFields = exports.mergeFilters = exports.mergeFilter = exports.transformFilter = exports.getFilterFieldComparison = exports.isComparison = exports.isBooleanComparisonOperators = exports.isRangeComparisonOperators = exports.isBetweenComparisonOperators = exports.isInComparisonOperators = exports.isLikeComparisonOperator = void 0;
+exports.getFilterOmitting = exports.transformFilterComparisons = exports.getFilterComparisons = exports.getFilterFields = exports.mergeFilters = exports.mergeFilter = exports.transformFilter = exports.getFilterFieldComparison = exports.isComparison = exports.isBooleanComparisonOperators = exports.isRangeComparisonOperators = exports.isBetweenComparisonOperators = exports.isInComparisonOperators = exports.isLikeComparisonOperator = void 0;
+exports.applyFilter = applyFilter;
 const filter_builder_1 = require("./filter.builder");
 const isLikeComparisonOperator = (op) => op === 'like' || op === 'notLike' || op === 'iLike' || op === 'notILike';
 exports.isLikeComparisonOperator = isLikeComparisonOperator;
@@ -166,5 +167,4 @@ function applyFilter(dtoOrArray, filter) {
     }
     return filterFunc(dtoOrArray);
 }
-exports.applyFilter = applyFilter;
 //# sourceMappingURL=filter.helpers.js.map

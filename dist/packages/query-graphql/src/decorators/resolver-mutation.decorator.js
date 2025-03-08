@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ResolverMutation = void 0;
+exports.ResolverMutation = ResolverMutation;
 const common_1 = require("@nestjs/common");
 const graphql_1 = require("@nestjs/graphql");
 const resolver_method_decorator_1 = require("./resolver-method.decorator");
@@ -17,5 +17,4 @@ function ResolverMutation(typeFunc, options, ...opts) {
     }
     return (0, common_1.applyDecorators)((0, graphql_1.Mutation)(typeFunc, options), (0, resolver_method_decorator_1.ResolverMethod)(...opts));
 }
-exports.ResolverMutation = ResolverMutation;
 //# sourceMappingURL=resolver-mutation.decorator.js.map

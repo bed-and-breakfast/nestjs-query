@@ -53,4 +53,4 @@ export interface CRUDResolver<DTO, C, U, R extends ReadResolverOpts<DTO>, QS ext
  * @param DTOClass - The DTO Class that the resolver is for. All methods will use types derived from this class.
  * @param opts - Options to customize the resolver.
  */
-export declare const CRUDResolver: <DTO, C = DeepPartial<DTO>, U = DeepPartial<DTO>, R extends ReadResolverOpts<DTO> = ReadResolverOpts<DTO>, PS extends PagingStrategies = PagingStrategies.CURSOR>(DTOClass: Class<DTO>, opts?: CRUDResolverOpts<DTO, C, U, R, PS>) => ResolverClass<DTO, QueryService<DTO, C, U>, CRUDResolver<DTO, C, U, MergePagingStrategyOpts<DTO, R, PS>, QueryService<DTO, C, U>>>;
+export declare const CRUDResolver: <DTO, C = DeepPartial<DTO>, U = DeepPartial<DTO>, R extends ReadResolverOpts<DTO> = ReadResolverOpts<DTO>, PS extends PagingStrategies = PagingStrategies.CURSOR>(DTOClass: Class<DTO>, opts?: CRUDResolverOpts<DTO, C, U, R, PS>) => ResolverClass<DTO, QueryService<DTO, C, U>, CRUDResolver<DTO, C, U, MergePagingStrategyOpts<DTO, R, PS>>>;

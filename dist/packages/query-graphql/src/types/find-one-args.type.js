@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.FindOneArgsType = void 0;
+exports.FindOneArgsType = FindOneArgsType;
 const tslib_1 = require("tslib");
 const graphql_1 = require("@nestjs/graphql");
 const class_validator_1 = require("class-validator");
@@ -23,5 +23,4 @@ function FindOneArgsType(DTOClass) {
     ], FindOneArgs);
     return FindOneArgs;
 }
-exports.FindOneArgsType = FindOneArgsType;
 //# sourceMappingURL=find-one-args.type.js.map

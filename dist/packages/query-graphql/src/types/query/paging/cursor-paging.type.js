@@ -4,13 +4,14 @@ exports.getOrCreateCursorPagingType = void 0;
 const tslib_1 = require("tslib");
 const graphql_1 = require("@nestjs/graphql");
 const class_validator_1 = require("class-validator");
+const decorators_1 = require("../../../decorators");
 const cursor_scalar_1 = require("../../cursor.scalar");
 const validators_1 = require("../../validators");
 const constants_1 = require("./constants");
 /** @internal */
 let graphQLCursorPaging = null;
 // eslint-disable-next-line @typescript-eslint/no-redeclare -- intentional
-const getOrCreateCursorPagingType = () => {
+const getOrCreateCursorPagingType = (opts) => {
     if (graphQLCursorPaging) {
         return graphQLCursorPaging;
     }
@@ -41,8 +42,8 @@ const getOrCreateCursorPagingType = () => {
     tslib_1.__decorate([
         (0, graphql_1.Field)(() => graphql_1.Int, { nullable: true, description: 'Paginate first' }),
         (0, validators_1.IsUndefined)(),
-        (0, class_validator_1.IsPositive)(),
-        (0, class_validator_1.Min)(1),
+        (0, decorators_1.SkipIf)(() => opts.enableFetchAllWithNegative, (0, class_validator_1.IsPositive)()),
+        (0, class_validator_1.Min)(opts.enableFetchAllWithNegative ? -1 : 1),
         (0, class_validator_1.Validate)(validators_1.CannotUseWith, ['before', 'last']),
         tslib_1.__metadata("design:type", Number)
     ], GraphQLCursorPagingImpl.prototype, "first", void 0);
@@ -55,8 +56,8 @@ const getOrCreateCursorPagingType = () => {
         ,
         (0, class_validator_1.Validate)(validators_1.CannotUseWithout, ['before']),
         (0, class_validator_1.Validate)(validators_1.CannotUseWith, ['after', 'first']),
-        (0, class_validator_1.Min)(1),
-        (0, class_validator_1.IsPositive)(),
+        (0, decorators_1.SkipIf)(() => opts.enableFetchAllWithNegative, (0, class_validator_1.IsPositive)()),
+        (0, class_validator_1.Min)(opts.enableFetchAllWithNegative ? -1 : 1),
         tslib_1.__metadata("design:type", Number)
     ], GraphQLCursorPagingImpl.prototype, "last", void 0);
     GraphQLCursorPagingImpl = tslib_1.__decorate([

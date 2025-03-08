@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getFilterableFields = exports.FilterableField = void 0;
+exports.FilterableField = FilterableField;
+exports.getFilterableFields = getFilterableFields;
 const graphql_1 = require("@nestjs/graphql");
 const nestjs_query_core_1 = require("@ptc-org/nestjs-query-core");
 const constants_1 = require("./constants");
@@ -41,7 +42,6 @@ function FilterableField(returnTypeFuncOrOptions, maybeOptions) {
         return (0, graphql_1.Field)()(target, propertyName, descriptor);
     };
 }
-exports.FilterableField = FilterableField;
 function getFilterableFields(DTOClass) {
     return (0, nestjs_query_core_1.getPrototypeChain)(DTOClass).reduce((fields, Cls) => {
         const existingFieldNames = fields.map((t) => t.propertyName);
@@ -50,5 +50,4 @@ function getFilterableFields(DTOClass) {
         return [...newFields, ...fields];
     }, []);
 }
-exports.getFilterableFields = getFilterableFields;
 //# sourceMappingURL=filterable-field.decorator.js.map

@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getSubscriptionEventName = exports.createSubscriptionFilter = exports.transformAndValidate = void 0;
+exports.createSubscriptionFilter = exports.transformAndValidate = void 0;
+exports.getSubscriptionEventName = getSubscriptionEventName;
 const common_1 = require("@nestjs/common");
 const nestjs_query_core_1 = require("@ptc-org/nestjs-query-core");
 const class_transformer_1 = require("class-transformer");
@@ -36,5 +37,4 @@ exports.createSubscriptionFilter = createSubscriptionFilter;
 function getSubscriptionEventName(eventName, authorizeFilter) {
     return authorizeFilter ? `${eventName}-${JSON.stringify(authorizeFilter)}` : eventName;
 }
-exports.getSubscriptionEventName = getSubscriptionEventName;
 //# sourceMappingURL=helpers.js.map

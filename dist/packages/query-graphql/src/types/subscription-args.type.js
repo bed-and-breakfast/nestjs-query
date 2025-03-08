@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.SubscriptionArgsType = void 0;
+exports.SubscriptionArgsType = SubscriptionArgsType;
 const tslib_1 = require("tslib");
 const graphql_1 = require("@nestjs/graphql");
 const class_transformer_1 = require("class-transformer");
@@ -20,5 +20,4 @@ function SubscriptionArgsType(InputClass) {
     ], SubscriptionArgs);
     return SubscriptionArgs;
 }
-exports.SubscriptionArgsType = SubscriptionArgsType;
 //# sourceMappingURL=subscription-args.type.js.map

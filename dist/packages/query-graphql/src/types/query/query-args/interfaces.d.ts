@@ -11,6 +11,9 @@ export type BaseQueryArgsTypeOpts<DTO> = {
     /**
      * The maximum number of results that can be returned from a query.
      * [Default=50]
+     *
+     * If `-1` it means there is no limit to the number of results that can be
+     * returned.
      */
     maxResultsSize?: number;
     /**
@@ -31,6 +34,10 @@ export type BaseQueryArgsTypeOpts<DTO> = {
      * Disable the filtering
      */
     disableFilter?: boolean;
+    /**
+     * Enable the fetch all with negative limit.
+     */
+    enableFetchAllWithNegative?: boolean;
 } & FilterTypeOptions;
 export interface CursorQueryArgsTypeOpts<DTO> extends BaseQueryArgsTypeOpts<DTO>, CursorConnectionOptions {
     pagingStrategy?: PagingStrategies.CURSOR;

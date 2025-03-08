@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getOrCreateStringFieldComparison = void 0;
+exports.getOrCreateStringFieldComparison = getOrCreateStringFieldComparison;
 const tslib_1 = require("tslib");
 const graphql_1 = require("@nestjs/graphql");
 const class_validator_1 = require("class-validator");
@@ -104,5 +104,4 @@ function getOrCreateStringFieldComparison() {
     stringFieldComparison = StringFieldComparison;
     return stringFieldComparison;
 }
-exports.getOrCreateStringFieldComparison = getOrCreateStringFieldComparison;
 //# sourceMappingURL=string-field-comparison.type.js.map

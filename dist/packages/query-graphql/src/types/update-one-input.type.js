@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.UpdateOneInputType = void 0;
+exports.UpdateOneInputType = UpdateOneInputType;
 const tslib_1 = require("tslib");
 const graphql_1 = require("@nestjs/graphql");
 const class_transformer_1 = require("class-transformer");
@@ -32,5 +32,4 @@ function UpdateOneInputType(DTOClass, UpdateType) {
     ], UpdateOneInput);
     return UpdateOneInput;
 }
-exports.UpdateOneInputType = UpdateOneInputType;
 //# sourceMappingURL=update-one-input.type.js.map

@@ -14,7 +14,7 @@ export interface NestjsQueryGraphqlModuleRootOpts {
     dataLoader?: DataLoaderOptions;
 }
 export interface NestjsQueryGraphqlModuleFeatureOpts {
-    imports?: Array<Class<any> | DynamicModule | Promise<DynamicModule> | ForwardReference>;
+    imports?: Array<Class<any> | DynamicModule | ForwardReference>;
     services?: Provider[];
     assemblers?: Class<Assembler<any, any, any, any, any, any>>[];
     resolvers?: AutoResolverOpts<any, any, unknown, unknown, ReadResolverOpts<any>, PagingStrategies>[];

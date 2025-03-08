@@ -1,6 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ResolverMethod = exports.isEnabled = exports.isDisabled = void 0;
+exports.isDisabled = isDisabled;
+exports.isEnabled = isEnabled;
+exports.ResolverMethod = ResolverMethod;
 /* eslint-disable @typescript-eslint/no-explicit-any */
 const common_1 = require("@nestjs/common");
 /**
@@ -21,7 +23,6 @@ function createSetArray(...arrs) {
 function isDisabled(opts) {
     return !!opts.find((o) => o.disabled);
 }
-exports.isDisabled = isDisabled;
 /**
  * @internal
  * Returns true if any of the [[ResolverRelationMethodOpts]] are disabled.
@@ -30,7 +31,6 @@ exports.isDisabled = isDisabled;
 function isEnabled(opts) {
     return opts.some((o) => o.enabled);
 }
-exports.isEnabled = isEnabled;
 /**
  * @internal
  * Decorator for all ResolverMethods
@@ -40,5 +40,4 @@ exports.isEnabled = isEnabled;
 function ResolverMethod(...opts) {
     return (0, common_1.applyDecorators)((0, common_1.UseGuards)(...createSetArray(...opts.map((o) => o.guards ?? []))), (0, common_1.UseInterceptors)(...createSetArray(...opts.map((o) => o.interceptors ?? []))), (0, common_1.UsePipes)(...createSetArray(...opts.map((o) => o.pipes ?? []))), (0, common_1.UseFilters)(...createSetArray(...opts.map((o) => o.filters ?? []))), ...createSetArray(...opts.map((o) => o.decorators ?? [])));
 }
-exports.ResolverMethod = ResolverMethod;
 //# sourceMappingURL=resolver-method.decorator.js.map

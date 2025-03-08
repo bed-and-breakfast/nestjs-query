@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.SubscriptionFilterInputType = void 0;
+exports.SubscriptionFilterInputType = SubscriptionFilterInputType;
 const tslib_1 = require("tslib");
 const graphql_1 = require("@nestjs/graphql");
 const class_transformer_1 = require("class-transformer");
@@ -28,5 +28,4 @@ function SubscriptionFilterInputType(DTOClass) {
     ], SubscriptionFilterInput);
     return SubscriptionFilterInput;
 }
-exports.SubscriptionFilterInputType = SubscriptionFilterInputType;
 //# sourceMappingURL=subscription-filter-input.type.js.map

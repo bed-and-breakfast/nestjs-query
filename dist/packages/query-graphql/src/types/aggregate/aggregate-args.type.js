@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.AggregateArgsType = void 0;
+exports.AggregateArgsType = AggregateArgsType;
 const tslib_1 = require("tslib");
 const graphql_1 = require("@nestjs/graphql");
 const class_transformer_1 = require("class-transformer");
@@ -26,5 +26,4 @@ function AggregateArgsType(DTOClass) {
     ], AggregateArgs);
     return AggregateArgs;
 }
-exports.AggregateArgsType = AggregateArgsType;
 //# sourceMappingURL=aggregate-args.type.js.map

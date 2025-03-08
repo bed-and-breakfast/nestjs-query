@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.QueryArgsType = exports.isStaticQueryArgsType = void 0;
+exports.isStaticQueryArgsType = void 0;
+exports.QueryArgsType = QueryArgsType;
 const common_1 = require("../../common");
 const decorators_1 = require("../../decorators");
 const paging_1 = require("./paging");
@@ -29,5 +30,4 @@ function QueryArgsType(DTOClass, opts) {
     }
     return (0, query_args_1.createCursorQueryArgsType)(DTOClass, mergedOpts);
 }
-exports.QueryArgsType = QueryArgsType;
 //# sourceMappingURL=query-args.type.js.map

@@ -57,7 +57,7 @@ class ComparisonBuilder {
     }
     likeComparison(cmp, val) {
         const regExpStr = (0, lodash_escaperegexp_1.default)(`${String(val)}`).replace(/%/g, '.*');
-        const regExp = new RegExp(regExpStr, cmp.includes('ilike') ? 'i' : undefined);
+        const regExp = new RegExp(`^${regExpStr}$`, cmp.includes('ilike') ? 'i' : undefined);
         if (cmp.startsWith('not')) {
             return { $not: { $regex: regExp } };
         }

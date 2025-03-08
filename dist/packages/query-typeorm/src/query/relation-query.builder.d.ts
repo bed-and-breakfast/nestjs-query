@@ -52,7 +52,7 @@ export declare class RelationQueryBuilder<Entity, Relation> {
      */
     private existingAlias;
     constructor(repo: Repository<Entity>, relation: string);
-    select(entity: Entity, query: Query<Relation>): SelectQueryBuilder<Relation>;
+    select(entity: Entity, query: Query<Relation>, withDeleted?: boolean): SelectQueryBuilder<Relation>;
     batchSelect(entities: Entity[], query: Query<Relation>, withDeleted?: boolean): SelectQueryBuilder<Relation>;
     batchAggregate(entities: Entity[], query: Query<Relation>, aggregateQuery: AggregateQuery<Relation>): SelectQueryBuilder<EntityIndexRelation<Record<string, unknown>>>;
     aggregate(entity: Entity, query: Query<Relation>, aggregateQuery: AggregateQuery<Relation>): SelectQueryBuilder<Relation>;
@@ -67,7 +67,6 @@ export declare class RelationQueryBuilder<Entity, Relation> {
     private batchMapRelationsManyToMany;
     private getParamName;
     get entityIndexColName(): string;
-    private get escapedEntityIndexColName();
     private get unionAlias();
     private escapeName;
     private getRelationPrimaryKeysPropertyNameAndColumnsName;

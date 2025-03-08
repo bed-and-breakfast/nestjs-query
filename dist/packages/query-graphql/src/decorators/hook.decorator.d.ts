@@ -10,4 +10,4 @@ export declare const BeforeDeleteOne: (...data: HookDecoratorArg<BeforeDeleteOne
 export declare const BeforeDeleteMany: (...data: HookDecoratorArg<BeforeDeleteManyHook<any>>[]) => (target: Function) => void;
 export declare const BeforeQueryMany: (...data: HookDecoratorArg<BeforeQueryManyHook<any>>[]) => (target: Function) => void;
 export declare const BeforeFindOne: (...data: HookDecoratorArg<BeforeFindOneHook>[]) => (target: Function) => void;
-export declare const getHooksForType: <H extends Hook<unknown, any>>(hookType: HookTypes, DTOClass: Class<unknown>) => Class<H>[];
+export declare const getHooksForType: <H extends Hook<unknown>>(hookType: HookTypes, DTOClass: Class<unknown>) => HookMetaValue<H>;

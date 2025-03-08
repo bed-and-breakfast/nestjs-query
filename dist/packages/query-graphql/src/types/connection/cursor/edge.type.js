@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getOrCreateEdgeType = void 0;
+exports.getOrCreateEdgeType = getOrCreateEdgeType;
 const tslib_1 = require("tslib");
 const graphql_1 = require("@nestjs/graphql");
 const nestjs_query_core_1 = require("@ptc-org/nestjs-query-core");
@@ -32,5 +32,4 @@ function getOrCreateEdgeType(DTOClass) {
         return AbstractEdge;
     });
 }
-exports.getOrCreateEdgeType = getOrCreateEdgeType;
 //# sourceMappingURL=edge.type.js.map

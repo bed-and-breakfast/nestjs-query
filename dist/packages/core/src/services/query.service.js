@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.QueryService = void 0;
+exports.QueryService = QueryService;
 const common_1 = require("@nestjs/common");
 /**
  * QueryService decorator to register with nestjs-query
@@ -13,5 +13,4 @@ function QueryService(DTOClass, options) {
         return (0, common_1.Injectable)(options)(cls);
     };
 }
-exports.QueryService = QueryService;
 //# sourceMappingURL=query.service.js.map

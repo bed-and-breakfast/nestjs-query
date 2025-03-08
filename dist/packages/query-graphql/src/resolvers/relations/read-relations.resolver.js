@@ -51,7 +51,12 @@ const ReadOneRelationMixin = (DTOClass, relation) => (Base) => {
         }
     };
     tslib_1.__decorate([
-        (0, decorators_1.ResolverField)(baseNameLower, () => relationDTO, { nullable: relation.nullable, complexity: relation.complexity, description: relation?.description }, commonResolverOpts, { interceptors: [(0, interceptors_1.AuthorizerInterceptor)(DTOClass)] }),
+        (0, decorators_1.ResolverField)(baseNameLower, () => relationDTO, {
+            nullable: relation.nullable,
+            complexity: relation.complexity,
+            description: relation?.description,
+            deprecationReason: relation?.deprecationReason
+        }, commonResolverOpts, { interceptors: [(0, interceptors_1.AuthorizerInterceptor)(DTOClass)] }),
         tslib_1.__param(0, (0, graphql_1.Parent)()),
         tslib_1.__param(1, (0, graphql_1.Context)()),
         tslib_1.__param(2, (0, decorators_1.RelationAuthorizerFilter)(baseNameLower, {
@@ -112,13 +117,18 @@ const ReadManyRelationMixin = (DTOClass, relation) => (Base) => {
                     async () => dto[relationName].length);
                 }
             }
-            const relationLoader = loader_1.DataLoaderFactory.getOrCreateLoader(context, relationLoaderName, () => queryLoader.createLoader(this.service), dataLoaderConfig);
-            const relationCountLoader = loader_1.DataLoaderFactory.getOrCreateLoader(context, countRelationLoaderName, () => countLoader.createLoader(this.service), dataLoaderConfig);
+            const relationLoader = loader_1.DataLoaderFactory.getOrCreateLoader(context, relationLoaderName, () => queryLoader.createLoader(this.service, { withDeleted: relation.withDeleted }), dataLoaderConfig);
+            const relationCountLoader = loader_1.DataLoaderFactory.getOrCreateLoader(context, countRelationLoaderName, () => countLoader.createLoader(this.service, { withDeleted: relation.withDeleted }), dataLoaderConfig);
             return CT.createFromPromise((query) => relationLoader.load({ dto, query }), (0, nestjs_query_core_1.mergeQuery)(relationQuery, { filter: relationFilter, relations: resolveInfo?.relations }), (filter) => relationCountLoader.load({ dto, filter }));
         }
     };
     tslib_1.__decorate([
-        (0, decorators_1.ResolverField)(baseNameLower, () => CT.resolveType, { nullable: relation.nullable, complexity: relation.complexity, description: relation?.description }, commonResolverOpts, { interceptors: [(0, interceptors_1.AuthorizerInterceptor)(DTOClass)] }),
+        (0, decorators_1.ResolverField)(baseNameLower, () => CT.resolveType, {
+            nullable: relation.nullable,
+            complexity: relation.complexity,
+            description: relation?.description,
+            deprecationReason: relation?.deprecationReason
+        }, commonResolverOpts, { interceptors: [(0, interceptors_1.AuthorizerInterceptor)(DTOClass)] }),
         tslib_1.__param(0, (0, graphql_1.Parent)()),
         tslib_1.__param(1, (0, graphql_1.Args)()),
         tslib_1.__param(2, (0, graphql_1.Context)()),

@@ -1,5 +1,5 @@
 import { Class, DeepPartial } from '../common';
-import { AggregateOptions, AggregateQuery, AggregateResponse, CountOptions, DeleteManyOptions, DeleteManyResponse, DeleteOneOptions, Filter, FindByIdOptions, FindRelationOptions, GetByIdOptions, ModifyRelationOptions, Query, QueryOptions, UpdateManyResponse, UpdateOneOptions } from '../interfaces';
+import { AggregateOptions, AggregateQuery, AggregateResponse, CountOptions, DeleteManyOptions, DeleteManyResponse, DeleteOneOptions, Filter, FindByIdOptions, FindRelationOptions, GetByIdOptions, ModifyRelationOptions, Query, QueryOptions, QueryRelationsOptions, UpdateManyResponse, UpdateOneOptions } from '../interfaces';
 import { QueryService } from './query.service';
 export declare class NoOpQueryService<DTO, C = DeepPartial<DTO>, U = DeepPartial<DTO>> implements QueryService<DTO, C, U> {
     private static instance;
@@ -17,10 +17,10 @@ export declare class NoOpQueryService<DTO, C = DeepPartial<DTO>, U = DeepPartial
     query(query: Query<DTO>, opts?: QueryOptions<DTO>): Promise<DTO[]>;
     aggregate(filter: Filter<DTO>, aggregate: AggregateQuery<DTO>, opts?: AggregateOptions): Promise<AggregateResponse<DTO>[]>;
     count(filter: Filter<DTO>, opts?: CountOptions): Promise<number>;
-    queryRelations<Relation>(RelationClass: Class<Relation>, relationName: string, dto: DTO, query: Query<Relation>): Promise<Relation[]>;
-    queryRelations<Relation>(RelationClass: Class<Relation>, relationName: string, dtos: DTO[], query: Query<Relation>): Promise<Map<DTO, Relation[]>>;
-    countRelations<Relation>(RelationClass: Class<Relation>, relationName: string, dto: DTO, filter: Filter<Relation>): Promise<number>;
-    countRelations<Relation>(RelationClass: Class<Relation>, relationName: string, dtos: DTO[], filter: Filter<Relation>): Promise<Map<DTO, number>>;
+    queryRelations<Relation>(RelationClass: Class<Relation>, relationName: string, dto: DTO, query: Query<Relation>, opts?: QueryRelationsOptions): Promise<Relation[]>;
+    queryRelations<Relation>(RelationClass: Class<Relation>, relationName: string, dtos: DTO[], query: Query<Relation>, opts?: QueryRelationsOptions): Promise<Map<DTO, Relation[]>>;
+    countRelations<Relation>(RelationClass: Class<Relation>, relationName: string, dto: DTO, filter: Filter<Relation>, opts?: QueryRelationsOptions): Promise<number>;
+    countRelations<Relation>(RelationClass: Class<Relation>, relationName: string, dtos: DTO[], filter: Filter<Relation>, opts?: QueryRelationsOptions): Promise<Map<DTO, number>>;
     removeRelation<Relation>(relationName: string, id: string | number, relationId: string | number, opts?: ModifyRelationOptions<DTO, Relation>): Promise<DTO>;
     removeRelations<Relation>(relationName: string, id: string | number, relationIds: (string | number)[], opts?: ModifyRelationOptions<DTO, Relation>): Promise<DTO>;
     setRelations<Relation>(relationName: string, id: string | number, relationId: (string | number)[], opts?: ModifyRelationOptions<DTO, Relation>): Promise<DTO>;

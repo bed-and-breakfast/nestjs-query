@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.AuthorizerInterceptor = void 0;
+exports.AuthorizerInterceptor = AuthorizerInterceptor;
 const tslib_1 = require("tslib");
 const common_1 = require("@nestjs/common");
 const graphql_1 = require("@nestjs/graphql");
@@ -29,5 +29,4 @@ function AuthorizerInterceptor(DTOClass) {
     });
     return Interceptor;
 }
-exports.AuthorizerInterceptor = AuthorizerInterceptor;
 //# sourceMappingURL=authorizer.interceptor.js.map

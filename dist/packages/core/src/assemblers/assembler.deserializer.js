@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getAssemblerDeserializer = exports.AssemblerDeserializer = void 0;
+exports.AssemblerDeserializer = AssemblerDeserializer;
+exports.getAssemblerDeserializer = getAssemblerDeserializer;
 const common_1 = require("../common");
 const constants_1 = require("./constants");
 const reflector = new common_1.ValueReflector(constants_1.ASSEMBLER_DESERIALIZER_KEY);
@@ -14,9 +15,7 @@ function AssemblerDeserializer(deserializer) {
         return cls;
     };
 }
-exports.AssemblerDeserializer = AssemblerDeserializer;
 function getAssemblerDeserializer(DTOClass) {
     return reflector.get(DTOClass, true);
 }
-exports.getAssemblerDeserializer = getAssemblerDeserializer;
 //# sourceMappingURL=assembler.deserializer.js.map

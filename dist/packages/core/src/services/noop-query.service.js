@@ -43,10 +43,10 @@ class NoOpQueryService {
     count(filter, opts) {
         return Promise.reject(new common_1.NotImplementedException('count is not implemented'));
     }
-    queryRelations(RelationClass, relationName, dto, query) {
+    queryRelations(RelationClass, relationName, dto, query, opts) {
         return Promise.reject(new common_1.NotImplementedException('queryRelations is not implemented'));
     }
-    countRelations(RelationClass, relationName, dto, filter) {
+    countRelations(RelationClass, relationName, dto, filter, opts) {
         return Promise.reject(new common_1.NotImplementedException('countRelations is not implemented'));
     }
     removeRelation(relationName, id, relationId, opts) {

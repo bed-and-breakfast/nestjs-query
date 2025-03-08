@@ -119,7 +119,7 @@ const Creatable = (DTOClass, opts) => (BaseClass) => {
                 throw new Error(`Unable to subscribe to ${createdEvent}`);
             }
             const eventName = (0, helpers_1.getSubscriptionEventName)(createdEvent, authorizeFilter);
-            return this.pubSub.asyncIterator(eventName);
+            return this.pubSub.asyncIterableIterator(eventName);
         }
     };
     tslib_1.__decorate([

@@ -1,1 +1,1 @@
-export declare const isInAllowedList: <T>(arr: T[], val: T) => boolean;
+export declare const isInAllowedList: <T>(arr: T[] | undefined, val: T) => boolean;

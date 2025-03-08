@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.HasRequiredFilter = void 0;
+exports.HasRequiredFilter = HasRequiredFilter;
 const class_validator_1 = require("class-validator");
 /**
  * @internal
@@ -26,5 +26,4 @@ function HasRequiredFilter() {
         });
     };
 }
-exports.HasRequiredFilter = HasRequiredFilter;
 //# sourceMappingURL=has-required.filter.js.map

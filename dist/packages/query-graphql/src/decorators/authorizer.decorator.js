@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getCustomAuthorizer = exports.getAuthorizer = exports.Authorize = void 0;
+exports.getCustomAuthorizer = exports.getAuthorizer = void 0;
+exports.Authorize = Authorize;
 const nestjs_query_core_1 = require("@ptc-org/nestjs-query-core");
 const auth_1 = require("../auth");
 const constants_1 = require("./constants");
@@ -16,7 +17,6 @@ function Authorize(optsOrAuthorizerOrClass) {
         return reflector.set(DTOClass, (0, auth_1.createDefaultAuthorizer)(DTOClass, optsOrAuthorizerOrClass));
     };
 }
-exports.Authorize = Authorize;
 const getAuthorizer = (DTOClass) => reflector.get(DTOClass);
 exports.getAuthorizer = getAuthorizer;
 const getCustomAuthorizer = (DTOClass) => customAuthorizerReflector.get(DTOClass);

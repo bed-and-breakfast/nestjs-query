@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.UpdateResolver = exports.Updateable = void 0;
+exports.UpdateResolver = exports.Updatable = void 0;
 const tslib_1 = require("tslib");
 // eslint-disable-next-line max-classes-per-file
 const graphql_1 = require("@nestjs/graphql");
@@ -53,7 +53,7 @@ const defaultUpdateManyInput = (dtoNames, DTOClass, UpdateDTO) => {
  * @internal
  * Mixin to add `update` graphql endpoints.
  */
-const Updateable = (DTOClass, opts) => (BaseClass) => {
+const Updatable = (DTOClass, opts) => (BaseClass) => {
     const dtoNames = (0, common_1.getDTONames)(DTOClass, opts);
     const { baseName, pluralBaseName } = dtoNames;
     const UMR = (0, types_1.UpdateManyResponseType)();
@@ -123,14 +123,14 @@ const Updateable = (DTOClass, opts) => (BaseClass) => {
                 throw new Error(`Unable to subscribe to ${updateOneEvent}`);
             }
             const eventName = (0, helpers_1.getSubscriptionEventName)(updateOneEvent, authorizeFilter);
-            return this.pubSub.asyncIterator(eventName);
+            return this.pubSub.asyncIterableIterator(eventName);
         }
         updatedManySubscription(authorizeFilter) {
             if (!enableManySubscriptions || !this.pubSub) {
                 throw new Error(`Unable to subscribe to ${updateManyEvent}`);
             }
             const eventName = (0, helpers_1.getSubscriptionEventName)(updateManyEvent, authorizeFilter);
-            return this.pubSub.asyncIterator(eventName);
+            return this.pubSub.asyncIterableIterator(eventName);
         }
     };
     tslib_1.__decorate([
@@ -188,8 +188,8 @@ const Updateable = (DTOClass, opts) => (BaseClass) => {
     ], UpdateResolverBase);
     return UpdateResolverBase;
 };
-exports.Updateable = Updateable;
+exports.Updatable = Updatable;
 // eslint-disable-next-line @typescript-eslint/no-redeclare -- intentional
-const UpdateResolver = (DTOClass, opts = {}) => (0, exports.Updateable)(DTOClass, opts)(resolver_interface_1.BaseServiceResolver);
+const UpdateResolver = (DTOClass, opts = {}) => (0, exports.Updatable)(DTOClass, opts)(resolver_interface_1.BaseServiceResolver);
 exports.UpdateResolver = UpdateResolver;
 //# sourceMappingURL=update.resolver.js.map

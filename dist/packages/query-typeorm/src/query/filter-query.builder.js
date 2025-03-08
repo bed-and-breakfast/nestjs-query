@@ -124,9 +124,10 @@ class FilterQueryBuilder {
             return qb;
         }
         return sorts.reduce((prevQb, { field, direction, nulls }) => {
-            let col = alias ? `${alias}.${field}` : `${field}`;
-            if (this.virtualColumns.includes(field)) {
-                col = prevQb.escape(alias ? `${alias}_${field}` : `${field}`);
+            const stringifiedField = String(field);
+            let col = alias ? `${alias}.${stringifiedField}` : `${stringifiedField}`;
+            if (this.virtualColumns.includes(stringifiedField)) {
+                col = prevQb.escape(alias ? `${alias}_${stringifiedField}` : `${stringifiedField}`);
             }
             return prevQb.addOrderBy(col, direction, nulls);
         }, qb);

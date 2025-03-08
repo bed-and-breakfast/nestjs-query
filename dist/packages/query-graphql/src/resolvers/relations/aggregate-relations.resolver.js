@@ -67,7 +67,6 @@ const AggregateRelationMixin = (DTOClass, relation) => (Base) => {
     AggregateMixin = tslib_1.__decorate([
         (0, graphql_1.Resolver)(() => DTOClass, { isAbstract: true })
     ], AggregateMixin);
-    // TODO:: Add also support for the "by" in dates
     return AggregateMixin;
 };
 const AggregateRelationsMixin = (DTOClass, relations) => (Base) => {

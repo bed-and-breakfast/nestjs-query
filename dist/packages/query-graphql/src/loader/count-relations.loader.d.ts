@@ -1,4 +1,4 @@
-import { Class, Filter, QueryService } from '@ptc-org/nestjs-query-core';
+import { Class, Filter, QueryRelationsOptions, QueryService } from '@ptc-org/nestjs-query-core';
 import { NestjsQueryDataloader } from './relations.loader';
 type CountRelationsArgs<DTO, Relation> = {
     dto: DTO;
@@ -8,7 +8,7 @@ export declare class CountRelationsLoader<DTO, Relation> implements NestjsQueryD
     readonly RelationDTO: Class<Relation>;
     readonly relationName: string;
     constructor(RelationDTO: Class<Relation>, relationName: string);
-    createLoader(service: QueryService<DTO, unknown, unknown>): (queryArgs: ReadonlyArray<CountRelationsArgs<DTO, Relation>>) => Promise<(number | Error)[]>;
+    createLoader(service: QueryService<DTO, unknown, unknown>, opts?: QueryRelationsOptions): (queryArgs: ReadonlyArray<CountRelationsArgs<DTO, Relation>>) => Promise<(number | Error)[]>;
     private loadResults;
     private groupQueries;
 }

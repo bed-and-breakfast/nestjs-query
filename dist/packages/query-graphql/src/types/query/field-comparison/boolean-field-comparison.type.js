@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getOrCreateBooleanFieldComparison = void 0;
+exports.getOrCreateBooleanFieldComparison = getOrCreateBooleanFieldComparison;
 const tslib_1 = require("tslib");
 const graphql_1 = require("@nestjs/graphql");
 const class_validator_1 = require("class-validator");
@@ -31,5 +31,4 @@ function getOrCreateBooleanFieldComparison() {
     booleanFieldComparison = BooleanFieldComparison;
     return BooleanFieldComparison;
 }
-exports.getOrCreateBooleanFieldComparison = getOrCreateBooleanFieldComparison;
 //# sourceMappingURL=boolean-field-comparison.type.js.map

@@ -1,4 +1,4 @@
-import { AggregateQuery, AggregateResponse, Class, Filter, FindRelationOptions, GetByIdOptions, ModifyRelationOptions, Query } from '@ptc-org/nestjs-query-core';
+import { AggregateQuery, AggregateResponse, Class, Filter, FindRelationOptions, GetByIdOptions, ModifyRelationOptions, Query, QueryRelationsOptions } from '@ptc-org/nestjs-query-core';
 import { Repository } from 'typeorm';
 import { FilterQueryBuilder, RelationQueryBuilder } from '../query';
 /**
@@ -18,7 +18,7 @@ export declare abstract class RelationQueryService<Entity> {
      * @param entities - the dtos to find relations for.
      * @param query - A query to use to filter, page, and sort relations.
      */
-    queryRelations<Relation>(RelationClass: Class<Relation>, relationName: string, entities: Entity[], query: Query<Relation>): Promise<Map<Entity, Relation[]>>;
+    queryRelations<Relation>(RelationClass: Class<Relation>, relationName: string, entities: Entity[], query: Query<Relation>, opts?: QueryRelationsOptions): Promise<Map<Entity, Relation[]>>;
     /**
      * Query for an array of relations.
      * @param RelationClass - The class to serialize the relations into.
@@ -26,11 +26,11 @@ export declare abstract class RelationQueryService<Entity> {
      * @param relationName - The name of relation to query for.
      * @param query - A query to filter, page and sort relations.
      */
-    queryRelations<Relation>(RelationClass: Class<Relation>, relationName: string, dto: Entity, query: Query<Relation>): Promise<Relation[]>;
+    queryRelations<Relation>(RelationClass: Class<Relation>, relationName: string, dto: Entity, query: Query<Relation>, opts?: QueryRelationsOptions): Promise<Relation[]>;
     aggregateRelations<Relation>(RelationClass: Class<Relation>, relationName: string, entities: Entity[], filter: Filter<Relation>, aggregate: AggregateQuery<Relation>): Promise<Map<Entity, AggregateResponse<Relation>[]>>;
     aggregateRelations<Relation>(RelationClass: Class<Relation>, relationName: string, dto: Entity, filter: Filter<Relation>, aggregate: AggregateQuery<Relation>): Promise<AggregateResponse<Relation>[]>;
-    countRelations<Relation>(RelationClass: Class<Relation>, relationName: string, entities: Entity[], filter: Filter<Relation>): Promise<Map<Entity, number>>;
-    countRelations<Relation>(RelationClass: Class<Relation>, relationName: string, dto: Entity, filter: Filter<Relation>): Promise<number>;
+    countRelations<Relation>(RelationClass: Class<Relation>, relationName: string, entities: Entity[], filter: Filter<Relation>, opts?: QueryRelationsOptions): Promise<Map<Entity, number>>;
+    countRelations<Relation>(RelationClass: Class<Relation>, relationName: string, dto: Entity, filter: Filter<Relation>, opts?: QueryRelationsOptions): Promise<number>;
     /**
      * Find a relation for an array of Entities. This will return a Map where the key is the Entity and the value is to
      * relation or undefined if not found.

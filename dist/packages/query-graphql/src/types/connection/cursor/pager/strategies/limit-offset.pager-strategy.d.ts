@@ -2,6 +2,8 @@ import { Query } from '@ptc-org/nestjs-query-core';
 import { CursorPagingType } from '../../../../query';
 import { OffsetPagingOpts, PagerStrategy } from './pager-strategy';
 export declare class LimitOffsetPagerStrategy<DTO> implements PagerStrategy<DTO> {
+    private readonly enableFetchAllWithNegative?;
+    constructor(enableFetchAllWithNegative?: boolean);
     private static CURSOR_PREFIX;
     toCursor(dto: DTO, index: number, pagingOpts: OffsetPagingOpts): string;
     fromCursorArgs(cursor: CursorPagingType): OffsetPagingOpts;

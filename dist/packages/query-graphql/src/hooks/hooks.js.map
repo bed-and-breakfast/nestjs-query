@@ -1,1 +1,1 @@
-{"version":3,"file":"hooks.js","sourceRoot":"","sources":["../../../../../packages/query-graphql/src/hooks/hooks.ts"],"names":[],"mappings":";;;AAkBA,SAAgB,WAAW,CAAa,IAAa;IACnD,OAAO,OAAO,IAAI,KAAK,UAAU,IAAI,WAAW,IAAI,IAAI,IAAI,KAAK,IAAI,IAAI,CAAC,SAAS,CAAA;AACrF,CAAC;AAFD,kCAEC"}
+{"version":3,"file":"hooks.js","sourceRoot":"","sources":["../../../../../packages/query-graphql/src/hooks/hooks.ts"],"names":[],"mappings":";;AAkBA,kCAEC;AAFD,SAAgB,WAAW,CAAa,IAAa;IACnD,OAAO,OAAO,IAAI,KAAK,UAAU,IAAI,WAAW,IAAI,IAAI,IAAI,KAAK,IAAI,IAAI,CAAC,SAAS,CAAA;AACrF,CAAC"}

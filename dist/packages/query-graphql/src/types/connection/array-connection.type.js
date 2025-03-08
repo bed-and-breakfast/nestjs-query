@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getOrCreateArrayConnectionType = void 0;
+exports.getOrCreateArrayConnectionType = getOrCreateArrayConnectionType;
 const nestjs_query_core_1 = require("@ptc-org/nestjs-query-core");
 const reflector = new nestjs_query_core_1.ValueReflector('nestjs-query:array-connection-type');
 function getOrCreateArrayConnectionType(TItemClass) {
@@ -16,5 +16,4 @@ function getOrCreateArrayConnectionType(TItemClass) {
         return AbstractConnection;
     });
 }
-exports.getOrCreateArrayConnectionType = getOrCreateArrayConnectionType;
 //# sourceMappingURL=array-connection.type.js.map

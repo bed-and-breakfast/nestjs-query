@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.DeleteOneInputType = void 0;
+exports.DeleteOneInputType = DeleteOneInputType;
 const tslib_1 = require("tslib");
 const graphql_1 = require("@nestjs/graphql");
 const class_validator_1 = require("class-validator");
@@ -23,5 +23,4 @@ function DeleteOneInputType(DTOClass) {
     ], DeleteOneInput);
     return DeleteOneInput;
 }
-exports.DeleteOneInputType = DeleteOneInputType;
 //# sourceMappingURL=delete-one-input.type.js.map

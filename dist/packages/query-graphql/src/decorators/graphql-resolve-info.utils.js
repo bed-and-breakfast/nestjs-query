@@ -1,6 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createLookAheadInfo = exports.removePagingFromSimplifiedInfo = exports.simplifyResolveInfo = void 0;
+exports.simplifyResolveInfo = simplifyResolveInfo;
+exports.removePagingFromSimplifiedInfo = removePagingFromSimplifiedInfo;
+exports.createLookAheadInfo = createLookAheadInfo;
 const graphql_1 = require("graphql");
 /**
  * Parts based of https://github.com/graphile/graphile-engine/blob/master/packages/graphql-parse-resolve-info/src/index.ts
@@ -97,7 +99,6 @@ function isCursorPaging(info) {
 function simplifyResolveInfo(resolveInfo) {
     return parseFieldNodes(resolveInfo.fieldNodes, resolveInfo, null, resolveInfo.parentType);
 }
-exports.simplifyResolveInfo = simplifyResolveInfo;
 function removePagingFromSimplifiedInfo(simpleInfo) {
     if (isOffsetPaging(simpleInfo)) {
         return simpleInfo.fields.nodes;
@@ -107,7 +108,6 @@ function removePagingFromSimplifiedInfo(simpleInfo) {
     }
     return simpleInfo;
 }
-exports.removePagingFromSimplifiedInfo = removePagingFromSimplifiedInfo;
 function createLookAheadInfo(relations, simpleResolveInfo) {
     const simplifiedInfoWithoutPaging = removePagingFromSimplifiedInfo(simpleResolveInfo);
     return relations
@@ -122,5 +122,4 @@ function createLookAheadInfo(relations, simpleResolveInfo) {
     })
         .filter(Boolean);
 }
-exports.createLookAheadInfo = createLookAheadInfo;
 //# sourceMappingURL=graphql-resolve-info.utils.js.map

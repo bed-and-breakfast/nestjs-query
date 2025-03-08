@@ -55,14 +55,14 @@ function extractDeleteResolverOpts(opts) {
  */
 // eslint-disable-next-line @typescript-eslint/no-redeclare -- intentional
 const CRUDResolver = (DTOClass, opts = {}) => {
-    const referencable = (0, reference_resolver_1.Referenceable)(DTOClass, opts.referenceBy ?? {});
+    const referenceable = (0, reference_resolver_1.Referenceable)(DTOClass, opts.referenceBy ?? {});
     const relatable = (0, relations_1.Relatable)(DTOClass, extractRelatableOpts(opts));
     const aggregateable = (0, aggregate_resolver_1.Aggregateable)(DTOClass, extractAggregateResolverOpts(opts));
     const creatable = (0, create_resolver_1.Creatable)(DTOClass, extractCreateResolverOpts(opts));
     const readable = (0, read_resolver_1.Readable)(DTOClass, extractReadResolverOpts(opts));
-    const updatable = (0, update_resolver_1.Updateable)(DTOClass, extractUpdateResolverOpts(opts));
+    const updatable = (0, update_resolver_1.Updatable)(DTOClass, extractUpdateResolverOpts(opts));
     const deleteResolver = (0, delete_resolver_1.DeleteResolver)(DTOClass, extractDeleteResolverOpts(opts));
-    return referencable(relatable(aggregateable(creatable(readable(updatable(deleteResolver))))));
+    return referenceable(relatable(aggregateable(creatable(readable(updatable(deleteResolver))))));
 };
 exports.CRUDResolver = CRUDResolver;
 //# sourceMappingURL=crud.resolver.js.map

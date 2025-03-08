@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.MapReflector = exports.ArrayReflector = exports.ValueReflector = exports.getClassMetadata = exports.classMetadataDecorator = void 0;
+exports.MapReflector = exports.ArrayReflector = exports.ValueReflector = exports.classMetadataDecorator = void 0;
+exports.getClassMetadata = getClassMetadata;
 require("reflect-metadata");
 const classMetadataDecorator = (key) => 
 // eslint-disable-next-line @typescript-eslint/ban-types
@@ -16,7 +17,6 @@ function getClassMetadata(DTOClass, key, includeParents) {
     }
     return Reflect.getOwnMetadata(key, DTOClass);
 }
-exports.getClassMetadata = getClassMetadata;
 class Reflector {
     constructor(metaKey) {
         this.metaKey = metaKey;

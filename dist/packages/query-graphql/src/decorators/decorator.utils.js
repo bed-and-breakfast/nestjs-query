@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.composeDecorators = void 0;
+exports.composeDecorators = composeDecorators;
 function composeDecorators(...decorators) {
     // eslint-disable-next-line @typescript-eslint/ban-types
     return (
@@ -17,5 +17,4 @@ function composeDecorators(...decorators) {
         });
     };
 }
-exports.composeDecorators = composeDecorators;
 //# sourceMappingURL=decorator.utils.js.map

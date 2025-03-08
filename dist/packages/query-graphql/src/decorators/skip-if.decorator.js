@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.SkipIf = void 0;
+exports.SkipIf = SkipIf;
 const decorator_utils_1 = require("./decorator.utils");
 /**
  * @internal
@@ -14,5 +14,4 @@ function SkipIf(check, ...decorators) {
     }
     return (0, decorator_utils_1.composeDecorators)(...decorators);
 }
-exports.SkipIf = SkipIf;
 //# sourceMappingURL=skip-if.decorator.js.map

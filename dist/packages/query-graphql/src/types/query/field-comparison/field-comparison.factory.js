@@ -1,12 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createFilterComparisonType = void 0;
+exports.createFilterComparisonType = createFilterComparisonType;
 const tslib_1 = require("tslib");
 const graphql_1 = require("@nestjs/graphql");
 const nestjs_query_core_1 = require("@ptc-org/nestjs-query-core");
 const class_transformer_1 = require("class-transformer");
 const class_validator_1 = require("class-validator");
-const upper_case_first_1 = require("upper-case-first");
 const common_1 = require("../../../common");
 const decorators_1 = require("../../../decorators");
 const validators_1 = require("../../validators");
@@ -40,16 +39,23 @@ const knownTypes = new Set([
     graphql_1.GraphQLTimestamp
 ]);
 const allowedBetweenTypes = new Set([Number, graphql_1.Int, graphql_1.Float, Date, graphql_1.GraphQLISODateTime, graphql_1.GraphQLTimestamp]);
+const betweenFilterValidationMap = new Map();
+betweenFilterValidationMap.set(Number, (0, class_validator_1.IsNumber)());
+betweenFilterValidationMap.set(graphql_1.Float, (0, class_validator_1.IsNumber)());
+betweenFilterValidationMap.set(graphql_1.Int, (0, class_validator_1.IsInt)());
+betweenFilterValidationMap.set(Date, (0, class_validator_1.IsDate)());
+betweenFilterValidationMap.set(graphql_1.GraphQLISODateTime, (0, class_validator_1.IsDate)());
+betweenFilterValidationMap.set(graphql_1.GraphQLTimestamp, (0, class_validator_1.IsDate)());
 /** @internal */
 const getTypeName = (SomeType) => {
     if (knownTypes.has(SomeType) || (0, nestjs_query_core_1.isNamed)(SomeType)) {
         const typeName = SomeType.name;
-        return (0, upper_case_first_1.upperCaseFirst)(typeName);
+        return (0, nestjs_query_core_1.upperCaseFirst)(typeName);
     }
     if (typeof SomeType === 'object') {
         const enumType = (0, common_1.getGraphqlEnumMetadata)(SomeType);
         if (enumType) {
-            return (0, upper_case_first_1.upperCaseFirst)(enumType.name);
+            return (0, nestjs_query_core_1.upperCaseFirst)(enumType.name);
         }
     }
     throw new Error(`Unable to create filter comparison for ${JSON.stringify(SomeType)}.`);
@@ -60,7 +66,7 @@ const getComparisonTypeName = (fieldType, options) => {
         return `${options.overrideTypeNamePrefix}FilterComparison`;
     }
     if (isCustomFieldComparison(options)) {
-        return `${(0, upper_case_first_1.upperCaseFirst)(options.fieldName)}FilterComparison`;
+        return `${(0, nestjs_query_core_1.upperCaseFirst)(options.fieldName)}FilterComparison`;
     }
     return `${getTypeName(fieldType)}FilterComparison`;
 };
@@ -81,16 +87,17 @@ function createFilterComparisonType(options) {
         }
         return true;
     };
+    const BetweenFieldValidator = () => (0, decorators_1.composeDecorators)(...[betweenFilterValidationMap.get(fieldType)].filter(Boolean));
     let FcBetween = class FcBetween {
     };
     tslib_1.__decorate([
         (0, graphql_1.Field)(() => fieldType, { nullable: false }),
-        (0, class_validator_1.IsDate)(),
+        BetweenFieldValidator(),
         tslib_1.__metadata("design:type", Object)
     ], FcBetween.prototype, "lower", void 0);
     tslib_1.__decorate([
         (0, graphql_1.Field)(() => fieldType, { nullable: false }),
-        (0, class_validator_1.IsDate)(),
+        BetweenFieldValidator(),
         tslib_1.__metadata("design:type", Object)
     ], FcBetween.prototype, "upper", void 0);
     FcBetween = tslib_1.__decorate([
@@ -212,5 +219,4 @@ function createFilterComparisonType(options) {
     filterComparisonMap.set(inputName, () => Fc);
     return Fc;
 }
-exports.createFilterComparisonType = createFilterComparisonType;
 //# sourceMappingURL=field-comparison.factory.js.map
