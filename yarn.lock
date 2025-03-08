@@ -7816,7 +7816,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/jsonwebtoken@npm:*, @types/jsonwebtoken@npm:9.0.7":
+"@types/jsonwebtoken@npm:*":
+  version: 9.0.9
+  resolution: "@types/jsonwebtoken@npm:9.0.9"
+  dependencies:
+    "@types/ms": "npm:*"
+    "@types/node": "npm:*"
+  checksum: 10/ef4dc05ae5ae78e3d2e20c364437e4afb788017cc80dd8a23a3eb17a3fcecb41e6abba254aba974d45a71307dd375aba4fda73cec358923aaaf8dff4667bea09
+  languageName: node
+  linkType: hard
+
+"@types/jsonwebtoken@npm:9.0.7":
   version: 9.0.7
   resolution: "@types/jsonwebtoken@npm:9.0.7"
   dependencies:
@@ -8028,11 +8038,11 @@ __metadata:
   linkType: hard
 
 "@types/passport@npm:*":
-  version: 1.0.16
-  resolution: "@types/passport@npm:1.0.16"
+  version: 1.0.17
+  resolution: "@types/passport@npm:1.0.17"
   dependencies:
     "@types/express": "npm:*"
-  checksum: 10/0ee7b9a46192cb60fb4e49038417b0c10b38e50204ed05b5204b3ea9a73e25da34ca8fe05205eaf42fe977610cdbd3a0d5f2228f8661fe0b303bc758fa2a158f
+  checksum: 10/3db90645d58d928796dd8e9c328dec8040b71a43f3691d42a08fb4779efcbfc7dccc43ea612066a961a41be0869800096d52fd8aaa71518a89aa4483f67f5914
   languageName: node
   linkType: hard
 
@@ -14161,7 +14171,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"glob@npm:11.0.1, glob@npm:^11.0.0":
+"glob@npm:11.0.1":
   version: 11.0.1
   resolution: "glob@npm:11.0.1"
   dependencies:
@@ -17286,9 +17296,9 @@ __metadata:
   linkType: hard
 
 "long@npm:^5.2.1":
-  version: 5.2.3
-  resolution: "long@npm:5.2.3"
-  checksum: 10/9167ec6947a825b827c30da169a7384eec6c0c9ec2f0b9c74da2e93d81159bbe39fb09c3f13dae9721d4b807ccfa09797a7dd1012f5d478e3e33ca3c78b608e6
+  version: 5.3.1
+  resolution: "long@npm:5.3.1"
+  checksum: 10/7713e10b4fe10db041d9939b7c4c3d73d3dd91785be72269ca8c5262feae7cb45f4eebed2b77bd346de7fe5f847e90f52c577c89ab3f2bd8a5ddc8b4098cbe35
   languageName: node
   linkType: hard
 
@@ -17299,7 +17309,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"loose-envify@npm:^1.0.0, loose-envify@npm:^1.2.0, loose-envify@npm:^1.3.1, loose-envify@npm:^1.4.0":
+"loose-envify@npm:^1.0.0, loose-envify@npm:^1.1.0, loose-envify@npm:^1.2.0, loose-envify@npm:^1.3.1, loose-envify@npm:^1.4.0":
   version: 1.4.0
   resolution: "loose-envify@npm:1.4.0"
   dependencies:
@@ -19123,9 +19133,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mysql2@npm:^3.13.0":
-  version: 3.13.0
-  resolution: "mysql2@npm:3.13.0"
+"mysql2@npm:3.12.0":
+  version: 3.12.0
+  resolution: "mysql2@npm:3.12.0"
   dependencies:
     aws-ssl-profiles: "npm:^1.1.1"
     denque: "npm:^2.1.0"
@@ -19136,7 +19146,7 @@ __metadata:
     named-placeholders: "npm:^1.1.3"
     seq-queue: "npm:^0.0.5"
     sqlstring: "npm:^2.3.2"
-  checksum: 10/da80609c23d8be43fdb9e32602ed33c34ebb860b0c4df6387a7695bc5a2a746953bbc5c35d7cb50326e0e4fec16479d4419566e3841317dadf06356e44aa0765
+  checksum: 10/55faaa32abc4ae706d8e3b9205ef3f05767bb35ee8049c95bfa594a2d54fec439118b66bbde23205491593f697501a060cba834288cc75fd70fdf4247ab15435
   languageName: node
   linkType: hard
 
@@ -19310,19 +19320,16 @@ __metadata:
     mongoose-lean-getters: "npm:^2.2.1"
     mongoose-lean-id: "npm:^1.0.0"
     mongoose-lean-virtuals: "npm:^1.1.0"
-    mysql2: "npm:^3.13.0"
+    mysql2: "npm:3.12.0"
     nx: "npm:19.6.1"
-    passport: "npm:^0.7.0"
-    passport-jwt: "npm:^4.0.1"
-    passport-local: "npm:^1.0.0"
-    pg: "npm:^8.13.3"
+    passport: "npm:0.7.0"
+    passport-jwt: "npm:4.0.1"
+    passport-local: "npm:1.0.0"
+    pg: "npm:8.13.3"
     prettier: "npm:3.5.0"
-    prism-react-renderer: "npm:^2.4.1"
-    react: "npm:^19.0.0"
-    react-dom: "npm:^19.0.0"
+    react: "npm:^18.3.1"
+    react-dom: "npm:^18.3.1"
     reflect-metadata: "npm:^0.2.2"
-    rimraf: "npm:^6.0.1"
-    rxjs: "npm:^7.8.2"
     sequelize: "npm:6.37.5"
     sequelize-typescript: "npm:2.1.6"
     sql-formatter: "npm:^15.4.10"
@@ -20171,7 +20178,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"passport-jwt@npm:^4.0.1":
+"passport-jwt@npm:4.0.1":
   version: 4.0.1
   resolution: "passport-jwt@npm:4.0.1"
   dependencies:
@@ -20181,7 +20188,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"passport-local@npm:^1.0.0":
+"passport-local@npm:1.0.0":
   version: 1.0.0
   resolution: "passport-local@npm:1.0.0"
   dependencies:
@@ -20197,7 +20204,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"passport@npm:^0.7.0":
+"passport@npm:0.7.0":
   version: 0.7.0
   resolution: "passport@npm:0.7.0"
   dependencies:
@@ -20396,7 +20403,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pg@npm:^8.13.3":
+"pg@npm:8.13.3":
   version: 8.13.3
   resolution: "pg@npm:8.13.3"
   dependencies:
@@ -21062,7 +21069,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prism-react-renderer@npm:^2.3.0, prism-react-renderer@npm:^2.4.1":
+"prism-react-renderer@npm:^2.3.0":
   version: 2.4.1
   resolution: "prism-react-renderer@npm:2.4.1"
   dependencies:
@@ -21367,14 +21374,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-dom@npm:^19.0.0":
-  version: 19.0.0
-  resolution: "react-dom@npm:19.0.0"
+"react-dom@npm:^18.3.1":
+  version: 18.3.1
+  resolution: "react-dom@npm:18.3.1"
   dependencies:
-    scheduler: "npm:^0.25.0"
+    loose-envify: "npm:^1.1.0"
+    scheduler: "npm:^0.23.2"
   peerDependencies:
-    react: ^19.0.0
-  checksum: 10/aa64a2f1991042f516260e8b0eca0ae777b6c8f1aa2b5ae096e80bbb6ac9b005aef2bca697969841d34f7e1819556263476bdfea36c35092e8d9aefde3de2d9a
+    react: ^18.3.1
+  checksum: 10/3f4b73a3aa083091173b29812b10394dd06f4ac06aff410b74702cfb3aa29d7b0ced208aab92d5272919b612e5cda21aeb1d54191848cf6e46e9e354f3541f81
   languageName: node
   linkType: hard
 
@@ -21515,10 +21523,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react@npm:^19.0.0":
-  version: 19.0.0
-  resolution: "react@npm:19.0.0"
-  checksum: 10/2490969c503f644703c88990d20e4011fa6119ddeca451e9de48f6d7ab058d670d2852a5fcd3aa3cd90a923ab2815d532637bd4a814add402ae5c0d4f129ee71
+"react@npm:^18.3.1":
+  version: 18.3.1
+  resolution: "react@npm:18.3.1"
+  dependencies:
+    loose-envify: "npm:^1.1.0"
+  checksum: 10/261137d3f3993eaa2368a83110466fc0e558bc2c7f7ae7ca52d94f03aac945f45146bd85e5f481044db1758a1dbb57879e2fcdd33924e2dde1bdc550ce73f7bf
   languageName: node
   linkType: hard
 
@@ -22164,18 +22174,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"rimraf@npm:^6.0.1":
-  version: 6.0.1
-  resolution: "rimraf@npm:6.0.1"
-  dependencies:
-    glob: "npm:^11.0.0"
-    package-json-from-dist: "npm:^1.0.0"
-  bin:
-    rimraf: dist/esm/bin.mjs
-  checksum: 10/0eb7edf08aa39017496c99ba675552dda11a20811ba78f8232da2ba945308c91e9cd673f95998b1a8202bc7436d33390831d23ea38ae52751038d56373ad99e2
-  languageName: node
-  linkType: hard
-
 "router@npm:^2.0.0":
   version: 2.0.0
   resolution: "router@npm:2.0.0"
@@ -22234,15 +22232,6 @@ __metadata:
   dependencies:
     tslib: "npm:^2.1.0"
   checksum: 10/b10cac1a5258f885e9dd1b70d23c34daeb21b61222ee735d2ec40a8685bdca40429000703a44f0e638c27a684ac139e1c37e835d2a0dc16f6fc061a138ae3abb
-  languageName: node
-  linkType: hard
-
-"rxjs@npm:^7.8.2":
-  version: 7.8.2
-  resolution: "rxjs@npm:7.8.2"
-  dependencies:
-    tslib: "npm:^2.1.0"
-  checksum: 10/03dff09191356b2b87d94fbc1e97c4e9eb3c09d4452399dddd451b09c2f1ba8d56925a40af114282d7bc0c6fe7514a2236ca09f903cf70e4bbf156650dddb49d
   languageName: node
   linkType: hard
 
@@ -22340,10 +22329,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"scheduler@npm:^0.25.0":
-  version: 0.25.0
-  resolution: "scheduler@npm:0.25.0"
-  checksum: 10/e661e38503ab29a153429a99203fefa764f28b35c079719eb5efdd2c1c1086522f6653d8ffce388209682c23891a6d1d32fa6badf53c35fb5b9cd0c55ace42de
+"scheduler@npm:^0.23.2":
+  version: 0.23.2
+  resolution: "scheduler@npm:0.23.2"
+  dependencies:
+    loose-envify: "npm:^1.1.0"
+  checksum: 10/e8d68b89d18d5b028223edf090092846868a765a591944760942b77ea1f69b17235f7e956696efbb62c8130ab90af7e0949bfb8eba7896335507317236966bc9
   languageName: node
   linkType: hard
 
