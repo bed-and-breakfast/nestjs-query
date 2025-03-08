@@ -38,14 +38,17 @@ export function createOffsetQueryArgs<DTO>(
       description: 'Limit or page results.'
     })
     @ValidateNested()
-    @Validate(PropertyMax, ['limit', opts.maxResultsSize ?? DEFAULT_QUERY_OPTS.maxResultsSize])
+    @SkipIf(
+      () => opts.maxResultsSize === -1,
+      Validate(PropertyMax, ['limit', opts.maxResultsSize ?? DEFAULT_QUERY_OPTS.maxResultsSize])
+    )
     @Type(() => P)
     paging?: OffsetPagingType
 
     @SkipIf(
       () => opts.disableFilter,
       Field(() => F, {
-        defaultValue: !F.hasRequiredFilters ? opts.defaultFilter ?? DEFAULT_QUERY_OPTS.defaultFilter : undefined,
+        defaultValue: !F.hasRequiredFilters ? (opts.defaultFilter ?? DEFAULT_QUERY_OPTS.defaultFilter) : undefined,
         description: 'Specify to filter the records returned.',
         nullable: false
       }),

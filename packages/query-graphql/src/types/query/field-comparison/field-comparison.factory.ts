@@ -9,10 +9,9 @@ import {
   ReturnTypeFunc,
   ReturnTypeFuncValue
 } from '@nestjs/graphql'
-import { Class, FilterComparisonOperators, FilterFieldComparison, isNamed } from '@ptc-org/nestjs-query-core'
+import { upperCaseFirst, Class, FilterComparisonOperators, FilterFieldComparison, isNamed } from '@ptc-org/nestjs-query-core'
 import { Type } from 'class-transformer'
-import { IsBoolean, IsDate, IsOptional, ValidateNested } from 'class-validator'
-import { upperCaseFirst } from 'upper-case-first'
+import { IsBoolean, IsDate, IsInt, IsNumber, IsOptional, ValidateNested } from 'class-validator'
 
 import { getGraphqlEnumMetadata } from '../../../common'
 import { composeDecorators, SkipIf } from '../../../decorators'
@@ -50,6 +49,13 @@ const knownTypes: Set<ReturnTypeFuncValue> = new Set([
 ])
 
 const allowedBetweenTypes: Set<ReturnTypeFuncValue> = new Set([Number, Int, Float, Date, GraphQLISODateTime, GraphQLTimestamp])
+const betweenFilterValidationMap: Map<ReturnTypeFuncValue, PropertyDecorator> = new Map()
+betweenFilterValidationMap.set(Number, IsNumber())
+betweenFilterValidationMap.set(Float, IsNumber())
+betweenFilterValidationMap.set(Int, IsInt())
+betweenFilterValidationMap.set(Date, IsDate())
+betweenFilterValidationMap.set(GraphQLISODateTime, IsDate())
+betweenFilterValidationMap.set(GraphQLTimestamp, IsDate())
 
 /** @internal */
 const getTypeName = (SomeType: ReturnTypeFuncValue): string => {
@@ -110,14 +116,16 @@ export function createFilterComparisonType<T>(options: FilterComparisonOptions<T
     return true
   }
 
+  const BetweenFieldValidator = () => composeDecorators(...[betweenFilterValidationMap.get(fieldType)].filter(Boolean))
+
   @InputType(`${inputName}Between`)
   class FcBetween {
     @Field(() => fieldType, { nullable: false })
-    @IsDate()
+    @BetweenFieldValidator()
     lower!: T
 
     @Field(() => fieldType, { nullable: false })
-    @IsDate()
+    @BetweenFieldValidator()
     upper!: T
   }
 

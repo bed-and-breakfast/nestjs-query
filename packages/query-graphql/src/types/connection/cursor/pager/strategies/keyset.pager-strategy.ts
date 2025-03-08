@@ -9,7 +9,8 @@ import { KeySetCursorPayload, KeySetPagingOpts, PagerStrategy } from './pager-st
 export class KeysetPagerStrategy<DTO> implements PagerStrategy<DTO> {
   constructor(
     readonly DTOClass: Class<DTO>,
-    readonly pageFields: (keyof DTO)[]
+    readonly pageFields: (keyof DTO)[],
+    private readonly enableFetchAllWithNegative?: boolean
   ) {}
 
   fromCursorArgs(cursor: CursorPagingType): KeySetPagingOpts<DTO> {
@@ -41,19 +42,20 @@ export class KeysetPagerStrategy<DTO> implements PagerStrategy<DTO> {
 
   createQuery<Q extends Query<DTO>>(query: Q, opts: KeySetPagingOpts<DTO>, includeExtraNode: boolean): Q {
     const paging = { limit: opts.limit }
-    if (includeExtraNode) {
+    if (includeExtraNode && (!this.enableFetchAllWithNegative || opts.limit !== -1)) {
       // Add 1 to the limit so we will fetch an additional node
       paging.limit += 1
     }
     const { payload } = opts
-    // Add 1 to the limit so we will fetch an additional node with the current node
     const sorting = this.getSortFields(query, opts)
     const filter = mergeFilter(query.filter ?? {}, this.createFieldsFilter(sorting, payload))
-    return { ...query, filter, paging, sorting }
+    const createdQuery = { ...query, filter, sorting, paging }
+    if (this.enableFetchAllWithNegative && opts.limit === -1) delete createdQuery.paging
+    return createdQuery
   }
 
   checkForExtraNode(nodes: DTO[], opts: KeySetPagingOpts<DTO>): DTO[] {
-    const hasExtraNode = nodes.length > opts.limit
+    const hasExtraNode = nodes.length > opts.limit && !(this.enableFetchAllWithNegative && opts.limit === -1)
     const returnNodes = [...nodes]
     if (hasExtraNode) {
       returnNodes.pop()
@@ -107,12 +109,20 @@ export class KeysetPagerStrategy<DTO> implements PagerStrategy<DTO> {
       const subFilter = {
         and: [...equalities, { [keySetField.field]: { [isAsc ? 'gt' : 'lt']: keySetField.value } }]
       } as Filter<DTO>
-      equalities.push({ [keySetField.field]: { eq: keySetField.value } } as Filter<DTO>)
+      if (keySetField.value === null) {
+        equalities.push({ [keySetField.field]: { is: null } } as Filter<DTO>)
+      } else {
+        equalities.push({ [keySetField.field]: { eq: keySetField.value } } as Filter<DTO>)
+      }
       return [...dtoFilters, subFilter]
     }, [] as Filter<DTO>[])
     return { or: oredFilter } as Filter<DTO>
   }
 
+  /**
+   * @description
+   * Strip the default sorting criteria if it is set by the client.
+   */
   private getSortFields(query: Query<DTO>, opts: KeySetPagingOpts<DTO>): SortField<DTO>[] {
     const { sorting = [] } = query
     const defaultSort = opts.defaultSort.filter((dsf) => !sorting.some((sf) => dsf.field === sf.field))

@@ -95,3 +95,4 @@ documentation/.docusaurus
 .vscode
 
 .nx/cache
+.nx/workspace-data

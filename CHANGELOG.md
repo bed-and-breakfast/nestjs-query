@@ -1,4 +1,162 @@
  
+## [9.0.2](https://github.com/TriPSs/nestjs-query/compare/v9.0.1...v9.0.2) (2025-02-17)
+
+
+
+## [9.0.1](https://github.com/TriPSs/nestjs-query/compare/v9.0.0...v9.0.1) (2025-02-17)
+
+
+### Bug Fixes
+
+* Update peer dependencies to support NestJS v11 ([9471198](https://github.com/TriPSs/nestjs-query/commit/9471198b987139f297a56f1f4ca3ed8b5b5dce96)), closes [#358](https://github.com/TriPSs/nestjs-query/issues/358)
+
+
+
+# [9.0.0](https://github.com/TriPSs/nestjs-query/compare/v8.0.3...v9.0.0) (2025-02-13)
+
+
+### Features
+
+* Updated to NestJS 11 ([8fe3ed9](https://github.com/TriPSs/nestjs-query/commit/8fe3ed98e19b2532526258d17758dc9d4055a521))
+
+
+### BREAKING CHANGES
+
+* Updated to NestJS 11
+
+
+
+## [8.0.3](https://github.com/TriPSs/nestjs-query/compare/v8.0.2...v8.0.3) (2025-01-30)
+
+
+
+## [8.0.2](https://github.com/TriPSs/nestjs-query/compare/v8.0.1...v8.0.2) (2025-01-21)
+
+
+### Bug Fixes
+
+* add missing import in doc + upgrading docker image version ([3ce8691](https://github.com/TriPSs/nestjs-query/commit/3ce86913e60a52188e61149c495a533ffa81fd59))
+* mongoose ilike comparism wasn capable of searching with fixed start/end letter ([4f90c93](https://github.com/TriPSs/nestjs-query/commit/4f90c936d6fc5af3e1c8d1be35e26ad0d2824944))
+* Mongoose ReferenceQueryService only accepted Relations with ObjectIds ([b364870](https://github.com/TriPSs/nestjs-query/commit/b364870b8c7348190359a722785b3c86324353d2))
+
+
+
+## [8.0.1](https://github.com/TriPSs/nestjs-query/compare/v8.0.0...v8.0.1) (2024-12-13)
+
+
+### Bug Fixes
+
+* update missing peerDependencies version increase ([ed6e57c](https://github.com/TriPSs/nestjs-query/commit/ed6e57cecbb9e014c8fb33fc6da9ba1b7e90310e))
+
+
+
+# [8.0.0](https://github.com/TriPSs/nestjs-query/compare/v7.1.0...v8.0.0) (2024-12-12)
+
+
+### Features
+
+* **query-graphql:** Updated graphql subscriptions ([ee688a2](https://github.com/TriPSs/nestjs-query/commit/ee688a2a1dc939964bdcabc07ec2a50de36dc7b7))
+
+
+### Reverts
+
+* Replace change-case with camel-case in multiple packages ([0720323](https://github.com/TriPSs/nestjs-query/commit/0720323ecf3941a296c909544c08ec3322f4ce54))
+
+
+### BREAKING CHANGES
+
+* **query-graphql:** Updated to new major version of graphql-subscriptions
+
+
+
+# [7.1.0](https://github.com/TriPSs/nestjs-query/compare/v7.0.1...v7.1.0) (2024-10-16)
+
+
+### Bug Fixes
+
+* Adjust package.json configurations and correct filter defaultValue syntax ([cc19f4c](https://github.com/TriPSs/nestjs-query/commit/cc19f4c4f24f5ae872d966f2719b5ca11edbc99a))
+
+
+### Features
+
+* support querying soft deleted relations ([00296c0](https://github.com/TriPSs/nestjs-query/commit/00296c0e656f7865bcf5bb54848a07d53be8d7d7))
+
+
+
+## [7.0.1](https://github.com/TriPSs/nestjs-query/compare/v7.0.0...v7.0.1) (2024-09-25)
+
+
+### Bug Fixes
+
+* null condition building for cursor filter ([4eb6e6b](https://github.com/TriPSs/nestjs-query/commit/4eb6e6bf50f48810e8bb5f513e67fb10f004f4a4))
+* **query-graphql:** Fix null condition building for cursor filter ([423f320](https://github.com/TriPSs/nestjs-query/commit/423f320647dd205d9c1c2633100e2f7ae0cf1ca2))
+
+
+
+# [7.0.0](https://github.com/TriPSs/nestjs-query/compare/v6.1.3...v7.0.0) (2024-07-26)
+
+
+### Features
+
+* **query-mongoose:** Dropped support of older versions ([7267967](https://github.com/TriPSs/nestjs-query/commit/72679678dbe9aa39f1e40bee1ed2c314b8c599c3))
+
+
+### BREAKING CHANGES
+
+* **query-mongoose:** Versions 6 and 7 of mongoose are no longer supported
+
+
+
+## [6.1.3](https://github.com/TriPSs/nestjs-query/compare/v6.1.2...v6.1.3) (2024-07-25)
+
+
+
+## [6.1.2](https://github.com/TriPSs/nestjs-query/compare/v6.1.1...v6.1.2) (2024-07-24)
+
+
+
+## [6.1.1](https://github.com/TriPSs/nestjs-query/compare/v6.1.0...v6.1.1) (2024-06-07)
+
+
+### Bug Fixes
+
+* **query-graphql:** Fixed hard `isDate` validator for custom between filters ([7437e53](https://github.com/TriPSs/nestjs-query/commit/7437e53f521e43fd943ded7b13e7dc5abae3e537))
+
+
+
+# [6.1.0](https://github.com/TriPSs/nestjs-query/compare/v6.0.0...v6.1.0) (2024-04-08)
+
+
+### Bug Fixes
+
+* Fix isValidPaging ([7f8913f](https://github.com/TriPSs/nestjs-query/commit/7f8913f525d56a86c374b0a4aa787e568051974b))
+
+
+### Features
+
+* **query-graphql:** Adds enableFetchAllWithNegative option ([6bfc92f](https://github.com/TriPSs/nestjs-query/commit/6bfc92f6ea3781f5619247023fef419c6d1b4299))
+
+
+### Reverts
+
+* Revert "test: Fix the typeorm tests with negative fetch and my sql" ([066732f](https://github.com/TriPSs/nestjs-query/commit/066732fb048f97d951e55e13e900269cb62f9421))
+
+
+
+# [6.0.0](https://github.com/TriPSs/nestjs-query/compare/v5.0.1...v6.0.0) (2024-04-04)
+
+
+### Bug Fixes
+
+* Explicitly mark types in the assemblers files ([58b94a9](https://github.com/TriPSs/nestjs-query/commit/58b94a9498a54275bc01146550dcd03583d2d753))
+
+
+### BREAKING CHANGES
+
+* The methods convertToDTO, convertToEntity, convertToCreateEntity, and convertToUpdateEntity now require casting the return value.
+
+
+
 ## [5.0.1](https://github.com/TriPSs/nestjs-query/compare/v5.1.0-alpha.2...v5.0.1) (2024-03-29)
 
 
@@ -764,7 +922,7 @@
 
 ### Bug Fixes
 
-* **typeorm, #954:** Filtering on relations with pagination  ([#977](https://github.com/tripss/nestjs-query/issues/977)) ([f5a6374](https://github.com/tripss/nestjs-query/commit/f5a6374f6e22470f63ef6257f7271c818ed09321)), closes [#954](https://github.com/tripss/nestjs-query/issues/954) [#954](https://github.com/tripss/nestjs-query/issues/954) [#954](https://github.com/tripss/nestjs-query/issues/954) [#954](https://github.com/tripss/nestjs-query/issues/954)
+* **typeorm, #954:** Filtering on relations with pagination  ([#977](https://github.com/tripss/nestjs-query/issues/977)) ([f5a6374](https://github.com/tripss/nestjs-query/commit/f5a6374f6e22470f63ef6257f7271c818ed09321)), closes [#954](https://github.com/doug-martin/nestjs-query/issues/954) [#954](https://github.com/doug-martin/nestjs-query/issues/954) [#954](https://github.com/doug-martin/nestjs-query/issues/954) [#954](https://github.com/doug-martin/nestjs-query/issues/954)
 
 
 

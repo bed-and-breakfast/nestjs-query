@@ -17,7 +17,10 @@ const DEFAULT_PAGING_META = <DTO>(query: Query<DTO>): PagingMeta<DTO, OffsetPagi
 })
 
 export class CursorPager<DTO> implements Pager<DTO, CursorPagerResult<DTO>> {
-  constructor(readonly strategy: PagerStrategy<DTO>) {}
+  constructor(
+    readonly strategy: PagerStrategy<DTO>,
+    private readonly enableFetchAllWithNegative?: boolean
+  ) {}
 
   async page<Q extends CursorQueryArgsType<DTO>>(
     queryMany: QueryMany<DTO, Q>,
@@ -36,10 +39,17 @@ export class CursorPager<DTO> implements Pager<DTO, CursorPagerResult<DTO>> {
   }
 
   private isValidPaging(pagingMeta: PagingMeta<DTO, CursorPagingOpts<DTO>>): boolean {
-    if ('offset' in pagingMeta.opts) {
-      return pagingMeta.opts.offset > 0 || pagingMeta.opts.limit > 0
+    const minimumLimit = this.enableFetchAllWithNegative ? -1 : 1
+    const hasLimit = 'limit' in pagingMeta.opts && pagingMeta.opts.limit !== null
+    const isValidLimit = pagingMeta.opts.limit >= minimumLimit
+    if (hasLimit && !isValidLimit) {
+      return false
     }
-    return pagingMeta.opts.limit > 0
+
+    if ('offset' in pagingMeta.opts) {
+      return pagingMeta.opts.offset > 0 || hasLimit
+    }
+    return hasLimit
   }
 
   private async runQuery<Q extends Query<DTO>>(
@@ -77,7 +87,7 @@ export class CursorPager<DTO> implements Pager<DTO, CursorPagerResult<DTO>> {
     const pageInfo = {
       startCursor: edges[0]?.cursor,
       endCursor: edges[edges.length - 1]?.cursor,
-      // if we have are going forward and have an extra node or there was a before cursor
+      // if we re paging forward and have an extra node we have more pages to load. Or there we know that we have a before cursor, thus we have next page
       hasNextPage: isForward ? hasExtraNode : hasBefore,
       // we have a previous page if we are going backwards and have an extra node.
       hasPreviousPage: this.hasPreviousPage(results, pagingMeta)
@@ -92,12 +102,16 @@ export class CursorPager<DTO> implements Pager<DTO, CursorPagerResult<DTO>> {
     return opts.isBackward ? hasExtraNode : !this.strategy.isEmptyCursor(opts)
   }
 
+  /**
+   * @description
+   * It is an empty page if:
+   *
+   * 1. We don't have an extra node.
+   * 2. There were no nodes returned.
+   * 3. We're paging forward.
+   * 4. And we don't have an offset.
+   */
   private isEmptyPage(results: QueryResults<DTO>, pagingMeta: PagingMeta<DTO, CursorPagingOpts<DTO>>): boolean {
-    // it is an empty page if
-    // 1. we dont have an extra node
-    // 2. there were no nodes returned
-    // 3. we're paging forward
-    // 4. and we dont have an offset
     const { opts } = pagingMeta
     const isEmpty = !results.hasExtraNode && !results.nodes.length && pagingMeta.opts.isForward
     return isEmpty && this.strategy.isEmptyCursor(opts)
