@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common'
+import { InjectableOptions } from '@nestjs/common/decorators/core/injectable.decorator'
 
 import { Class, DeepPartial } from '../common'
 import {
@@ -16,6 +17,7 @@ import {
   ModifyRelationOptions,
   Query,
   QueryOptions,
+  QueryRelationsOptions,
   UpdateManyResponse,
   UpdateOneOptions
 } from '../interfaces'
@@ -29,9 +31,10 @@ export interface QueryService<DTO, C = DeepPartial<DTO>, U = DeepPartial<DTO>> {
   /**
    * Query for multiple records of type `T`.
    * @param query - the query used to filer, page or sort records.
+   * @param selectRelations - additional relation to select and fetch in the same query.
    * @returns a promise with an array of records that match the query.
    */
-  query(query: Query<DTO>, opts?: QueryOptions): Promise<DTO[]>
+  query(query: Query<DTO>, opts?: QueryOptions<DTO>): Promise<DTO[]>
 
   /**
    * Perform an aggregate query
@@ -66,14 +69,16 @@ export interface QueryService<DTO, C = DeepPartial<DTO>, U = DeepPartial<DTO>> {
     RelationClass: Class<Relation>,
     relationName: string,
     dto: DTO,
-    query: Query<Relation>
+    query: Query<Relation>,
+    opts?: QueryRelationsOptions
   ): Promise<Relation[]>
 
   queryRelations<Relation>(
     RelationClass: Class<Relation>,
     relationName: string,
     dtos: DTO[],
-    query: Query<Relation>
+    query: Query<Relation>,
+    opts?: QueryRelationsOptions
   ): Promise<Map<DTO, Relation[]>>
 
   /**
@@ -108,14 +113,16 @@ export interface QueryService<DTO, C = DeepPartial<DTO>, U = DeepPartial<DTO>> {
     RelationClass: Class<Relation>,
     relationName: string,
     dto: DTO,
-    filter: Filter<Relation>
+    filter: Filter<Relation>,
+    opts?: QueryRelationsOptions
   ): Promise<number>
 
   countRelations<Relation>(
     RelationClass: Class<Relation>,
     relationName: string,
     dto: DTO[],
-    filter: Filter<Relation>
+    filter: Filter<Relation>,
+    opts?: QueryRelationsOptions
   ): Promise<Map<DTO, number>>
 
   /**
@@ -283,10 +290,11 @@ export interface QueryService<DTO, C = DeepPartial<DTO>, U = DeepPartial<DTO>> {
 /**
  * QueryService decorator to register with nestjs-query
  * @param DTOClass - the DTO class that the QueryService is used for.
+ * @param options - InjectableOptions
  */
 // eslint-disable-next-line @typescript-eslint/no-redeclare,@typescript-eslint/no-unused-vars -- intentional
-export function QueryService<DTO, C = DeepPartial<DTO>, U = DeepPartial<DTO>>(DTOClass: Class<DTO>) {
+export function QueryService<DTO, C = DeepPartial<DTO>, U = DeepPartial<DTO>>(DTOClass: Class<DTO>, options?: InjectableOptions) {
   return <Cls extends Class<QueryService<DTO, C, U>>>(cls: Cls): Cls | void => {
-    return Injectable()(cls)
+    return Injectable(options)(cls)
   }
 }

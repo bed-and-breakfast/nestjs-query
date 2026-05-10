@@ -22,15 +22,15 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node-version: [ 16.x ]
+        node-version: [ 22.x, 24.x ]
         target: [ 'build', 'test', 'lint' ]
     steps:
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
 
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
@@ -48,7 +48,7 @@ jobs:
         run: yarn nx run workspace:version
 
       - name: nx affected:${{ matrix.target }}
-        run: node ./tools/scripts/run-many.js ${{ matrix.target }}
+        run: yarn nx run-many --target=${{ matrix.target }} --all
 
       - name: Codecov
         uses: codecov/codecov-action@v2
@@ -65,15 +65,15 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node-version: [ 16.x ]
+        node-version: [ 22.x, 24.x ]
         db-type: ['postgres', 'mysql']
     steps:
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
 
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
@@ -81,10 +81,10 @@ jobs:
         uses: ./.github/actions/setup-step
 
       - name: docker compose
-        run: docker-compose -f ./examples/docker-compose.yml up -d
+        run: docker compose -f ./examples/docker-compose.yml up -d
 
       - name: nx affected:e2e
-        run: npx nx affected:e2e
+        run: yarn nx run-many --target=e2e --all
         env:
           NESTJS_QUERY_DB_TYPE: ${{ matrix.db-type }}
 
@@ -95,3 +95,24 @@ jobs:
           directory: ./coverage
           fail_ci_if_error: false
           name: run-e2e-${{ matrix.node-version }}-${{ matrix.db-type }}
+
+  federation-e2e-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Docker Compose
+        uses: docker/setup-compose-action@v1
+
+      - name: Build and run Federation E2E tests
+        run: |
+          cd examples/federation-v2-e2e
+          docker compose --profile test up --build --exit-code-from e2e-test e2e-test
+
+      - name: Show logs on failure
+        if: failure()
+        run: |
+          cd examples/federation-v2-e2e
+          docker compose logs

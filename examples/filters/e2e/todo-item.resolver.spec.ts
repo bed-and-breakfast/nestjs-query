@@ -2,7 +2,7 @@ import { INestApplication, ValidationPipe } from '@nestjs/common'
 import { Test } from '@nestjs/testing'
 import { CursorConnectionType } from '@ptc-org/nestjs-query-graphql'
 import request from 'supertest'
-import { Connection } from 'typeorm'
+import { DataSource } from 'typeorm'
 
 import { AppModule } from '../src/app.module'
 import { TodoItemDTO } from '../src/todo-item/dto/todo-item.dto'
@@ -29,10 +29,10 @@ describe('TodoItemResolver (filters - e2e)', () => {
     )
 
     await app.init()
-    await refresh(app.get(Connection))
+    await refresh(app.get(DataSource))
   })
 
-  afterAll(() => refresh(app.get(Connection)))
+  afterAll(() => refresh(app.get(DataSource)))
 
   describe('query', () => {
     it(`should require "completed" filter`, () =>
@@ -97,7 +97,27 @@ describe('TodoItemResolver (filters - e2e)', () => {
         })
         .expect(200)
         .then(({ body }) => {
-          expect(body.errors[0].extensions.response.message[0]).toBe('filter.There was no filter provided for "completed"!')
+          expect(body.errors[0].extensions.originalError.message[0]).toBe('filter.There was no filter provided for "completed"!')
+        }))
+
+    it(`should accepted "description" filter`, () =>
+      request(app.getHttpServer())
+        .post('/graphql')
+        .send({
+          operationName: null,
+          variables: {},
+          query: `{
+          todoItems (filter: { description: { isNot: null }, completed: { is: false } }) {
+            ${pageInfoField}
+            ${edgeNodes(todoItemFields)}
+          }
+        }`
+        })
+        .expect(200)
+        .then(({ body }) => {
+          const { edges }: CursorConnectionType<TodoItemDTO & { description: string }> = body.data.todoItems
+          expect(edges).toHaveLength(1)
+          expect(edges[0].node.description).toBe('test description')
         }))
   })
 

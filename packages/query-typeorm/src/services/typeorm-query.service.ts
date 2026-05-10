@@ -55,7 +55,10 @@ export class TypeOrmQueryService<Entity>
 
   readonly useSoftDelete: boolean
 
-  constructor(readonly repo: Repository<Entity>, opts?: TypeOrmQueryServiceOpts<Entity>) {
+  constructor(
+    readonly repo: Repository<Entity>,
+    opts?: TypeOrmQueryServiceOpts<Entity>
+  ) {
     super()
 
     this.filterQueryBuilder = opts?.filterQueryBuilder ?? new FilterQueryBuilder<Entity>(this.repo)
@@ -80,7 +83,7 @@ export class TypeOrmQueryService<Entity>
    * ```
    * @param query - The Query used to filter, page, and sort rows.
    */
-  public async query(query: Query<Entity>, opts?: QueryOptions): Promise<Entity[]> {
+  public async query(query: Query<Entity>, opts?: QueryOptions<Entity>): Promise<Entity[]> {
     const qb = this.filterQueryBuilder.select(query)
 
     if (opts?.withDeleted) {
@@ -112,7 +115,26 @@ export class TypeOrmQueryService<Entity>
       qb.withDeleted()
     }
 
-    return qb.getCount()
+    // Check if we have any relation that could cause the same record to be returned twice, if not then we create
+    // our own count as TypeORM still decides to add "DISTINCT" to it, which makes it slow
+    if (qb.expressionMap.joinAttributes.some((join) => join.isMany)) {
+      // If we have relations than do what TypeORM does
+      return qb.getCount()
+    }
+
+    // This is the same as TypeORM does it with the exception that the select is always COUNT(1)
+    const result = (await qb
+      .orderBy()
+      .groupBy()
+      .offset(undefined)
+      .limit(undefined)
+      .skip(undefined)
+      .take(undefined)
+      .select('COUNT(1)', 'cnt')
+      .setOption('disable-global-order')
+      .execute()) as { cnt?: number }[]
+
+    return parseInt(`${result?.[0]?.cnt ?? 0}`)
   }
 
   /**
@@ -232,11 +254,11 @@ export class TypeOrmQueryService<Entity>
     this.ensureIdIsNotPresent(update)
     let updateResult: UpdateResult
 
-    // If the update has relations then fetch all the id's and then do an update on the ids returned
+    // If the update has relations, then fetch all the id's and then do an update on the ids returned
     if (this.filterQueryBuilder.filterHasRelations(filter)) {
       const builder = this.filterQueryBuilder.select({ filter }).distinct(true)
 
-      const distinctRecords = await builder.addSelect(`${builder.alias}.id`).getRawMany()
+      const distinctRecords = await builder.select(`${builder.alias}.id AS id`).getRawMany()
 
       const ids: unknown[] = distinctRecords.map(({ id }) => id as unknown)
       const idsFilter = { id: { in: ids } } as unknown as Filter<Entity>

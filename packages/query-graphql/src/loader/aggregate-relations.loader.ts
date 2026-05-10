@@ -9,10 +9,15 @@ type AggregateRelationsArgs<DTO, Relation> = {
 }
 type AggregateRelationsMap<DTO, Relation> = Map<string, (AggregateRelationsArgs<DTO, Relation> & { index: number })[]>
 
-export class AggregateRelationsLoader<DTO, Relation>
-  implements NestjsQueryDataloader<DTO, AggregateRelationsArgs<DTO, Relation>, AggregateResponse<Relation> | Error>
-{
-  constructor(readonly RelationDTO: Class<Relation>, readonly relationName: string) {}
+export class AggregateRelationsLoader<DTO, Relation> implements NestjsQueryDataloader<
+  DTO,
+  AggregateRelationsArgs<DTO, Relation>,
+  AggregateResponse<Relation> | Error
+> {
+  constructor(
+    readonly RelationDTO: Class<Relation>,
+    readonly relationName: string
+  ) {}
 
   createLoader(service: QueryService<DTO, unknown, unknown>) {
     return async (
@@ -51,7 +56,7 @@ export class AggregateRelationsLoader<DTO, Relation>
         map.set(queryJson, [])
       }
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      map.get(queryJson)!.push({ ...args, index })
+      map.get(queryJson).push({ ...args, index })
       return map
     }, new Map<string, (AggregateRelationsArgs<DTO, Relation> & { index: number })[]>())
   }

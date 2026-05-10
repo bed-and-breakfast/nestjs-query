@@ -43,7 +43,8 @@ export interface ResolverClass<DTO, QS extends QueryService<DTO, unknown, unknow
  * @internal
  * Base Resolver that takes in a service as a constructor argument.
  */
-export class BaseServiceResolver<DTO, QS extends QueryService<DTO, unknown, unknown>> {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export class BaseServiceResolver<DTO, QS> {
   constructor(readonly service: QS) {}
 }
 
@@ -58,5 +59,5 @@ export type MergePagingStrategyOpts<
 > = Opts['pagingStrategy'] extends PagingStrategies
   ? Opts
   : S extends PagingStrategies
-  ? Omit<Opts, 'pagingStrategy'> & { pagingStrategy: S }
-  : Opts
+    ? Omit<Opts, 'pagingStrategy'> & { pagingStrategy: S }
+    : Opts

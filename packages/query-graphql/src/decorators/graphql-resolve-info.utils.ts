@@ -1,28 +1,28 @@
-import { ASTNode, FieldNode, getArgumentValues, getNamedType, GraphQLField, GraphQLUnionType, isCompositeType } from 'graphql'
+import {
+  ASTNode,
+  DirectiveNode,
+  getArgumentValues,
+  getNamedType,
+  GraphQLField,
+  GraphQLUnionType,
+  isCompositeType,
+  Kind
+} from 'graphql'
 
 import type { CursorConnectionType, OffsetConnectionType } from '../types'
-import type { Query } from '@ptc-org/nestjs-query-core'
+import type { RelationDescriptor } from './relation.decorator'
+import type { QueryResolveFields, QueryResolveTree, SelectRelation } from '@ptc-org/nestjs-query-core'
 import type { GraphQLCompositeType, GraphQLResolveInfo as ResolveInfo, SelectionNode } from 'graphql'
 
-type QueryResolveFields<DTO> = {
-  [key in keyof DTO]: QueryResolveTree<
-    // If the key is a array get the type of the array
-    DTO[key] extends ArrayLike<unknown> ? DTO[key][number] : DTO[key]
-  >
-}
-
-export interface QueryResolveTree<DTO> {
-  name: string
-  alias: string
-  args?: Query<DTO>
-  fields: QueryResolveFields<DTO>
-}
+/**
+ * Parts based of https://github.com/graphile/graphile-engine/blob/master/packages/graphql-parse-resolve-info/src/index.ts
+ */
 
 function getFieldFromAST<TContext>(
   fieldNode: ASTNode,
   parentType: GraphQLCompositeType
 ): GraphQLField<GraphQLCompositeType, TContext> | undefined {
-  if (fieldNode.kind === 'Field') {
+  if (fieldNode.kind === Kind.FIELD) {
     if (!(parentType instanceof GraphQLUnionType)) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-return
       return parentType.getFields()[fieldNode.name.value]
@@ -33,16 +33,54 @@ function getFieldFromAST<TContext>(
   return undefined
 }
 
+function getDirectiveValue(directive: DirectiveNode, info: ResolveInfo) {
+  const arg = directive.arguments[0] // only arg on an include or skip directive is "if"
+  if (arg.value.kind !== Kind.VARIABLE) {
+    // eslint-disable-next-line
+    return !!arg.value['value']
+  }
+  return info.variableValues[arg.value.name.value]
+}
+
+function getDirectiveResults(fieldNode: SelectionNode, info: ResolveInfo) {
+  const directiveResult = {
+    shouldInclude: true,
+    shouldSkip: false
+  }
+
+  return fieldNode.directives.reduce((result, directive) => {
+    switch (directive.name.value) {
+      case 'include':
+        return { ...result, shouldInclude: getDirectiveValue(directive, info) }
+      case 'skip':
+        return { ...result, shouldSkip: getDirectiveValue(directive, info) }
+      default:
+        return result
+    }
+  }, directiveResult)
+}
+
 function parseFieldNodes<DTO>(
   inASTs: ReadonlyArray<SelectionNode> | SelectionNode,
   resolveInfo: ResolveInfo,
   initTree: QueryResolveFields<DTO> | null,
   parentType: GraphQLCompositeType
 ): QueryResolveTree<DTO> | QueryResolveFields<DTO> {
-  const asts: ReadonlyArray<FieldNode> = Array.isArray(inASTs) ? inASTs : [inASTs]
+  const asts: ReadonlyArray<SelectionNode> = Array.isArray(inASTs) ? inASTs : [inASTs]
 
   return asts.reduce((tree, fieldNode) => {
-    const alias: string = fieldNode?.alias?.value ?? fieldNode.name.value
+    let name: string
+    let alias: string
+
+    if (fieldNode.kind === Kind.INLINE_FRAGMENT) {
+      name = fieldNode?.typeCondition?.name.value
+    } else {
+      name = fieldNode.name.value
+    }
+
+    if (fieldNode.kind === Kind.FIELD) {
+      alias = fieldNode?.alias?.value ?? name
+    }
 
     const field = getFieldFromAST(fieldNode, parentType)
     if (field == null) {
@@ -53,13 +91,22 @@ function parseFieldNodes<DTO>(
       return tree
     }
 
+    if (fieldNode.directives && fieldNode.directives.length) {
+      const { shouldInclude, shouldSkip } = getDirectiveResults(fieldNode, resolveInfo)
+      // field/fragment is not included if either the @skip condition is true or the @include condition is false
+      // https://facebook.github.io/graphql/draft/#sec--include
+      if (shouldSkip || !shouldInclude) {
+        return tree
+      }
+    }
+
     const parsedField = {
-      name: fieldNode.name.value,
+      name,
       alias,
-      args: getArgumentValues(field, fieldNode, resolveInfo.variableValues),
+      args: fieldNode.kind === Kind.FIELD ? getArgumentValues(field, fieldNode, resolveInfo.variableValues) : {},
 
       fields:
-        fieldNode.selectionSet && isCompositeType(fieldGqlTypeOrUndefined)
+        fieldNode.kind !== Kind.FRAGMENT_SPREAD && fieldNode.selectionSet && isCompositeType(fieldGqlTypeOrUndefined)
           ? parseFieldNodes(
               fieldNode.selectionSet.selections,
               resolveInfo,
@@ -88,16 +135,35 @@ function isCursorPaging<DTO>(info: unknown): info is QueryResolveTree<CursorConn
 }
 
 export function simplifyResolveInfo<DTO>(resolveInfo: ResolveInfo): QueryResolveTree<DTO> {
-  const simpleInfo = parseFieldNodes(resolveInfo.fieldNodes, resolveInfo, null, resolveInfo.parentType) as
-    | QueryResolveTree<DTO>
-    | QueryResolveTree<OffsetConnectionType<DTO>>
-    | QueryResolveTree<CursorConnectionType<DTO>>
+  return parseFieldNodes<DTO>(resolveInfo.fieldNodes, resolveInfo, null, resolveInfo.parentType) as QueryResolveTree<DTO>
+}
 
+export function removePagingFromSimplifiedInfo<DTO>(simpleInfo: QueryResolveTree<DTO>) {
   if (isOffsetPaging(simpleInfo)) {
     return simpleInfo.fields.nodes as QueryResolveTree<DTO>
   } else if (isCursorPaging(simpleInfo)) {
     return simpleInfo.fields.edges.fields.node as QueryResolveTree<DTO>
   }
 
-  return simpleInfo as QueryResolveTree<DTO>
+  return simpleInfo
+}
+
+export function createLookAheadInfo<DTO>(
+  relations: RelationDescriptor<unknown>[],
+  simpleResolveInfo: QueryResolveTree<DTO>
+): SelectRelation<DTO>[] {
+  const simplifiedInfoWithoutPaging = removePagingFromSimplifiedInfo(simpleResolveInfo)
+
+  return relations
+    .map((relation): SelectRelation<DTO> | boolean => {
+      if (relation.name in simplifiedInfoWithoutPaging.fields) {
+        return {
+          name: relation.name,
+          query: (simplifiedInfoWithoutPaging.fields[relation.name] as QueryResolveTree<DTO>).args || {}
+        }
+      }
+
+      return false
+    })
+    .filter(Boolean) as SelectRelation<DTO>[]
 }

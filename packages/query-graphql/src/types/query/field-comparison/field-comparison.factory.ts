@@ -9,13 +9,12 @@ import {
   ReturnTypeFunc,
   ReturnTypeFuncValue
 } from '@nestjs/graphql'
-import { Class, FilterComparisonOperators, FilterFieldComparison, isNamed } from '@ptc-org/nestjs-query-core'
+import { Class, FilterComparisonOperators, FilterFieldComparison, isNamed, upperCaseFirst } from '@ptc-org/nestjs-query-core'
 import { Type } from 'class-transformer'
-import { IsBoolean, IsDate, IsOptional, ValidateNested } from 'class-validator'
-import { upperCaseFirst } from 'upper-case-first'
+import { IsBoolean, IsDate, IsInt, IsNumber, IsOptional, ValidateNested } from 'class-validator'
 
 import { getGraphqlEnumMetadata } from '../../../common'
-import { SkipIf } from '../../../decorators'
+import { composeDecorators, SkipIf } from '../../../decorators'
 import { IsUndefined } from '../../validators'
 import { isInAllowedList } from '../helpers'
 import { getOrCreateBooleanFieldComparison } from './boolean-field-comparison.type'
@@ -50,9 +49,19 @@ const knownTypes: Set<ReturnTypeFuncValue> = new Set([
 ])
 
 const allowedBetweenTypes: Set<ReturnTypeFuncValue> = new Set([Number, Int, Float, Date, GraphQLISODateTime, GraphQLTimestamp])
+const betweenFilterValidationMap: Map<ReturnTypeFuncValue, PropertyDecorator> = new Map()
+betweenFilterValidationMap.set(Number, IsNumber())
+betweenFilterValidationMap.set(Float, IsNumber())
+betweenFilterValidationMap.set(Int, IsInt())
+betweenFilterValidationMap.set(Date, IsDate())
+betweenFilterValidationMap.set(GraphQLISODateTime, IsDate())
+betweenFilterValidationMap.set(GraphQLTimestamp, IsDate())
 
 /** @internal */
 const getTypeName = (SomeType: ReturnTypeFuncValue): string => {
+  if (Array.isArray(SomeType)) {
+    return getTypeName(SomeType[0] as ReturnTypeFuncValue)
+  }
   if (knownTypes.has(SomeType) || isNamed(SomeType)) {
     const typeName = (SomeType as { name: string }).name
     return upperCaseFirst(typeName)
@@ -66,9 +75,13 @@ const getTypeName = (SomeType: ReturnTypeFuncValue): string => {
   throw new Error(`Unable to create filter comparison for ${JSON.stringify(SomeType)}.`)
 }
 
-const isCustomFieldComparison = <T>(options: FilterComparisonOptions<T>): boolean => !!options.allowedComparisons
+const isCustomFieldComparison = <T>(options: FilterComparisonOptions<T>): boolean =>
+  !!options.allowedComparisons || !!options.decorators
 
 const getComparisonTypeName = <T>(fieldType: ReturnTypeFuncValue, options: FilterComparisonOptions<T>): string => {
+  if (options.overrideTypeNamePrefix) {
+    return `${options.overrideTypeNamePrefix}FilterComparison`
+  }
   if (isCustomFieldComparison(options)) {
     return `${upperCaseFirst(options.fieldName)}FilterComparison`
   }
@@ -79,15 +92,18 @@ type FilterComparisonOptions<T> = {
   FieldType: Class<T>
   fieldName: string
   allowedComparisons?: FilterComparisonOperators<T>[]
-  returnTypeFunc?: ReturnTypeFunc
+  returnTypeFunc?: ReturnTypeFunc<ReturnTypeFuncValue>
+  decorators?: PropertyDecorator[]
+  overrideTypeNamePrefix?: string
 }
 
 /** @internal */
 export function createFilterComparisonType<T>(options: FilterComparisonOptions<T>): Class<FilterFieldComparison<T>> {
-  const { FieldType, returnTypeFunc } = options
+  const { FieldType, returnTypeFunc, decorators = [] } = options
   const fieldType = returnTypeFunc ? returnTypeFunc() : FieldType
   const inputName = getComparisonTypeName(fieldType, options)
   const generator = filterComparisonMap.get(inputName)
+  const CustomDecorator = () => composeDecorators(...decorators)
 
   if (generator) {
     return generator() as Class<FilterFieldComparison<T>>
@@ -103,14 +119,16 @@ export function createFilterComparisonType<T>(options: FilterComparisonOptions<T
     return true
   }
 
+  const BetweenFieldValidator = () => composeDecorators(...[betweenFilterValidationMap.get(fieldType)].filter(Boolean))
+
   @InputType(`${inputName}Between`)
   class FcBetween {
     @Field(() => fieldType, { nullable: false })
-    @IsDate()
+    @BetweenFieldValidator()
     lower!: T
 
     @Field(() => fieldType, { nullable: false })
-    @IsDate()
+    @BetweenFieldValidator()
     upper!: T
   }
 
@@ -129,61 +147,73 @@ export function createFilterComparisonType<T>(options: FilterComparisonOptions<T
     @SkipIf(isNotAllowed('eq'), Field(() => fieldType, { nullable: true }))
     @IsUndefined()
     @Type(() => FieldType)
+    @CustomDecorator()
     eq?: T
 
     @SkipIf(isNotAllowed('neq'), Field(() => fieldType, { nullable: true }))
     @IsUndefined()
     @Type(() => FieldType)
+    @CustomDecorator()
     neq?: T
 
     @SkipIf(isNotAllowed('gt'), Field(() => fieldType, { nullable: true }))
     @IsUndefined()
     @Type(() => FieldType)
+    @CustomDecorator()
     gt?: T
 
     @SkipIf(isNotAllowed('gte'), Field(() => fieldType, { nullable: true }))
     @IsUndefined()
     @Type(() => FieldType)
+    @CustomDecorator()
     gte?: T
 
     @SkipIf(isNotAllowed('lt'), Field(() => fieldType, { nullable: true }))
     @IsUndefined()
     @Type(() => FieldType)
+    @CustomDecorator()
     lt?: T
 
     @SkipIf(isNotAllowed('lte'), Field(() => fieldType, { nullable: true }))
     @IsUndefined()
     @Type(() => FieldType)
+    @CustomDecorator()
     lte?: T
 
     @SkipIf(isNotAllowed('like'), Field(() => fieldType, { nullable: true }))
     @IsUndefined()
     @Type(() => FieldType)
+    @CustomDecorator()
     like?: T
 
     @SkipIf(isNotAllowed('notLike'), Field(() => fieldType, { nullable: true }))
     @IsUndefined()
     @Type(() => FieldType)
+    @CustomDecorator()
     notLike?: T
 
     @SkipIf(isNotAllowed('iLike'), Field(() => fieldType, { nullable: true }))
     @IsUndefined()
     @Type(() => FieldType)
+    @CustomDecorator()
     iLike?: T
 
     @SkipIf(isNotAllowed('notILike'), Field(() => fieldType, { nullable: true }))
     @IsUndefined()
     @Type(() => FieldType)
+    @CustomDecorator()
     notILike?: T;
 
     @SkipIf(isNotAllowed('in'), Field(() => [fieldType], { nullable: true }))
     @IsUndefined()
     @Type(() => FieldType)
+    @CustomDecorator()
     in?: T[]
 
     @SkipIf(isNotAllowed('notIn'), Field(() => [fieldType], { nullable: true }))
     @IsUndefined()
     @Type(() => FieldType)
+    @CustomDecorator()
     notIn?: T[]
 
     @SkipIf(isNotAllowed('between', allowedBetweenTypes), Field(() => FcBetween, { nullable: true }))

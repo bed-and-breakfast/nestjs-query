@@ -3,7 +3,7 @@ import { Test } from '@nestjs/testing'
 import { AggregateResponse, getQueryServiceToken, QueryService } from '@ptc-org/nestjs-query-core'
 import { CursorConnectionType } from '@ptc-org/nestjs-query-graphql'
 import request from 'supertest'
-import { Connection } from 'typeorm'
+import { DataSource } from 'typeorm'
 
 import { AppModule } from '../src/app.module'
 import { USER_HEADER_NAME } from '../src/constants'
@@ -40,10 +40,10 @@ describe('TagResolver (typeorm - e2e)', () => {
     )
 
     await app.init()
-    await refresh(app.get(Connection))
+    await refresh(app.get(DataSource))
   })
 
-  afterAll(() => refresh(app.get(Connection)))
+  afterAll(() => refresh(app.get(DataSource)))
 
   const tags = [
     { id: '1', name: 'Urgent' },
@@ -369,6 +369,88 @@ describe('TagResolver (typeorm - e2e)', () => {
             }
           ])
         }))
+
+    describe('grouping on date', () => {
+      it(`should allow grouping on month`, () =>
+        request(app.getHttpServer())
+          .post('/graphql')
+          .send({
+            operationName: null,
+            variables: {},
+            // language=graphql
+            query: `{
+              tagAggregate {
+                groupBy {
+                  fakeDate(by: MONTH)
+                }
+                sum {
+                  id
+                }
+              }
+            }`
+          })
+          .expect(200)
+          .then(({ body }) => {
+            const res: AggregateResponse<TodoItemDTO>[] = body.data.tagAggregate
+            expect(res).toHaveLength(1)
+            expect(res[0].sum).toEqual({ id: 15 })
+          }))
+
+      it(`should allow grouping on week`, () =>
+        request(app.getHttpServer())
+          .post('/graphql')
+          .send({
+            operationName: null,
+            variables: {},
+            // language=graphql
+            query: `{
+              tagAggregate {
+                groupBy {
+                  fakeDate(by: WEEK)
+                }
+                sum {
+                  id
+                }
+              }
+            }`
+          })
+          .expect(200)
+          .then(({ body }) => {
+            const res: AggregateResponse<TodoItemDTO>[] = body.data.tagAggregate
+            expect(res).toHaveLength(1)
+            expect(res[0].sum).toEqual({ id: 15 })
+          }))
+
+      it(`should allow grouping on day`, () =>
+        request(app.getHttpServer())
+          .post('/graphql')
+          .send({
+            operationName: null,
+            variables: {},
+            // language=graphql
+            query: `{
+              tagAggregate {
+                groupBy {
+                  fakeDate(by: DAY)
+                }
+                sum {
+                  id
+                }
+              }
+            }`
+          })
+          .expect(200)
+          .then(({ body }) => {
+            const res: AggregateResponse<TodoItemDTO>[] = body.data.tagAggregate
+            expect(res).toHaveLength(2)
+
+            // First of the month we switched the days so they stay in the same month
+            const isFirstOfMonth = new Date().getDate() === 1
+
+            expect(res[isFirstOfMonth ? 1 : 0].sum).toEqual({ id: 1 })
+            expect(res[isFirstOfMonth ? 0 : 1].sum).toEqual({ id: 14 })
+          }))
+    })
   })
 
   describe('create one', () => {

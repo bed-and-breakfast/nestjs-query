@@ -21,7 +21,8 @@ const mongo = new MongoServer()
 describe('MongooseQueryService', () => {
   let moduleRef: TestingModule
   let TestEntityModel: Model<TestEntity>
-  let TestReferenceModel: Model<TestReference>
+
+  // let TestReferenceModel: Model<TestReference>
 
   class TestEntityService extends MongooseQueryService<TestEntity> {
     constructor(@InjectModel(TestEntity.name) readonly model: Model<TestEntity>) {
@@ -33,7 +34,7 @@ describe('MongooseQueryService', () => {
   class TestReferenceService extends MongooseQueryService<TestReference> {
     constructor(@InjectModel(TestReference.name) readonly model: Model<TestReference>) {
       super(model)
-      TestReferenceModel = model
+      // TestReferenceModel = model
     }
   }
 
@@ -750,7 +751,7 @@ describe('MongooseQueryService', () => {
       })
 
       it('should return undefined select if no results are found.', async () => {
-        const entities: TestEntity[] = [TEST_ENTITIES[0], { _id: new Types.ObjectId() } as TestEntity]
+        const entities: TestEntity[] = [TEST_ENTITIES[0], { _id: new Types.ObjectId() as never as string } as TestEntity]
         const queryService = moduleRef.get(TestEntityService)
         const queryResult = await queryService.findRelation(TestReference, 'testReference', entities)
 
@@ -829,9 +830,9 @@ describe('MongooseQueryService', () => {
           filter: { referenceName: { isNot: null } }
         })
         expect(queryResult.size).toBe(3)
-        expect(convertDocuments(queryResult.get(entities[0])!)).toEqual(TEST_REFERENCES.slice(0, 3))
-        expect(convertDocuments(queryResult.get(entities[1])!)).toEqual(TEST_REFERENCES.slice(3, 6))
-        expect(convertDocuments(queryResult.get(entities[2])!)).toEqual(TEST_REFERENCES.slice(6, 9))
+        expect(convertDocuments(queryResult.get(entities[0]))).toEqual(TEST_REFERENCES.slice(0, 3))
+        expect(convertDocuments(queryResult.get(entities[1]))).toEqual(TEST_REFERENCES.slice(3, 6))
+        expect(convertDocuments(queryResult.get(entities[2]))).toEqual(TEST_REFERENCES.slice(6, 9))
       })
 
       it('should apply a filter per entity', async () => {
@@ -842,9 +843,9 @@ describe('MongooseQueryService', () => {
           filter: { referenceName: { in: references.map((r) => r.referenceName) } }
         })
         expect(queryResult.size).toBe(3)
-        expect(convertDocuments(queryResult.get(entities[0])!)).toEqual([references[0]])
-        expect(convertDocuments(queryResult.get(entities[1])!)).toEqual([references[1]])
-        expect(convertDocuments(queryResult.get(entities[2])!)).toEqual([references[2]])
+        expect(convertDocuments(queryResult.get(entities[0]))).toEqual([references[0]])
+        expect(convertDocuments(queryResult.get(entities[1]))).toEqual([references[1]])
+        expect(convertDocuments(queryResult.get(entities[2]))).toEqual([references[2]])
       })
 
       it('should apply paging per entity', async () => {
@@ -854,9 +855,9 @@ describe('MongooseQueryService', () => {
           paging: { limit: 2, offset: 1 }
         })
         expect(queryResult.size).toBe(3)
-        expect(convertDocuments(queryResult.get(entities[0])!)).toEqual(TEST_REFERENCES.slice(1, 3))
-        expect(convertDocuments(queryResult.get(entities[1])!)).toEqual(TEST_REFERENCES.slice(4, 6))
-        expect(convertDocuments(queryResult.get(entities[2])!)).toEqual(TEST_REFERENCES.slice(7, 9))
+        expect(convertDocuments(queryResult.get(entities[0]))).toEqual(TEST_REFERENCES.slice(1, 3))
+        expect(convertDocuments(queryResult.get(entities[1]))).toEqual(TEST_REFERENCES.slice(4, 6))
+        expect(convertDocuments(queryResult.get(entities[2]))).toEqual(TEST_REFERENCES.slice(7, 9))
       })
 
       it('should return an empty array if no results are found.', async () => {
@@ -866,8 +867,8 @@ describe('MongooseQueryService', () => {
           filter: { referenceName: { isNot: null } }
         })
         expect(queryResult.size).toBe(2)
-        expect(convertDocuments(queryResult.get(entities[0])!)).toEqual(TEST_REFERENCES.slice(0, 3))
-        expect(convertDocuments(queryResult.get(entities[1])!)).toEqual([])
+        expect(convertDocuments(queryResult.get(entities[0]))).toEqual(TEST_REFERENCES.slice(0, 3))
+        expect(convertDocuments(queryResult.get(entities[1]))).toEqual([])
       })
     })
   })
@@ -1138,7 +1139,7 @@ describe('MongooseQueryService', () => {
       })
 
       it('should return an empty array if no results are found.', async () => {
-        const entities: TestEntity[] = [TEST_ENTITIES[0], { _id: new Types.ObjectId() } as TestEntity]
+        const entities: TestEntity[] = [TEST_ENTITIES[0], { _id: new Types.ObjectId() as never as string } as TestEntity]
         const queryService = moduleRef.get(TestEntityService)
         const queryResult = await queryService.aggregateRelations(
           TestReference,

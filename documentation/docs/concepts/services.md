@@ -295,12 +295,8 @@ import { SubTaskDTO } from '../../sub-task/dto/sub-task.dto';
 
 @ObjectType('TodoItem')
 @KeySet(['id'])
-@FilterableConnection('subTasks', () => SubTaskDTO, { disableRemove: true })
-@FilterableConnection('completedSubTasks', () => SubTaskDTO, {
-  // disable remove and update because it is a virtual relation
-  disableRemove: true,
-  disableUpdate: true,
-})
+@FilterableConnection('subTasks', () => SubTaskDTO)
+@FilterableConnection('completedSubTasks', () => SubTaskDTO)
 export class TodoItemDTO {
   @IDField(() => ID)
   id!: number;
@@ -398,7 +394,7 @@ The `completedSubTasks` relation is now available in your graphql schema.
 
 The `ProxyQueryService` is a query service that delegates to another query service. The `ProxyQueryService` can be used when you want to override certain methods of a query service without extending it. 
 
-This class is used internally by the [RelationQueryService](#relation-query-service) to override the relation methods for a `QueryService` 
+This class is used internally by the [RelationQueryService](#relationqueryservice) to override the relation methods for a `QueryService` 
 
 Lets use the `ProxyQueryService` to create a generic query service that will time and log a message everytime a `create`, `update`, or `delete` method is called.
 

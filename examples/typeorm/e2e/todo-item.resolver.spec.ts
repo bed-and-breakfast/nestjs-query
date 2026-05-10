@@ -3,7 +3,7 @@ import { Test } from '@nestjs/testing'
 import { AggregateResponse, getQueryServiceToken, QueryService } from '@ptc-org/nestjs-query-core'
 import { CursorConnectionType } from '@ptc-org/nestjs-query-graphql'
 import request from 'supertest'
-import { Connection } from 'typeorm'
+import { DataSource } from 'typeorm'
 
 import { AppModule } from '../src/app.module'
 import { config } from '../src/config'
@@ -44,10 +44,10 @@ describe('TodoItemResolver (typeorm - e2e)', () => {
     )
 
     await app.init()
-    await refresh(app.get(Connection))
+    await refresh(app.get(DataSource))
   })
 
-  afterAll(() => refresh(app.get(Connection)))
+  afterAll(() => refresh(app.get(DataSource)))
 
   describe('find one', () => {
     it(`should find a todo item by id`, () =>
@@ -264,7 +264,7 @@ describe('TodoItemResolver (typeorm - e2e)', () => {
               completed: false,
               description: null,
               age: expect.any(Number),
-              subTasksCount: 3
+              subTasksCount: 2
             }
           ])
         }))
@@ -411,7 +411,7 @@ describe('TodoItemResolver (typeorm - e2e)', () => {
               completed: false,
               description: null,
               age: expect.any(Number),
-              subTasksCount: 3
+              subTasksCount: 2
             },
             {
               id: '4',
@@ -434,60 +434,68 @@ describe('TodoItemResolver (typeorm - e2e)', () => {
           ])
         }))
 
-    // it(`should allow sorting on a virtual column`, () =>
-    //   request(app.getHttpServer())
-    //     .post('/graphql')
-    //     .send({
-    //       operationName: null,
-    //       variables: {},
-    //       query: `{
-    //       todoItems(sorting: [{field: subTasksCount, direction: DESC}]) {
-    //         ${pageInfoField}
-    //         ${edgeNodes(todoItemFields)}
-    //         totalCount
-    //       }
-    //     }`
-    //     })
-    //     .expect(200)
-    //     .then(({ body }) => {
-    //       const { edges, pageInfo, totalCount }: CursorConnectionType<TodoItemDTO> = body.data.todoItems
-    //       expect(pageInfo).toEqual({
-    //         endCursor: 'eyJ0eXBlIjoia2V5c2V0IiwiZmllbGRzIjpbeyJmaWVsZCI6ImlkIiwidmFsdWUiOjF9XX0=',
-    //         hasNextPage: false,
-    //         hasPreviousPage: false,
-    //         startCursor: 'eyJ0eXBlIjoia2V5c2V0IiwiZmllbGRzIjpbeyJmaWVsZCI6ImlkIiwidmFsdWUiOjV9XX0='
-    //       })
-    //       expect(totalCount).toBe(5)
-    //       expect(edges).toHaveLength(5)
-    //       expect(edges.map((e) => e.node)).toEqual([
-    //         {
-    //           id: '5',
-    //           title: 'How to create item With Sub Tasks',
-    //           completed: false,
-    //           description: null,
-    //           age: expect.any(Number),
-    //           subTasksCount: 3
-    //         },
-    //         {
-    //           id: '4',
-    //           title: 'Add Todo Item Resolver',
-    //           completed: false,
-    //           description: null,
-    //           age: expect.any(Number),
-    //           subTasksCount: 3
-    //         },
-    //         {
-    //           id: '3',
-    //           title: 'Create Entity Service',
-    //           completed: false,
-    //           description: null,
-    //           age: expect.any(Number),
-    //           subTasksCount: 3
-    //         },
-    //         { id: '2', title: 'Create Entity', completed: false, description: null, age: expect.any(Number), subTasksCount: 3 },
-    //         { id: '1', title: 'Create Nest App', completed: true, description: null, age: expect.any(Number), subTasksCount: 3 }
-    //       ])
-    //     }))
+    it('should allow filtering on a virtual column', () =>
+      request(app.getHttpServer())
+        .post('/graphql')
+        .send({
+          operationName: null,
+          variables: {},
+          // language=graphql
+          query: `{
+            todoItems(filter: {subTasksCount: {lt: 3}}) {
+              ${pageInfoField}
+              ${edgeNodes(todoItemFields)}
+              totalCount
+            }
+          }`
+        })
+        .expect(200)
+        .then(({ body }) => {
+          const { edges, totalCount }: CursorConnectionType<TodoItemDTO> = body.data.todoItems
+          expect(totalCount).toBe(1)
+          expect(edges).toHaveLength(1)
+        }))
+
+    it(`should allow sorting on a virtual column`, () =>
+      request(app.getHttpServer())
+        .post('/graphql')
+        .send({
+          operationName: null,
+          variables: {},
+          // language=graphql
+          query: `{
+            todoItems(sorting: [{field: subTasksCount, direction: ASC}], paging: {first: 2}) {
+              ${pageInfoField}
+              ${edgeNodes(todoItemFields)}
+              totalCount
+            }
+          }`
+        })
+        .expect(200)
+        .then(({ body }) => {
+          const { edges, pageInfo, totalCount }: CursorConnectionType<TodoItemDTO> = body.data.todoItems
+          expect(pageInfo).toEqual({
+            endCursor:
+              'eyJ0eXBlIjoia2V5c2V0IiwiZmllbGRzIjpbeyJmaWVsZCI6InN1YlRhc2tzQ291bnQiLCJ2YWx1ZSI6M30seyJmaWVsZCI6ImlkIiwidmFsdWUiOjF9XX0=',
+            hasNextPage: true,
+            hasPreviousPage: false,
+            startCursor:
+              'eyJ0eXBlIjoia2V5c2V0IiwiZmllbGRzIjpbeyJmaWVsZCI6InN1YlRhc2tzQ291bnQiLCJ2YWx1ZSI6Mn0seyJmaWVsZCI6ImlkIiwidmFsdWUiOjV9XX0='
+          })
+          expect(totalCount).toBe(5)
+          expect(edges).toHaveLength(2)
+          expect(edges.map((e) => e.node)).toEqual([
+            {
+              id: '5',
+              title: 'How to create item With Sub Tasks',
+              completed: false,
+              description: null,
+              age: expect.any(Number),
+              subTasksCount: 2
+            },
+            { id: '1', title: 'Create Nest App', completed: true, description: null, age: expect.any(Number), subTasksCount: 3 }
+          ])
+        }))
 
     describe('paging', () => {
       it(`should allow paging with the 'first' field`, () =>

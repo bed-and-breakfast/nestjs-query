@@ -11,7 +11,7 @@ import { Referenceable, ReferenceResolverOpts } from './reference.resolver'
 import { Relatable } from './relations'
 import { RelatableOpts } from './relations/relations.resolver'
 import { MergePagingStrategyOpts, ResolverClass } from './resolver.interface'
-import { Updateable, UpdateResolver, UpdateResolverOpts } from './update.resolver'
+import { Updatable, UpdateResolver, UpdateResolverOpts } from './update.resolver'
 
 export interface CRUDResolverOpts<
   DTO,
@@ -19,8 +19,8 @@ export interface CRUDResolverOpts<
   U = DeepPartial<DTO>,
   R extends ReadResolverOpts<DTO> = ReadResolverOpts<DTO>,
   PS extends PagingStrategies = PagingStrategies.CURSOR
-> extends BaseResolverOptions,
-    Pick<ConnectionOptions, 'enableTotalCount'> {
+>
+  extends BaseResolverOptions, Pick<ConnectionOptions, 'enableTotalCount'> {
   /**
    * The DTO that should be used as input for create endpoints.
    */
@@ -50,7 +50,9 @@ export interface CRUDResolver<
   U,
   R extends ReadResolverOpts<DTO>,
   QS extends QueryService<DTO, C, U> = QueryService<DTO, C, U>
-> extends CreateResolver<DTO, C, QS>,
+>
+  extends
+    CreateResolver<DTO, C, QS>,
     ReadResolverFromOpts<DTO, R, QS>,
     UpdateResolver<DTO, U, QS>,
     DeleteResolver<DTO, QS>,
@@ -129,13 +131,13 @@ export const CRUDResolver = <
   DTOClass: Class<DTO>,
   opts: CRUDResolverOpts<DTO, C, U, R, PS> = {}
 ): ResolverClass<DTO, QueryService<DTO, C, U>, CRUDResolver<DTO, C, U, MergePagingStrategyOpts<DTO, R, PS>>> => {
-  const referencable = Referenceable(DTOClass, opts.referenceBy ?? {})
+  const referenceable = Referenceable(DTOClass, opts.referenceBy ?? {})
   const relatable = Relatable(DTOClass, extractRelatableOpts(opts))
   const aggregateable = Aggregateable(DTOClass, extractAggregateResolverOpts(opts))
   const creatable = Creatable(DTOClass, extractCreateResolverOpts(opts))
   const readable = Readable(DTOClass, extractReadResolverOpts(opts))
-  const updatable = Updateable(DTOClass, extractUpdateResolverOpts(opts))
+  const updatable = Updatable(DTOClass, extractUpdateResolverOpts(opts))
   const deleteResolver = DeleteResolver(DTOClass, extractDeleteResolverOpts(opts))
 
-  return referencable(relatable(aggregateable(creatable(readable(updatable(deleteResolver))))))
+  return referenceable(relatable(aggregateable(creatable(readable(updatable(deleteResolver))))))
 }

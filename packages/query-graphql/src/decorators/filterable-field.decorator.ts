@@ -1,4 +1,4 @@
-import { Field, FieldOptions, ReturnTypeFunc } from '@nestjs/graphql'
+import { Field, FieldOptions, ReturnTypeFunc, ReturnTypeFuncValue } from '@nestjs/graphql'
 import { ArrayReflector, Class, FilterComparisonOperators, getPrototypeChain } from '@ptc-org/nestjs-query-core'
 
 import { FILTERABLE_FIELD_KEY } from './constants'
@@ -8,12 +8,15 @@ export type FilterableFieldOptions = {
   allowedComparisons?: FilterComparisonOperators<unknown>[]
   filterRequired?: boolean
   filterOnly?: boolean
+  filterDecorators?: PropertyDecorator[]
+  overrideFilterTypeNamePrefix?: string
 } & FieldOptions
 
 export interface FilterableFieldDescriptor {
   propertyName: string
+  schemaName: string
   target: Class<unknown>
-  returnTypeFunc?: ReturnTypeFunc
+  returnTypeFunc?: ReturnTypeFunc<ReturnTypeFuncValue>
   advancedOptions?: FilterableFieldOptions
 }
 
@@ -74,10 +77,13 @@ export function FilterableField(
     descriptor: TypedPropertyDescriptor<D>
   ): TypedPropertyDescriptor<D> | void => {
     const Ctx = Reflect.getMetadata('design:type', target, propertyName) as Class<unknown>
+    const rt = returnTypeFunc ?? (() => Ctx)
+
     reflector.append(target.constructor as Class<unknown>, {
       propertyName: propertyName.toString(),
+      schemaName: advancedOptions?.name || propertyName.toString(),
       target: Ctx,
-      returnTypeFunc,
+      returnTypeFunc: rt,
       advancedOptions
     })
 
