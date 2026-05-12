@@ -6038,34 +6038,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nestjs/core@npm:^11.1.19":
-  version: 11.1.19
-  resolution: "@nestjs/core@npm:11.1.19"
-  dependencies:
-    "@nuxt/opencollective": "npm:0.4.1"
-    fast-safe-stringify: "npm:2.1.1"
-    iterare: "npm:1.2.1"
-    path-to-regexp: "npm:8.4.2"
-    tslib: "npm:2.8.1"
-    uid: "npm:2.0.2"
-  peerDependencies:
-    "@nestjs/common": ^11.0.0
-    "@nestjs/microservices": ^11.0.0
-    "@nestjs/platform-express": ^11.0.0
-    "@nestjs/websockets": ^11.0.0
-    reflect-metadata: ^0.1.12 || ^0.2.0
-    rxjs: ^7.1.0
-  peerDependenciesMeta:
-    "@nestjs/microservices":
-      optional: true
-    "@nestjs/platform-express":
-      optional: true
-    "@nestjs/websockets":
-      optional: true
-  checksum: 10/be0d9b8221867afa0f93eb0e45ea750a48e9c4e0225331889b0ca6b1ceb4d1292096146442e9c55e1775777c23a8fc66d9c07c82ca1f53fff16f1913ecd51165
-  languageName: node
-  linkType: hard
-
 "@nestjs/graphql@npm:^13.2.4":
   version: 13.2.4
   resolution: "@nestjs/graphql@npm:13.2.4"
@@ -19756,7 +19728,7 @@ __metadata:
     "@nestjs/cache-manager": "npm:^3.1.2"
     "@nestjs/cli": "npm:11.0.16"
     "@nestjs/common": "npm:11.1.17"
-    "@nestjs/core": "npm:^11.1.19"
+    "@nestjs/core": "npm:^11.1.18"
     "@nestjs/graphql": "npm:^13.4.0"
     "@nestjs/jwt": "npm:11.0.2"
     "@nestjs/mongoose": "npm:11.0.4"
