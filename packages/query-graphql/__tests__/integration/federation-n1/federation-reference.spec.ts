@@ -43,7 +43,7 @@ describe('Federation Reference Resolution Integration Test', () => {
         TypeOrmModule.forFeature([TodoList, TodoItem]),
         GraphQLModule.forRoot<ApolloFederationDriverConfig>({
           driver: ApolloFederationDriver,
-          autoSchemaFile: { federation: { version: 2, importUrl: 'https://specs.apollo.dev/federation/v2.7' } }
+          autoSchemaFile: { federation: { version: 2 } }
         }),
         NestjsQueryGraphQLModule.forFeature({
           imports: [NestjsQueryTypeOrmModule.forFeature([TodoList, TodoItem])],
