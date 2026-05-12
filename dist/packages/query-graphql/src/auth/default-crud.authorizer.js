@@ -65,6 +65,7 @@ function createDefaultAuthorizer(DTOClass, opts // instance of class or authoriz
     };
     DefaultAuthorizer = tslib_1.__decorate([
         (0, common_1.Injectable)(),
+        tslib_1.__param(0, (0, common_1.Inject)(core_1.ModuleRef)),
         tslib_1.__param(1, (0, common_1.Optional)()),
         tslib_1.__param(1, (0, common_1.Inject)((0, tokens_1.getCustomAuthorizerToken)(DTOClass))),
         tslib_1.__metadata("design:paramtypes", [core_1.ModuleRef, Object])
