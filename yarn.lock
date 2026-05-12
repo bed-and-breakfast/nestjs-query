@@ -5987,7 +5987,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nestjs/common@npm:11.1.17, @nestjs/common@npm:^11.1.17":
+"@nestjs/common@npm:^11.1.17":
   version: 11.1.17
   resolution: "@nestjs/common@npm:11.1.17"
   dependencies:
@@ -6007,6 +6007,29 @@ __metadata:
     class-validator:
       optional: true
   checksum: 10/5cf09b83373ac1090a3f81ffcf34b91237f062b7e48ff37453e7c2d0cb4373e2e8dc33ed13636ff0e944a900ab19508436a76c8a5e73702d57f930ed5a0cc9c2
+  languageName: node
+  linkType: hard
+
+"@nestjs/common@npm:^11.1.18":
+  version: 11.1.19
+  resolution: "@nestjs/common@npm:11.1.19"
+  dependencies:
+    file-type: "npm:21.3.4"
+    iterare: "npm:1.2.1"
+    load-esm: "npm:1.0.3"
+    tslib: "npm:2.8.1"
+    uid: "npm:2.0.2"
+  peerDependencies:
+    class-transformer: ">=0.4.1"
+    class-validator: ">=0.13.2"
+    reflect-metadata: ^0.1.12 || ^0.2.0
+    rxjs: ^7.1.0
+  peerDependenciesMeta:
+    class-transformer:
+      optional: true
+    class-validator:
+      optional: true
+  checksum: 10/e402d0c859efc9d1547a5cd0edd3a0d2b485fcc55147071b4472e530afc4efa112b7cc4982eb85f34aa4e57fa62c0cbba368f16366d3144d83b2149fe0b4891c
   languageName: node
   linkType: hard
 
@@ -13812,6 +13835,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"file-type@npm:21.3.4":
+  version: 21.3.4
+  resolution: "file-type@npm:21.3.4"
+  dependencies:
+    "@tokenizer/inflate": "npm:^0.4.1"
+    strtok3: "npm:^10.3.4"
+    token-types: "npm:^6.1.1"
+    uint8array-extras: "npm:^1.4.0"
+  checksum: 10/42d5cf6aafb998fb2f0357e96ea7c48bcce5249f899523a3a5a4c297f4fe2346cc0aff9cf04243ada5c54b6457183550b2a04902b6533cd5e64aaa344d78e0eb
+  languageName: node
+  linkType: hard
+
 "file-uri-to-path@npm:1.0.0":
   version: 1.0.0
   resolution: "file-uri-to-path@npm:1.0.0"
@@ -19727,7 +19762,7 @@ __metadata:
     "@nestjs/apollo": "npm:^13.2.4"
     "@nestjs/cache-manager": "npm:^3.1.2"
     "@nestjs/cli": "npm:11.0.16"
-    "@nestjs/common": "npm:11.1.17"
+    "@nestjs/common": "npm:^11.1.18"
     "@nestjs/core": "npm:^11.1.18"
     "@nestjs/graphql": "npm:^13.4.0"
     "@nestjs/jwt": "npm:11.0.2"
@@ -19816,6 +19851,10 @@ __metadata:
     tslib: "npm:^2.8.1"
     typeorm: "npm:0.3.28"
     typescript: "npm:^5.9.3"
+  peerDependencies:
+    "@nestjs/common": ^11.1.18
+    "@nestjs/core": ^11.1.18
+    "@nestjs/graphql": ^13.2.4
   languageName: unknown
   linkType: soft
 

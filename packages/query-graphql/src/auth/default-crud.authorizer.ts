@@ -35,7 +35,7 @@ export function createDefaultAuthorizer<DTO>(
     private readonly relations: Map<string, ResolverRelation<unknown>>
 
     constructor(
-      @Inject(ModuleRef) private readonly moduleRef: ModuleRef,
+      private readonly moduleRef: ModuleRef,
       @Optional() @Inject(getCustomAuthorizerToken(DTOClass)) private readonly customAuthorizer?: CustomAuthorizer<DTO>
     ) {
       this.relationsAuthorizers = new Map<string, Authorizer<unknown> | undefined>()
