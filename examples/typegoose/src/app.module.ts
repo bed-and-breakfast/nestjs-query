@@ -3,6 +3,9 @@ import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo'
 import { Module } from '@nestjs/common'
 import { GraphQLModule } from '@nestjs/graphql'
 
+import { NestjsQueryTypegooseCacheModule } from '@bed-and-breakfast/nestjs-query-typegoose'
+import { CACHE_MANAGER, CacheModule } from '@nestjs/cache-manager'
+import { Cache } from 'cache-manager'
 import { formatGraphqlError, mongooseConfig } from '../../helpers'
 import { GqlContext } from './auth.guard'
 import { SubTaskModule } from './sub-task/sub-task.module'
@@ -13,6 +16,14 @@ const { uri, ...options } = mongooseConfig('typegoose', {})
 
 @Module({
   imports: [
+    NestjsQueryTypegooseCacheModule.registerAsync({
+      imports: [CacheModule.register()],
+      inject: [CACHE_MANAGER],
+      useFactory: (cache: Cache) => ({
+        cacheManager: cache,
+        disablePreloading: true
+      })
+    }),
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     TypegooseModule.forRoot(uri, options),
     GraphQLModule.forRoot<ApolloDriverConfig>({
