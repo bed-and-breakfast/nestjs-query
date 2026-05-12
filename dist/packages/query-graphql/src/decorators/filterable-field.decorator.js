@@ -23,11 +23,12 @@ function FilterableField(returnTypeFuncOrOptions, maybeOptions) {
     // eslint-disable-next-line @typescript-eslint/ban-types
     target, propertyName, descriptor) => {
         const Ctx = Reflect.getMetadata('design:type', target, propertyName);
+        const rt = returnTypeFunc ?? (() => Ctx);
         reflector.append(target.constructor, {
             propertyName: propertyName.toString(),
             schemaName: advancedOptions?.name || propertyName.toString(),
             target: Ctx,
-            returnTypeFunc,
+            returnTypeFunc: rt,
             advancedOptions
         });
         if (advancedOptions?.filterOnly) {

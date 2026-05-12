@@ -48,6 +48,9 @@ betweenFilterValidationMap.set(graphql_1.GraphQLISODateTime, (0, class_validator
 betweenFilterValidationMap.set(graphql_1.GraphQLTimestamp, (0, class_validator_1.IsDate)());
 /** @internal */
 const getTypeName = (SomeType) => {
+    if (Array.isArray(SomeType)) {
+        return getTypeName(SomeType[0]);
+    }
     if (knownTypes.has(SomeType) || (0, nestjs_query_core_1.isNamed)(SomeType)) {
         const typeName = SomeType.name;
         return (0, nestjs_query_core_1.upperCaseFirst)(typeName);

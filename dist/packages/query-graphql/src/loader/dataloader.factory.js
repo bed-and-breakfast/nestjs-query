@@ -18,7 +18,13 @@ class DataLoaderFactory {
         const nestjsQueryLoaders = this.initializeContext(context);
         if (!nestjsQueryLoaders[name]) {
             const handler = createHandler();
-            const dataLoaderOptions = { cacheKeyFn, ...options };
+            const dataLoaderOptions = {
+                cacheKeyFn,
+                // Ensure batching and caching are enabled
+                batch: true,
+                cache: true,
+                ...options
+            };
             // eslint-disable-next-line no-param-reassign
             nestjsQueryLoaders[name] = new dataloader_1.default(handler, dataLoaderOptions);
         }

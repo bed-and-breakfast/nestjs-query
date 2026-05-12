@@ -135,7 +135,12 @@ export declare class FilterQueryBuilder<Entity> {
      */
     filterHasRelations(filter?: Filter<Entity>): boolean;
     /**
-     * Checks if the query should use skip/take instead of limit/offset
+     * Checks if the query should use skip/take instead of limit/offset.
+     *
+     * We need to use Skip/Take instead of Limit/Offset when the query involves a join that might be (one|many)-to-many.
+     * This method looks for any n-to-many relations in the filter and if it finds any, it returns true.
+     *
+     * Recursively traverses the filter so we can detect nested n-to-many relations.
      */
     private shouldUseSkipTake;
     getReferencedRelationsWithAliasRecursive(metadata: EntityMetadata, filter?: Filter<unknown>, selectRelations?: SelectRelation<Entity>[]): NestedRelationsAliased;

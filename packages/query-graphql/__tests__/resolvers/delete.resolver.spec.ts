@@ -3,11 +3,11 @@ import { DeleteManyResponse, Filter } from '@ptc-org/nestjs-query-core'
 import { PubSub } from 'graphql-subscriptions'
 import { anything, deepEqual, instance, mock, objectContaining, verify, when } from 'ts-mockito'
 
+import { PubSubAsyncIterableIterator } from 'graphql-subscriptions/dist/pubsub-async-iterable-iterator'
 import { DeleteManyInputType, DeleteOneInputType, DeleteResolver, DeleteResolverOpts, InjectPubSub } from '../../src'
 import { DeletedEvent } from '../../src/resolvers/delete.resolver'
 import { EventType, getDTOEventName } from '../../src/subscription'
 import { createResolverFromNest, generateSchema, TestResolverDTO, TestService } from '../__fixtures__'
-import { PubSubAsyncIterableIterator } from 'graphql-subscriptions/dist/pubsub-async-iterable-iterator'
 
 describe('DeleteResolver', () => {
   const expectResolverSDL = async (opts?: DeleteResolverOpts<TestResolverDTO>) => {

@@ -96,3 +96,5 @@ documentation/.docusaurus
 
 .nx/cache
 .nx/workspace-data
+
+.npmrc

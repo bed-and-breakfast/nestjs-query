@@ -76,7 +76,7 @@ describe('TypegooseQueryService', () => {
     const testingModuleBuilder = Test.createTestingModule({
       imports: [
         NestjsQueryTypegooseCacheModule.registerAsync({
-          imports: [CacheModule.register({ ttl: 0, max: 10 * 1000 * 1000 /* 10 MB */ })],
+          imports: [CacheModule.register()],
           inject: [CACHE_MANAGER],
           useFactory: (cache: Cache) => ({
             cacheManager: cache,

@@ -189,10 +189,10 @@ class TypeOrmQueryService extends relation_query_service_1.RelationQueryService 
     async updateMany(update, filter) {
         this.ensureIdIsNotPresent(update);
         let updateResult;
-        // If the update has relations then fetch all the id's and then do an update on the ids returned
+        // If the update has relations, then fetch all the id's and then do an update on the ids returned
         if (this.filterQueryBuilder.filterHasRelations(filter)) {
             const builder = this.filterQueryBuilder.select({ filter }).distinct(true);
-            const distinctRecords = await builder.addSelect(`${builder.alias}.id`).getRawMany();
+            const distinctRecords = await builder.select(`${builder.alias}.id AS id`).getRawMany();
             const ids = distinctRecords.map(({ id }) => id);
             const idsFilter = { id: { in: ids } };
             updateResult = await this.filterQueryBuilder

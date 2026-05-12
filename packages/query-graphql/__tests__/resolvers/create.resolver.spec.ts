@@ -11,10 +11,10 @@ import {
 import { PubSub } from 'graphql-subscriptions'
 import { anything, deepEqual, instance, mock, objectContaining, verify, when } from 'ts-mockito'
 
+import { PubSubAsyncIterableIterator } from 'graphql-subscriptions/dist/pubsub-async-iterable-iterator'
 import { CreatedEvent } from '../../src/resolvers/create.resolver'
 import { EventType, getDTOEventName } from '../../src/subscription'
 import { createResolverFromNest, generateSchema, TestResolverDTO, TestResolverInputDTO, TestService } from '../__fixtures__'
-import { PubSubAsyncIterableIterator } from 'graphql-subscriptions/dist/pubsub-async-iterable-iterator'
 
 describe('CreateResolver', () => {
   const expectResolverSDL = async (opts?: CreateResolverOpts<TestResolverDTO>) => {

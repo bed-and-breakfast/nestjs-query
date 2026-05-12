@@ -51,8 +51,13 @@ class OffsetPager {
     createQuery(query, pagingMeta) {
         const { limit, offset } = pagingMeta.opts;
         const paging = { limit: limit + 1, offset };
-        if (this.enableFetchAllWithNegative && limit === -1)
+        if (this.enableFetchAllWithNegative && limit === -1) {
             delete paging.limit;
+            // Delete the offset if it is 0.
+            if (offset === 0) {
+                delete paging.offset;
+            }
+        }
         return { ...query, paging };
     }
     checkForExtraNode(nodes, opts) {

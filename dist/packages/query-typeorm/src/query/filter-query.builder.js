@@ -201,27 +201,25 @@ class FilterQueryBuilder {
         return (0, nestjs_query_core_1.getFilterFields)(filter).filter((f) => relationNames.includes(f)).length > 0;
     }
     /**
-     * Checks if the query should use skip/take instead of limit/offset
+     * Checks if the query should use skip/take instead of limit/offset.
+     *
+     * We need to use Skip/Take instead of Limit/Offset when the query involves a join that might be (one|many)-to-many.
+     * This method looks for any n-to-many relations in the filter and if it finds any, it returns true.
+     *
+     * Recursively traverses the filter so we can detect nested n-to-many relations.
      */
-    shouldUseSkipTake(filter) {
-        if (!filter) {
+    shouldUseSkipTake(filter, relations = this.repo.metadata.relations) {
+        if (!filter)
             return false;
-        }
-        return ((0, nestjs_query_core_1.getFilterFields)(filter).filter((field) => {
-            const relation = this.repo.metadata.relations.find(({ propertyName }) => propertyName === field);
-            if (!relation) {
+        return (0, nestjs_query_core_1.getFilterFields)(filter).some((field) => {
+            const relation = relations.find(({ propertyName }) => propertyName === field);
+            if (!relation)
                 return false;
-            }
-            if (!relation || relation.isOneToOne || relation.isManyToOne) {
-                return false;
-                // } else if (relation.isOneToMany) {
-                //   TODO
-                // return false
-            }
-            else {
+            if (!relation.isOneToOne && !relation.isManyToOne)
                 return true;
-            }
-        }).length > 0);
+            const nestedFilter = filter[field];
+            return this.shouldUseSkipTake(nestedFilter, relation.inverseEntityMetadata.relations);
+        });
     }
     getReferencedRelationsWithAliasRecursive(metadata, filter = {}, selectRelations = []) {
         const referencedRelations = this.getReferencedRelationsRecursive(metadata, filter, selectRelations);

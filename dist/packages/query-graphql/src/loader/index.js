@@ -6,4 +6,5 @@ tslib_1.__exportStar(require("./count-relations.loader"), exports);
 tslib_1.__exportStar(require("./dataloader.factory"), exports);
 tslib_1.__exportStar(require("./find-relations.loader"), exports);
 tslib_1.__exportStar(require("./query-relations.loader"), exports);
+tslib_1.__exportStar(require("./reference.loader"), exports);
 //# sourceMappingURL=index.js.map
