@@ -6010,9 +6010,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nestjs/common@npm:^11.1.18":
-  version: 11.1.19
-  resolution: "@nestjs/common@npm:11.1.19"
+"@nestjs/common@npm:^11.1.19":
+  version: 11.1.21
+  resolution: "@nestjs/common@npm:11.1.21"
   dependencies:
     file-type: "npm:21.3.4"
     iterare: "npm:1.2.1"
@@ -6029,7 +6029,7 @@ __metadata:
       optional: true
     class-validator:
       optional: true
-  checksum: 10/e402d0c859efc9d1547a5cd0edd3a0d2b485fcc55147071b4472e530afc4efa112b7cc4982eb85f34aa4e57fa62c0cbba368f16366d3144d83b2149fe0b4891c
+  checksum: 10/d40a3cae684c3c524da7e3e53d322f0f79317cb9ae9c2f306e1d07bbf31e09ace2a2fb0491d83aef5535bb8f4e28054eafe0f83a9fec62aae2e004a5e554db56
   languageName: node
   linkType: hard
 
@@ -6058,6 +6058,34 @@ __metadata:
     "@nestjs/websockets":
       optional: true
   checksum: 10/522775660e9111df51294d82ac1ab63ea6b7ebc1edbb45a79c6471cdf33205bd1bb4f6058d284c5ab7b480e25c4da71763a89595112cb6d958786f6f76c87a1e
+  languageName: node
+  linkType: hard
+
+"@nestjs/core@npm:^11.1.19":
+  version: 11.1.21
+  resolution: "@nestjs/core@npm:11.1.21"
+  dependencies:
+    "@nuxt/opencollective": "npm:0.4.1"
+    fast-safe-stringify: "npm:2.1.1"
+    iterare: "npm:1.2.1"
+    path-to-regexp: "npm:8.4.2"
+    tslib: "npm:2.8.1"
+    uid: "npm:2.0.2"
+  peerDependencies:
+    "@nestjs/common": ^11.0.0
+    "@nestjs/microservices": ^11.0.0
+    "@nestjs/platform-express": ^11.0.0
+    "@nestjs/websockets": ^11.0.0
+    reflect-metadata: ^0.1.12 || ^0.2.0
+    rxjs: ^7.1.0
+  peerDependenciesMeta:
+    "@nestjs/microservices":
+      optional: true
+    "@nestjs/platform-express":
+      optional: true
+    "@nestjs/websockets":
+      optional: true
+  checksum: 10/bb975e542fbd960e87a9a44647c0bc801c629edba04bb426501a229600be9102ed11783f262e421d5457481d87b44a826ef403aed822555176444de38d628050
   languageName: node
   linkType: hard
 
@@ -14245,9 +14273,9 @@ __metadata:
     "@as-integrations/express5": "npm:^1.1.2"
     "@nestjs/apollo": "npm:^13.2.4"
     "@nestjs/cli": "npm:^11.0.16"
-    "@nestjs/common": "npm:^11.1.17"
-    "@nestjs/core": "npm:^11.1.18"
-    "@nestjs/graphql": "npm:^13.2.4"
+    "@nestjs/common": "npm:^11.1.19"
+    "@nestjs/core": "npm:^11.1.19"
+    "@nestjs/graphql": "npm:^13.4.0"
     "@nestjs/platform-express": "npm:^11.1.17"
     "@nestjs/schematics": "npm:^11.0.9"
     "@types/node": "npm:^24.10.1"
@@ -14257,6 +14285,10 @@ __metadata:
     reflect-metadata: "npm:^0.2.2"
     rxjs: "npm:^7.8.2"
     typescript: "npm:^5.9.3"
+  peerDependencies:
+    "@nestjs/common": ^9.0.0 || ^10.0.0 || ^11.0.0
+    "@nestjs/core": ^9.0.0 || ^10.0.0 || ^11.0.0
+    "@nestjs/graphql": ^11.0.0 || ^12.0.0 || ^13.0.0
   languageName: unknown
   linkType: soft
 
@@ -19762,8 +19794,8 @@ __metadata:
     "@nestjs/apollo": "npm:^13.2.4"
     "@nestjs/cache-manager": "npm:^3.1.2"
     "@nestjs/cli": "npm:11.0.16"
-    "@nestjs/common": "npm:^11.1.18"
-    "@nestjs/core": "npm:^11.1.18"
+    "@nestjs/common": "npm:^11.1.19"
+    "@nestjs/core": "npm:^11.1.19"
     "@nestjs/graphql": "npm:^13.4.0"
     "@nestjs/jwt": "npm:11.0.2"
     "@nestjs/mongoose": "npm:11.0.4"
@@ -19852,9 +19884,9 @@ __metadata:
     typeorm: "npm:0.3.28"
     typescript: "npm:^5.9.3"
   peerDependencies:
-    "@nestjs/common": ^11.1.18
-    "@nestjs/core": ^11.1.18
-    "@nestjs/graphql": ^13.2.4
+    "@nestjs/common": ^9.0.0 || ^10.0.0 || ^11.0.0
+    "@nestjs/core": ^9.0.0 || ^10.0.0 || ^11.0.0
+    "@nestjs/graphql": ^11.0.0 || ^12.0.0 || ^13.0.0
   languageName: unknown
   linkType: soft
 
@@ -24675,9 +24707,9 @@ __metadata:
     "@as-integrations/express5": "npm:^1.1.2"
     "@nestjs/apollo": "npm:^13.2.4"
     "@nestjs/cli": "npm:^11.0.16"
-    "@nestjs/common": "npm:^11.1.17"
-    "@nestjs/core": "npm:^11.1.18"
-    "@nestjs/graphql": "npm:^13.2.4"
+    "@nestjs/common": "npm:^11.1.19"
+    "@nestjs/core": "npm:^11.1.19"
+    "@nestjs/graphql": "npm:^13.4.0"
     "@nestjs/platform-express": "npm:^11.1.17"
     "@nestjs/schematics": "npm:^11.0.9"
     "@nestjs/typeorm": "npm:^11.0.0"
@@ -24690,6 +24722,10 @@ __metadata:
     rxjs: "npm:^7.8.2"
     typeorm: "npm:^0.3.28"
     typescript: "npm:^5.9.3"
+  peerDependencies:
+    "@nestjs/common": ^9.0.0 || ^10.0.0 || ^11.0.0
+    "@nestjs/core": ^9.0.0 || ^10.0.0 || ^11.0.0
+    "@nestjs/graphql": ^11.0.0 || ^12.0.0 || ^13.0.0
   languageName: unknown
   linkType: soft
 
@@ -25694,6 +25730,10 @@ __metadata:
     rxjs: "npm:^7.8.2"
     typeorm: "npm:^0.3.28"
     typescript: "npm:^5.9.3"
+  peerDependencies:
+    "@nestjs/common": ^9.0.0 || ^10.0.0 || ^11.0.0
+    "@nestjs/core": ^9.0.0 || ^10.0.0 || ^11.0.0
+    "@nestjs/graphql": ^11.0.0 || ^12.0.0 || ^13.0.0
   languageName: unknown
   linkType: soft
 
